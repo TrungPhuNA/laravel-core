@@ -2,6 +2,14 @@
 
 Base prefix: `/api/v1/settings`
 
+## Get by key
+
+`GET /{key}`
+
+Ghi chú:
+- Nếu key là public -> không cần token.
+- Nếu key không public -> cần `Authorization: Bearer <token>` và `user_type` là `ADMIN` hoặc `SYSTEM`.
+
 ## Public list
 
 `GET /public`
@@ -32,4 +40,3 @@ Payload:
   ]
 }
 ```
-

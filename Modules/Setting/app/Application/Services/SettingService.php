@@ -26,5 +26,18 @@ final class SettingService implements SettingServiceInterface
     {
         $this->settings->upsertMany($items, $updatedById);
     }
-}
 
+    public function getPublicByKey(string $key)
+    {
+        return $this->settings
+            ->all(true)
+            ->firstWhere('key', $key);
+    }
+
+    public function getByKey(string $key)
+    {
+        return $this->settings
+            ->all(false)
+            ->firstWhere('key', $key);
+    }
+}

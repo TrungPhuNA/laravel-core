@@ -36,6 +36,51 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: 'api/v1/settings/{key}'
+    metadata:
+      custom: []
+      groupName: 'Cài đặt'
+      groupDescription: ''
+      subgroup: 'Theo key'
+      subgroupDescription: ''
+      title: 'Lấy setting theo key'
+      description: |-
+        Nếu setting là public: không cần đăng nhập.
+        Nếu setting không public: yêu cầu user_type là ADMIN hoặc SYSTEM.
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      key:
+        custom: []
+        name: key
+        description: ''
+        required: true
+        example: '!public$Z'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      key: '!public$Z'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: api/v1/settings
     metadata:
       custom: []
@@ -146,7 +191,7 @@ endpoints:
         name: 'items[].is_public'
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false

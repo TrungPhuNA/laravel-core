@@ -66,5 +66,34 @@ final class SettingEndpointsTest extends TestCase
         $res->assertJsonPath('status', 'fail');
         $res->assertJsonPath('code', 'FORBIDDEN');
     }
-}
 
+    public function test_get_setting_by_key_public_and_private(): void
+    {
+        Setting::create(['key' => 'site_name', 'value' => 'Core API', 'group' => 'general', 'is_public' => true]);
+        Setting::create(['key' => 'private_key', 'value' => 'secret', 'group' => 'security', 'is_public' => false]);
+
+        $public = $this->getJson('/api/v1/settings/site_name');
+        $public->assertOk();
+        $public->assertJsonPath('status', 'success');
+        $public->assertJsonPath('data.item.key', 'site_name');
+
+        $unauth = $this->getJson('/api/v1/settings/private_key');
+        $unauth->assertStatus(401);
+        $unauth->assertJsonPath('status', 'fail');
+        $unauth->assertJsonPath('code', 'UNAUTHORIZED');
+
+        $normalUser = User::factory()->create(['user_type' => UserType::USER]);
+        Sanctum::actingAs($normalUser);
+        $forbidden = $this->getJson('/api/v1/settings/private_key');
+        $forbidden->assertStatus(403);
+        $forbidden->assertJsonPath('status', 'fail');
+        $forbidden->assertJsonPath('code', 'FORBIDDEN');
+
+        $admin = User::factory()->create(['user_type' => UserType::ADMIN]);
+        Sanctum::actingAs($admin);
+        $ok = $this->getJson('/api/v1/settings/private_key');
+        $ok->assertOk();
+        $ok->assertJsonPath('status', 'success');
+        $ok->assertJsonPath('data.item.key', 'private_key');
+    }
+}

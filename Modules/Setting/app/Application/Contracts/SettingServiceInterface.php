@@ -20,5 +20,8 @@ interface SettingServiceInterface
      * @param array<int, array<string, mixed>> $items
      */
     public function upsert(array $items, int $updatedById): void;
-}
 
+    public function getPublicByKey(string $key);
+
+    public function getByKey(string $key);
+}

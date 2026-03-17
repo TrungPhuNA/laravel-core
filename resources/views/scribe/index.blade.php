@@ -79,6 +79,14 @@
                                             <a href="#cai-dat-GETapi-v1-settings-public">Danh sách setting công khai</a>
                                         </li>
                                                                     </ul>
+                                                                                <li class="tocify-item level-2" data-unique="cai-dat-theo-key">
+                                <a href="#cai-dat-theo-key">Theo key</a>
+                            </li>
+                                                            <ul id="tocify-subheader-cai-dat-theo-key" class="tocify-subheader">
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings--key-">
+                                            <a href="#cai-dat-GETapi-v1-settings--key-">Lấy setting theo key</a>
+                                        </li>
+                                                                    </ul>
                                                                                 <li class="tocify-item level-2" data-unique="cai-dat-quan-tri">
                                 <a href="#cai-dat-quan-tri">Quản trị</a>
                             </li>
@@ -273,6 +281,132 @@ Có thể mở DevTools Console để debug.</code></pre>
 <p>Example: <code>application/json</code></p>
             </div>
                         </form>
+
+                                <h2 id="cai-dat-theo-key">Theo key</h2>
+                                                    <h2 id="cai-dat-GETapi-v1-settings--key-">Lấy setting theo key</h2>
+
+<p>
+</p>
+
+<p>Nếu setting là public: không cần đăng nhập.
+Nếu setting không public: yêu cầu user_type là ADMIN hoặc SYSTEM.</p>
+
+<span id="example-requests-GETapi-v1-settings--key-">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/!public$Z" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/!public$Z"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings--key-">
+    </span>
+<span id="execution-results-GETapi-v1-settings--key-" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings--key-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings--key-"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings--key-" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings--key-">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings--key-" data-method="GET"
+      data-path="api/v1/settings/{key}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings--key-', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings--key-"
+                    onclick="tryItOut('GETapi-v1-settings--key-');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings--key-"
+                    onclick="cancelTryOut('GETapi-v1-settings--key-');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings--key-"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/{key}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings--key-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings--key-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>key</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="key"                data-endpoint="GETapi-v1-settings--key-"
+               value="!public$Z"
+               data-component="url">
+    <br>
+<p>Example: <code>!public$Z</code></p>
+            </div>
+                    </form>
 
                                 <h2 id="cai-dat-quan-tri">Quản trị</h2>
                                                     <h2 id="cai-dat-GETapi-v1-settings">Danh sách tất cả setting</h2>
@@ -616,7 +750,7 @@ Có thể mở DevTools Console để debug.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
