@@ -24,10 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Make API always behave as JSON (avoid redirect-to-login HTML responses).
+        // Buoc API luon "nhin" nhu JSON de tranh redirect ve trang login va tra ve HTML.
         $middleware->prependToGroup('api', ForceJsonAccept::class);
 
-        // Allow switching validation/error messages between vi/en per request.
+        // Cho phep doi ngon ngu thong bao loi (vi/en) theo tung request.
         $middleware->appendToGroup('api', SetLocale::class);
 
         $middleware->alias([
@@ -35,9 +35,14 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Force JSON for API routes even if client sends Accept: text/html (eg browsers).
+        // Buoc cac route /api/* luon render JSON ke ca client gui Accept: text/html (thuong gap khi goi tu browser).
         $exceptions->shouldRenderJsonWhen(function (Request $request, \Throwable $e) {
             return $request->is('api/*') || $request->expectsJson();
+        });
+
+        // Khong log nhung loi API "du kien" (4xx do client) thanh local.ERROR.
+        $exceptions->dontReportWhen(function (\Throwable $e) {
+            return $e instanceof ApiException && $e->status < 500;
         });
 
         $exceptions->render(function (AuthenticationException $e) {
@@ -109,7 +114,7 @@ return Application::configure(basePath: dirname(__DIR__))
             );
         });
 
-        // Final fallback for API: never return HTML error pages.
+        // Fallback cuoi cho API: khong bao gio tra ve trang loi HTML.
         $exceptions->render(function (\Throwable $e, Request $request) {
             if (!$request->is('api/*')) {
                 return null;

@@ -231,8 +231,8 @@ INTRO,
         'bodyParameters' => [
             ...Defaults::BODY_PARAMETERS_STRATEGIES,
         ],
-        // Keep docs generation stable by default (no HTTP response calls).
-        // If you want live response examples, re-enable ResponseCalls and ensure your DB is running.
+        // De generate docs on dinh mac dinh (khong goi HTTP de lay response example).
+        // Neu muon response example "that", hay bat lai ResponseCalls va dam bao DB dang chay.
         'responses' => removeStrategies(
             Defaults::RESPONSES_STRATEGIES,
             [Strategies\Responses\ResponseCalls::class]

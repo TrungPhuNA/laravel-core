@@ -7,7 +7,7 @@ use Illuminate\Http\JsonResponse;
 final class ApiResponse
 {
     /**
-     * JSend: success
+     * JSend: success (thanh cong)
      */
     public static function success(mixed $data = null, string $code = 'SUCCESS', string $message = 'OK', int $status = 200): JsonResponse
     {
@@ -20,7 +20,7 @@ final class ApiResponse
     }
 
     /**
-     * JSend: fail (client-side errors like validation/preconditions).
+     * JSend: fail (loi phia client: validation, precondition, ...).
      *
      * @param array<string, mixed> $data
      */
@@ -35,7 +35,7 @@ final class ApiResponse
     }
 
     /**
-     * JSend: error (server-side errors).
+     * JSend: error (loi phia server).
      *
      * @param array<string, mixed>|null $data
      */

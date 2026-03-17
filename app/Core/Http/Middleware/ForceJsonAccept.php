@@ -9,8 +9,8 @@ final class ForceJsonAccept
 {
     public function handle(Request $request, Closure $next)
     {
-        // Many clients send only Content-Type without Accept, which makes Laravel treat
-        // unauthenticated requests as "web" and attempt redirects to route('login').
+        // Nhieu client chi gui Content-Type ma khong gui Accept, lam Laravel hieu sai thanh web request,
+        // dan den auth middleware co the redirect ve route('login') va tra ve HTML.
         if ($request->is('api/*')) {
             $accept = (string) $request->header('Accept', '');
 
@@ -22,4 +22,3 @@ final class ForceJsonAccept
         return $next($request);
     }
 }
-

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 final class SetLocale
 {
     /**
-     * Supported locales for API error messages.
+     * Cac ngon ngu ho tro cho thong bao loi/validation.
      */
     private const SUPPORTED = ['vi', 'en'];
 
@@ -25,7 +25,7 @@ final class SetLocale
 
     private function resolveLocale(Request $request): ?string
     {
-        // Priority: query -> X-Locale -> Accept-Language
+        // Thu tu uu tien: query -> X-Locale -> Accept-Language
         $candidate = $request->query('lang')
             ?: $request->header('X-Locale')
             ?: $this->fromAcceptLanguage($request->header('Accept-Language'));
@@ -36,7 +36,7 @@ final class SetLocale
 
         $candidate = strtolower(trim((string) $candidate));
 
-        // Normalize: vi-VN -> vi, en-US -> en
+        // Chuan hoa: vi-VN -> vi, en-US -> en
         if (str_contains($candidate, ',')) {
             $candidate = explode(',', $candidate, 2)[0];
         }
@@ -59,4 +59,3 @@ final class SetLocale
         return $acceptLanguage ? (string) $acceptLanguage : null;
     }
 }
-
