@@ -2,11 +2,16 @@
 
 Base prefix: `/api/v1/auth`
 
-## Register
+## Swagger / OpenAPI
+
+- Swagger UI: `/docs`
+- OpenAPI spec: `/docs.openapi`
+
+## Đăng ký
 
 `POST /register`
 
-Payload:
+Dữ liệu gửi:
 ```json
 {
   "name": "Demo User",
@@ -17,11 +22,11 @@ Payload:
 }
 ```
 
-## Login
+## Đăng nhập
 
 `POST /login`
 
-Payload:
+Dữ liệu gửi:
 ```json
 {
   "email": "demo@example.com",
@@ -32,13 +37,13 @@ Payload:
 
 ## Me
 
-`GET /me` (requires `Authorization: Bearer <token>`)
+`GET /me` (cần `Authorization: Bearer <token>`)
 
-## Update Profile
+## Cập nhật profile
 
-`PUT /profile` (requires auth)
+`PUT /profile` (cần auth)
 
-Payload (partial update, fields are optional):
+Dữ liệu gửi (partial update, fields optional):
 ```json
 {
   "phone": "0900000000",
@@ -48,6 +53,6 @@ Payload (partial update, fields are optional):
 }
 ```
 
-## Logout
+## Đăng xuất
 
-`POST /logout` (requires auth)
+`POST /logout` (cần auth)

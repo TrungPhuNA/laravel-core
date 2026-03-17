@@ -15,5 +15,33 @@ final class RegisterRequest extends FormRequest
             'device_name' => ['nullable', 'string', 'max:100'],
         ];
     }
-}
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => [
+                'description' => 'User display name.',
+                'example' => 'Demo User',
+            ],
+            'email' => [
+                'description' => 'Unique email address.',
+                'example' => 'demo@example.com',
+            ],
+            'password' => [
+                'description' => 'Password (min 8 chars).',
+                'example' => 'password123',
+            ],
+            'password_confirmation' => [
+                'description' => 'Must match password.',
+                'example' => 'password123',
+            ],
+            'device_name' => [
+                'description' => 'Optional device name for the token.',
+                'example' => 'postman',
+            ],
+        ];
+    }
+}

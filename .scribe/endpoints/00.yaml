@@ -1,0 +1,470 @@
+name: 'Xác thực'
+description: |-
+
+  API đăng ký/đăng nhập/cập nhật profile sử dụng Bearer token (Sanctum).
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/register
+    metadata:
+      custom: []
+      groupName: 'Xác thực'
+      groupDescription: |-
+
+        API đăng ký/đăng nhập/cập nhật profile sử dụng Bearer token (Sanctum).
+      subgroup: 'Tài khoản'
+      subgroupDescription: 'Các thao tác đăng ký/đăng nhập.'
+      title: 'Đăng ký'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'User display name. Must not be greater than 150 characters.'
+        required: true
+        example: 'Demo User'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Unique email address. Must be a valid email address. Must not be greater than 255 characters.'
+        required: true
+        example: demo@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'Password (min 8 chars). Must be at least 8 characters.'
+        required: true
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      device_name:
+        custom: []
+        name: device_name
+        description: 'Optional device name for the token. Must not be greater than 100 characters.'
+        required: false
+        example: postman
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Demo User'
+      email: demo@example.com
+      password: password123
+      device_name: postman
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/login
+    metadata:
+      custom: []
+      groupName: 'Xác thực'
+      groupDescription: |-
+
+        API đăng ký/đăng nhập/cập nhật profile sử dụng Bearer token (Sanctum).
+      subgroup: 'Tài khoản'
+      subgroupDescription: ''
+      title: 'Đăng nhập'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: 'Registered email address. Must be a valid email address. Must not be greater than 255 characters.'
+        required: true
+        example: demo@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'Account password.'
+        required: true
+        example: password123
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      device_name:
+        custom: []
+        name: device_name
+        description: 'Optional device name for the token. Must not be greater than 100 characters.'
+        required: false
+        example: postman
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      email: demo@example.com
+      password: password123
+      device_name: postman
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/auth/me
+    metadata:
+      custom: []
+      groupName: 'Xác thực'
+      groupDescription: |-
+
+        API đăng ký/đăng nhập/cập nhật profile sử dụng Bearer token (Sanctum).
+      subgroup: 'Hồ sơ'
+      subgroupDescription: 'Các thao tác xem/cập nhật hồ sơ.'
+      title: 'Thông tin tài khoản'
+      description: 'Lấy thông tin user đang đăng nhập.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: api/v1/auth/profile
+    metadata:
+      custom: []
+      groupName: 'Xác thực'
+      groupDescription: |-
+
+        API đăng ký/đăng nhập/cập nhật profile sử dụng Bearer token (Sanctum).
+      subgroup: 'Hồ sơ'
+      subgroupDescription: ''
+      title: 'Cập nhật profile'
+      description: 'Cập nhật thông tin profile của user hiện tại.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'User display name. Must not be greater than 150 characters.'
+        required: false
+        example: 'Demo User'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Phone number. Must not be greater than 30 characters.'
+        required: false
+        example: '0900000000'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      avatar_url:
+        custom: []
+        name: avatar_url
+        description: 'Avatar image URL. Must not be greater than 255 characters.'
+        required: false
+        example: 'https://example.com/avatar.png'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      date_of_birth:
+        custom: []
+        name: date_of_birth
+        description: 'Date of birth (YYYY-MM-DD). Must be a valid date.'
+        required: false
+        example: '1990-01-01'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      gender:
+        custom: []
+        name: gender
+        description: 'Gender (free text). Must not be greater than 20 characters.'
+        required: false
+        example: male
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      address_line1:
+        custom: []
+        name: address_line1
+        description: 'Address line 1. Must not be greater than 255 characters.'
+        required: false
+        example: '123 Street'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      address_line2:
+        custom: []
+        name: address_line2
+        description: 'Address line 2. Must not be greater than 255 characters.'
+        required: false
+        example: 'Apt 4'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      ward:
+        custom: []
+        name: ward
+        description: 'Ward. Must not be greater than 255 characters.'
+        required: false
+        example: 'Ward 1'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      district:
+        custom: []
+        name: district
+        description: 'District. Must not be greater than 255 characters.'
+        required: false
+        example: 'District 1'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      province:
+        custom: []
+        name: province
+        description: 'Province/City. Must not be greater than 255 characters.'
+        required: false
+        example: HCM
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country:
+        custom: []
+        name: country
+        description: 'ISO 3166-1 alpha-2 country code. Must be 2 characters.'
+        required: false
+        example: VN
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      postal_code:
+        custom: []
+        name: postal_code
+        description: 'Postal code. Must not be greater than 20 characters.'
+        required: false
+        example: '700000'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      company:
+        custom: []
+        name: company
+        description: 'Company name. Must not be greater than 255 characters.'
+        required: false
+        example: 'Core Co'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      job_title:
+        custom: []
+        name: job_title
+        description: 'Job title. Must not be greater than 255 characters.'
+        required: false
+        example: Engineer
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      timezone:
+        custom: []
+        name: timezone
+        description: 'Timezone identifier. Must not be greater than 50 characters.'
+        required: false
+        example: Asia/Ho_Chi_Minh
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      locale:
+        custom: []
+        name: locale
+        description: 'Locale code. Must not be greater than 10 characters.'
+        required: false
+        example: vi
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      bio:
+        custom: []
+        name: bio
+        description: 'Short bio. Must not be greater than 2000 characters.'
+        required: false
+        example: Hello
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: 'Demo User'
+      phone: '0900000000'
+      avatar_url: 'https://example.com/avatar.png'
+      date_of_birth: '1990-01-01'
+      gender: male
+      address_line1: '123 Street'
+      address_line2: 'Apt 4'
+      ward: 'Ward 1'
+      district: 'District 1'
+      province: HCM
+      country: VN
+      postal_code: '700000'
+      company: 'Core Co'
+      job_title: Engineer
+      timezone: Asia/Ho_Chi_Minh
+      locale: vi
+      bio: Hello
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/auth/logout
+    metadata:
+      custom: []
+      groupName: 'Xác thực'
+      groupDescription: |-
+
+        API đăng ký/đăng nhập/cập nhật profile sử dụng Bearer token (Sanctum).
+      subgroup: Phiên
+      subgroupDescription: 'Quản lý phiên và token.'
+      title: 'Đăng xuất'
+      description: 'Thu hồi token hiện tại.'
+      authenticated: true
+      deprecated: false
+    headers:
+      Authorization: 'Bearer {TOKEN}'
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth:
+      - headers
+      - Authorization
+      - 'Bearer 3V5EgbkvZcDPa166h8fd4ae'
+    controller: null
+    method: null
+    route: null

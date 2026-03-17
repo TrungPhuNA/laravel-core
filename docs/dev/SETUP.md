@@ -8,7 +8,7 @@ export PATH="/opt/homebrew/opt/php@8.2/sbin:$PATH"
 php -v
 ```
 
-## Install
+## Cài đặt
 
 ```bash
 composer install
@@ -17,8 +17,25 @@ php artisan key:generate
 php artisan migrate
 ```
 
-## Run (local)
+## Chạy local
 
 ```bash
 php artisan serve
+```
+
+## API Docs (Swagger/OpenAPI)
+
+```bash
+php artisan scribe:generate
+```
+
+Open:
+- `/docs`
+- `/docs.openapi`
+
+## Domain cho curl mẫu (Scribe)
+
+Thêm vào `.env`:
+```bash
+SCRIBE_BASE_URL=${APP_URL}
 ```
