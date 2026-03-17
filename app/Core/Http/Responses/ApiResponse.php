@@ -6,38 +6,54 @@ use Illuminate\Http\JsonResponse;
 
 final class ApiResponse
 {
-    public static function ok(mixed $data = null, array $meta = [], int $status = 200): JsonResponse
+    /**
+     * JSend: success
+     */
+    public static function success(mixed $data = null, string $code = 'SUCCESS', string $message = 'OK', int $status = 200): JsonResponse
     {
         return response()->json([
-            'success' => true,
+            'status' => 'success',
+            'code' => $code,
+            'message' => $message,
             'data' => $data,
-            'meta' => array_merge(self::baseMeta(), $meta),
-        ], $status);
-    }
-
-    public static function error(string $code, string $message, array $details = [], array $meta = [], int $status = 400): JsonResponse
-    {
-        return response()->json([
-            'success' => false,
-            'error' => [
-                'code' => $code,
-                'message' => $message,
-                'details' => $details,
-            ],
-            'meta' => array_merge(self::baseMeta(), $meta),
         ], $status);
     }
 
     /**
-     * @return array<string, mixed>
+     * JSend: fail (client-side errors like validation/preconditions).
+     *
+     * @param array<string, mixed> $data
      */
-    private static function baseMeta(): array
+    public static function fail(array $data, string $code = 'FAIL', string $message = 'Request failed', int $status = 400): JsonResponse
     {
-        $requestId = request()?->header('X-Request-Id');
+        return response()->json([
+            'status' => 'fail',
+            'code' => $code,
+            'message' => $message,
+            'data' => $data,
+        ], $status);
+    }
 
-        return [
-            'request_id' => $requestId,
+    /**
+     * JSend: error (server-side errors).
+     *
+     * @param array<string, mixed>|null $data
+     */
+    public static function error(string $message = 'Server error', ?string $code = 'ERROR', ?array $data = null, int $status = 500): JsonResponse
+    {
+        $payload = [
+            'status' => 'error',
+            'message' => $message,
         ];
+
+        if ($code !== null) {
+            $payload['code'] = $code;
+        }
+
+        if ($data !== null) {
+            $payload['data'] = $data;
+        }
+
+        return response()->json($payload, $status);
     }
 }
-

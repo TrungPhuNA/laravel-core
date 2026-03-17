@@ -8,6 +8,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Core\Exceptions\ApiException;
 use App\Core\Exceptions\ErrorCode;
 use App\Core\Http\Responses\ApiResponse;
+use App\Core\Http\Middleware\SetLocale;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,31 +18,42 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Allow switching validation/error messages between vi/en per request.
+        $middleware->appendToGroup('api', SetLocale::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (ApiException $e) {
-            return ApiResponse::error(
+            if ($e->status >= 500) {
+                return ApiResponse::error(
+                    message: $e->getMessage(),
+                    code: $e->errorCode,
+                    data: $e->details ?: null,
+                    status: $e->status,
+                );
+            }
+
+            return ApiResponse::fail(
+                data: $e->details,
                 code: $e->errorCode,
                 message: $e->getMessage(),
-                details: $e->details,
                 status: $e->status,
             );
         });
 
         $exceptions->render(function (ValidationException $e) {
-            return ApiResponse::error(
+            return ApiResponse::fail(
+                data: $e->errors(),
                 code: ErrorCode::VALIDATION_ERROR->value,
-                message: 'Validation error',
-                details: $e->errors(),
-                status: 422,
+                message: __('messages.validation_error'),
+                status: 400,
             );
         });
 
         $exceptions->render(function (NotFoundHttpException $e) {
-            return ApiResponse::error(
+            return ApiResponse::fail(
+                data: [],
                 code: ErrorCode::NOT_FOUND->value,
-                message: 'Not found',
+                message: __('messages.not_found'),
                 status: 404,
             );
         });

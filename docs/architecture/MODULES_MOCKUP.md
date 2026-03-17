@@ -136,29 +136,33 @@ Goi y naming:
 
 ## 2) API response schema (goi y)
 
-Schema:
+Schema (JSend):
 ```json
 {
-  "success": true,
-  "data": {},
-  "meta": {
-    "request_id": "..."
-  }
+  "status": "success",
+  "code": "SUCCESS",
+  "message": "OK",
+  "data": {}
 }
 ```
 
-Error:
+Fail (client error):
 ```json
 {
-  "success": false,
-  "error": {
-    "code": "USER_NOT_FOUND",
-    "message": "User not found",
-    "details": {}
-  },
-  "meta": {
-    "request_id": "..."
-  }
+  "status": "fail",
+  "code": "VALIDATION_ERROR",
+  "message": "Dữ liệu không hợp lệ",
+  "data": {}
+}
+```
+
+Error (server error):
+```json
+{
+  "status": "error",
+  "code": "ERROR",
+  "message": "Server error",
+  "data": {}
 }
 ```
 
@@ -174,25 +178,33 @@ use Illuminate\Http\JsonResponse;
 
 final class ApiResponse
 {
-    public static function ok(mixed $data = null, array $meta = [], int $status = 200): JsonResponse
+    public static function success(mixed $data = null, string $code = 'SUCCESS', string $message = 'OK', int $status = 200): JsonResponse
     {
         return response()->json([
-            'success' => true,
+            'status' => 'success',
+            'code' => $code,
+            'message' => $message,
             'data' => $data,
-            'meta' => $meta,
         ], $status);
     }
 
-    public static function error(string $code, string $message, array $details = [], array $meta = [], int $status = 400): JsonResponse
+    public static function fail(array $data, string $code = 'FAIL', string $message = 'Request failed', int $status = 400): JsonResponse
     {
         return response()->json([
-            'success' => false,
-            'error' => [
-                'code' => $code,
-                'message' => $message,
-                'details' => $details,
-            ],
-            'meta' => $meta,
+            'status' => 'fail',
+            'code' => $code,
+            'message' => $message,
+            'data' => $data,
+        ], $status);
+    }
+
+    public static function error(string $message = 'Server error', ?string $code = 'ERROR', ?array $data = null, int $status = 500): JsonResponse
+    {
+        return response()->json([
+            'status' => 'error',
+            'code' => $code,
+            'message' => $message,
+            'data' => $data,
         ], $status);
     }
 }
@@ -480,7 +492,7 @@ final class UserController extends Controller
         $data = UserIndexData::from($request->data());
         $paginator = $this->users->paginate($data);
 
-        return ApiResponse::ok([
+        return ApiResponse::success([
             'items' => UserResource::collection($paginator->getCollection()),
             'pagination' => [
                 'page' => $paginator->currentPage(),
@@ -852,24 +864,24 @@ final class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         $result = $this->auth->register($request->validated());
-        return ApiResponse::ok($result, status: 201);
+        return ApiResponse::success($result, status: 200);
     }
 
     public function login(LoginRequest $request)
     {
         $result = $this->auth->login($request->validated());
-        return ApiResponse::ok($result);
+        return ApiResponse::success($result);
     }
 
     public function me()
     {
-        return ApiResponse::ok(['user' => request()->user()]);
+        return ApiResponse::success(['user' => request()->user()]);
     }
 
     public function logout()
     {
         $this->auth->logout(request()->user());
-        return ApiResponse::ok(null);
+        return ApiResponse::success(null);
     }
 }
 ```

@@ -33,10 +33,15 @@ final class AuthController extends Controller
     {
         $result = $this->auth->register($request->validated());
 
-        return ApiResponse::ok([
-            'user' => new UserResource($result['user']),
-            'token' => $result['token'],
-        ], status: 201);
+        return ApiResponse::success(
+            data: [
+                'user' => new UserResource($result['user']),
+                'token' => $result['token'],
+            ],
+            code: 'AUTH_REGISTER_SUCCESS',
+            message: 'Đăng ký thành công',
+            status: 200,
+        );
     }
 
     /**
@@ -50,10 +55,14 @@ final class AuthController extends Controller
     {
         $result = $this->auth->login($request->validated());
 
-        return ApiResponse::ok([
-            'user' => new UserResource($result['user']),
-            'token' => $result['token'],
-        ]);
+        return ApiResponse::success(
+            data: [
+                'user' => new UserResource($result['user']),
+                'token' => $result['token'],
+            ],
+            code: 'AUTH_LOGIN_SUCCESS',
+            message: 'Đăng nhập thành công',
+        );
     }
 
     /**
@@ -68,9 +77,13 @@ final class AuthController extends Controller
      */
     public function me()
     {
-        return ApiResponse::ok([
-            'user' => new UserResource($this->user()),
-        ]);
+        return ApiResponse::success(
+            data: [
+                'user' => new UserResource($this->user()),
+            ],
+            code: 'AUTH_ME_SUCCESS',
+            message: 'Lấy thông tin thành công',
+        );
     }
 
     /**
@@ -87,7 +100,11 @@ final class AuthController extends Controller
     {
         $this->auth->logout($this->user());
 
-        return ApiResponse::ok(null);
+        return ApiResponse::success(
+            data: null,
+            code: 'AUTH_LOGOUT_SUCCESS',
+            message: 'Đăng xuất thành công',
+        );
     }
 
     /**
@@ -103,9 +120,13 @@ final class AuthController extends Controller
     {
         $user = $this->auth->updateProfile($this->user(), $request->validated());
 
-        return ApiResponse::ok([
-            'user' => new UserResource($user),
-        ]);
+        return ApiResponse::success(
+            data: [
+                'user' => new UserResource($user),
+            ],
+            code: 'AUTH_UPDATE_PROFILE_SUCCESS',
+            message: 'Cập nhật profile thành công',
+        );
     }
 
     private function user()

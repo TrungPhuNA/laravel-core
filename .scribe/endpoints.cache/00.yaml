@@ -33,7 +33,7 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'User display name. Must not be greater than 150 characters.'
+        description: 'User display name. Trường value không được lớn hơn 150 ký tự.'
         required: true
         example: 'Demo User'
         type: string
@@ -44,7 +44,7 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Unique email address. Must be a valid email address. Must not be greater than 255 characters.'
+        description: 'Unique email address. Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
         required: true
         example: demo@example.com
         type: string
@@ -55,7 +55,7 @@ endpoints:
       password:
         custom: []
         name: password
-        description: 'Password (min 8 chars). Must be at least 8 characters.'
+        description: 'Password (min 8 chars). Trường value phải tối thiểu 8 ký tự.'
         required: true
         example: password123
         type: string
@@ -66,7 +66,7 @@ endpoints:
       device_name:
         custom: []
         name: device_name
-        description: 'Optional device name for the token. Must not be greater than 100 characters.'
+        description: 'Optional device name for the token. Trường value không được lớn hơn 100 ký tự.'
         required: false
         example: postman
         type: string
@@ -114,7 +114,7 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Registered email address. Must be a valid email address. Must not be greater than 255 characters.'
+        description: 'Registered email address. Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
         required: true
         example: demo@example.com
         type: string
@@ -136,7 +136,7 @@ endpoints:
       device_name:
         custom: []
         name: device_name
-        description: 'Optional device name for the token. Must not be greater than 100 characters.'
+        description: 'Optional device name for the token. Trường value không được lớn hơn 100 ký tự.'
         required: false
         example: postman
         type: string
@@ -221,7 +221,7 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'User display name. Must not be greater than 150 characters.'
+        description: 'User display name. Trường value không được lớn hơn 150 ký tự.'
         required: false
         example: 'Demo User'
         type: string
@@ -232,7 +232,7 @@ endpoints:
       phone:
         custom: []
         name: phone
-        description: 'Phone number. Must not be greater than 30 characters.'
+        description: 'Phone number. Trường value không được lớn hơn 30 ký tự.'
         required: false
         example: '0900000000'
         type: string
@@ -243,7 +243,7 @@ endpoints:
       avatar_url:
         custom: []
         name: avatar_url
-        description: 'Avatar image URL. Must not be greater than 255 characters.'
+        description: 'Avatar image URL. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: 'https://example.com/avatar.png'
         type: string
@@ -254,7 +254,7 @@ endpoints:
       date_of_birth:
         custom: []
         name: date_of_birth
-        description: 'Date of birth (YYYY-MM-DD). Must be a valid date.'
+        description: 'Date of birth (YYYY-MM-DD). Trường value không phải là ngày hợp lệ.'
         required: false
         example: '1990-01-01'
         type: string
@@ -265,7 +265,7 @@ endpoints:
       gender:
         custom: []
         name: gender
-        description: 'Gender (free text). Must not be greater than 20 characters.'
+        description: 'Gender (free text). Trường value không được lớn hơn 20 ký tự.'
         required: false
         example: male
         type: string
@@ -276,7 +276,7 @@ endpoints:
       address_line1:
         custom: []
         name: address_line1
-        description: 'Address line 1. Must not be greater than 255 characters.'
+        description: 'Address line 1. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: '123 Street'
         type: string
@@ -287,7 +287,7 @@ endpoints:
       address_line2:
         custom: []
         name: address_line2
-        description: 'Address line 2. Must not be greater than 255 characters.'
+        description: 'Address line 2. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: 'Apt 4'
         type: string
@@ -298,7 +298,7 @@ endpoints:
       ward:
         custom: []
         name: ward
-        description: 'Ward. Must not be greater than 255 characters.'
+        description: 'Ward. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: 'Ward 1'
         type: string
@@ -309,7 +309,7 @@ endpoints:
       district:
         custom: []
         name: district
-        description: 'District. Must not be greater than 255 characters.'
+        description: 'District. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: 'District 1'
         type: string
@@ -320,7 +320,7 @@ endpoints:
       province:
         custom: []
         name: province
-        description: 'Province/City. Must not be greater than 255 characters.'
+        description: 'Province/City. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: HCM
         type: string
@@ -331,7 +331,7 @@ endpoints:
       country:
         custom: []
         name: country
-        description: 'ISO 3166-1 alpha-2 country code. Must be 2 characters.'
+        description: 'ISO 3166-1 alpha-2 country code. Trường value phải có 2 ký tự.'
         required: false
         example: VN
         type: string
@@ -342,7 +342,7 @@ endpoints:
       postal_code:
         custom: []
         name: postal_code
-        description: 'Postal code. Must not be greater than 20 characters.'
+        description: 'Postal code. Trường value không được lớn hơn 20 ký tự.'
         required: false
         example: '700000'
         type: string
@@ -353,7 +353,7 @@ endpoints:
       company:
         custom: []
         name: company
-        description: 'Company name. Must not be greater than 255 characters.'
+        description: 'Company name. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: 'Core Co'
         type: string
@@ -364,7 +364,7 @@ endpoints:
       job_title:
         custom: []
         name: job_title
-        description: 'Job title. Must not be greater than 255 characters.'
+        description: 'Job title. Trường value không được lớn hơn 255 ký tự.'
         required: false
         example: Engineer
         type: string
@@ -375,7 +375,7 @@ endpoints:
       timezone:
         custom: []
         name: timezone
-        description: 'Timezone identifier. Must not be greater than 50 characters.'
+        description: 'Timezone identifier. Trường value không được lớn hơn 50 ký tự.'
         required: false
         example: Asia/Ho_Chi_Minh
         type: string
@@ -386,7 +386,7 @@ endpoints:
       locale:
         custom: []
         name: locale
-        description: 'Locale code. Must not be greater than 10 characters.'
+        description: 'Locale code. Trường value không được lớn hơn 10 ký tự.'
         required: false
         example: vi
         type: string
@@ -397,7 +397,7 @@ endpoints:
       bio:
         custom: []
         name: bio
-        description: 'Short bio. Must not be greater than 2000 characters.'
+        description: 'Short bio. Trường value không được lớn hơn 2000 ký tự.'
         required: false
         example: Hello
         type: string

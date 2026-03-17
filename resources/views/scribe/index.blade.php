@@ -26,7 +26,7 @@
             </style>
 
     <script>
-        var tryItOutBaseUrl = "http://localhost";
+        var tryItOutBaseUrl = "http://laravel-core.test";
         var useCsrf = Boolean();
         var csrfUrl = "/sanctum/csrf-cookie";
     </script>
@@ -122,7 +122,7 @@
         <h1 id="gioi-thieu">Giới thiệu</h1>
 <p>Tài liệu mô tả các endpoint API của hệ thống.</p>
 <aside>
-    <strong>Địa chỉ gốc</strong>: <code>http://localhost</code>
+    <strong>Địa chỉ gốc</strong>: <code>http://laravel-core.test</code>
 </aside>
 <p>Tài liệu này mô tả toàn bộ endpoint API hiện có.</p>
 <p>Xác thực sử dụng Bearer token (Laravel Sanctum).</p>
@@ -153,7 +153,7 @@
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/v1/auth/register" \
+    "http://laravel-core.test/api/v1/auth/register" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -167,7 +167,7 @@
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/auth/register"
+    "http://laravel-core.test/api/v1/auth/register"
 );
 
 const headers = {
@@ -274,7 +274,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Demo User"
                data-component="body">
     <br>
-<p>User display name. Must not be greater than 150 characters. Example: <code>Demo User</code></p>
+<p>User display name. Trường value không được lớn hơn 150 ký tự. Example: <code>Demo User</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
@@ -286,7 +286,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="demo@example.com"
                data-component="body">
     <br>
-<p>Unique email address. Must be a valid email address. Must not be greater than 255 characters. Example: <code>demo@example.com</code></p>
+<p>Unique email address. Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự. Example: <code>demo@example.com</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
@@ -298,7 +298,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="password123"
                data-component="body">
     <br>
-<p>Password (min 8 chars). Must be at least 8 characters. Example: <code>password123</code></p>
+<p>Password (min 8 chars). Trường value phải tối thiểu 8 ký tự. Example: <code>password123</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>device_name</code></b>&nbsp;&nbsp;
@@ -310,7 +310,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="postman"
                data-component="body">
     <br>
-<p>Optional device name for the token. Must not be greater than 100 characters. Example: <code>postman</code></p>
+<p>Optional device name for the token. Trường value không được lớn hơn 100 ký tự. Example: <code>postman</code></p>
         </div>
         </form>
 
@@ -327,7 +327,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/v1/auth/login" \
+    "http://laravel-core.test/api/v1/auth/login" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -340,7 +340,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/auth/login"
+    "http://laravel-core.test/api/v1/auth/login"
 );
 
 const headers = {
@@ -446,7 +446,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="demo@example.com"
                data-component="body">
     <br>
-<p>Registered email address. Must be a valid email address. Must not be greater than 255 characters. Example: <code>demo@example.com</code></p>
+<p>Registered email address. Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự. Example: <code>demo@example.com</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
@@ -470,7 +470,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="postman"
                data-component="body">
     <br>
-<p>Optional device name for the token. Must not be greater than 100 characters. Example: <code>postman</code></p>
+<p>Optional device name for the token. Trường value không được lớn hơn 100 ký tự. Example: <code>postman</code></p>
         </div>
         </form>
 
@@ -492,7 +492,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/v1/auth/me" \
+    --get "http://laravel-core.test/api/v1/auth/me" \
     --header "Authorization: Bearer {TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -500,7 +500,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/auth/me"
+    "http://laravel-core.test/api/v1/auth/me"
 );
 
 const headers = {
@@ -618,7 +618,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request PUT \
-    "http://localhost/api/v1/auth/profile" \
+    "http://laravel-core.test/api/v1/auth/profile" \
     --header "Authorization: Bearer {TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
@@ -646,7 +646,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/auth/profile"
+    "http://laravel-core.test/api/v1/auth/profile"
 );
 
 const headers = {
@@ -779,7 +779,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Demo User"
                data-component="body">
     <br>
-<p>User display name. Must not be greater than 150 characters. Example: <code>Demo User</code></p>
+<p>User display name. Trường value không được lớn hơn 150 ký tự. Example: <code>Demo User</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
@@ -791,7 +791,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="0900000000"
                data-component="body">
     <br>
-<p>Phone number. Must not be greater than 30 characters. Example: <code>0900000000</code></p>
+<p>Phone number. Trường value không được lớn hơn 30 ký tự. Example: <code>0900000000</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>avatar_url</code></b>&nbsp;&nbsp;
@@ -803,7 +803,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="https://example.com/avatar.png"
                data-component="body">
     <br>
-<p>Avatar image URL. Must not be greater than 255 characters. Example: <code>https://example.com/avatar.png</code></p>
+<p>Avatar image URL. Trường value không được lớn hơn 255 ký tự. Example: <code>https://example.com/avatar.png</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>date_of_birth</code></b>&nbsp;&nbsp;
@@ -815,7 +815,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="1990-01-01"
                data-component="body">
     <br>
-<p>Date of birth (YYYY-MM-DD). Must be a valid date. Example: <code>1990-01-01</code></p>
+<p>Date of birth (YYYY-MM-DD). Trường value không phải là ngày hợp lệ. Example: <code>1990-01-01</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>gender</code></b>&nbsp;&nbsp;
@@ -827,7 +827,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="male"
                data-component="body">
     <br>
-<p>Gender (free text). Must not be greater than 20 characters. Example: <code>male</code></p>
+<p>Gender (free text). Trường value không được lớn hơn 20 ký tự. Example: <code>male</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>address_line1</code></b>&nbsp;&nbsp;
@@ -839,7 +839,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="123 Street"
                data-component="body">
     <br>
-<p>Address line 1. Must not be greater than 255 characters. Example: <code>123 Street</code></p>
+<p>Address line 1. Trường value không được lớn hơn 255 ký tự. Example: <code>123 Street</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>address_line2</code></b>&nbsp;&nbsp;
@@ -851,7 +851,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Apt 4"
                data-component="body">
     <br>
-<p>Address line 2. Must not be greater than 255 characters. Example: <code>Apt 4</code></p>
+<p>Address line 2. Trường value không được lớn hơn 255 ký tự. Example: <code>Apt 4</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>ward</code></b>&nbsp;&nbsp;
@@ -863,7 +863,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Ward 1"
                data-component="body">
     <br>
-<p>Ward. Must not be greater than 255 characters. Example: <code>Ward 1</code></p>
+<p>Ward. Trường value không được lớn hơn 255 ký tự. Example: <code>Ward 1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>district</code></b>&nbsp;&nbsp;
@@ -875,7 +875,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="District 1"
                data-component="body">
     <br>
-<p>District. Must not be greater than 255 characters. Example: <code>District 1</code></p>
+<p>District. Trường value không được lớn hơn 255 ký tự. Example: <code>District 1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>province</code></b>&nbsp;&nbsp;
@@ -887,7 +887,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="HCM"
                data-component="body">
     <br>
-<p>Province/City. Must not be greater than 255 characters. Example: <code>HCM</code></p>
+<p>Province/City. Trường value không được lớn hơn 255 ký tự. Example: <code>HCM</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>country</code></b>&nbsp;&nbsp;
@@ -899,7 +899,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="VN"
                data-component="body">
     <br>
-<p>ISO 3166-1 alpha-2 country code. Must be 2 characters. Example: <code>VN</code></p>
+<p>ISO 3166-1 alpha-2 country code. Trường value phải có 2 ký tự. Example: <code>VN</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>postal_code</code></b>&nbsp;&nbsp;
@@ -911,7 +911,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="700000"
                data-component="body">
     <br>
-<p>Postal code. Must not be greater than 20 characters. Example: <code>700000</code></p>
+<p>Postal code. Trường value không được lớn hơn 20 ký tự. Example: <code>700000</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>company</code></b>&nbsp;&nbsp;
@@ -923,7 +923,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Core Co"
                data-component="body">
     <br>
-<p>Company name. Must not be greater than 255 characters. Example: <code>Core Co</code></p>
+<p>Company name. Trường value không được lớn hơn 255 ký tự. Example: <code>Core Co</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>job_title</code></b>&nbsp;&nbsp;
@@ -935,7 +935,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Engineer"
                data-component="body">
     <br>
-<p>Job title. Must not be greater than 255 characters. Example: <code>Engineer</code></p>
+<p>Job title. Trường value không được lớn hơn 255 ký tự. Example: <code>Engineer</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>timezone</code></b>&nbsp;&nbsp;
@@ -947,7 +947,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Asia/Ho_Chi_Minh"
                data-component="body">
     <br>
-<p>Timezone identifier. Must not be greater than 50 characters. Example: <code>Asia/Ho_Chi_Minh</code></p>
+<p>Timezone identifier. Trường value không được lớn hơn 50 ký tự. Example: <code>Asia/Ho_Chi_Minh</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>locale</code></b>&nbsp;&nbsp;
@@ -959,7 +959,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="vi"
                data-component="body">
     <br>
-<p>Locale code. Must not be greater than 10 characters. Example: <code>vi</code></p>
+<p>Locale code. Trường value không được lớn hơn 10 ký tự. Example: <code>vi</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>bio</code></b>&nbsp;&nbsp;
@@ -971,7 +971,7 @@ Có thể mở DevTools Console để debug.</code></pre>
                value="Hello"
                data-component="body">
     <br>
-<p>Short bio. Must not be greater than 2000 characters. Example: <code>Hello</code></p>
+<p>Short bio. Trường value không được lớn hơn 2000 ký tự. Example: <code>Hello</code></p>
         </div>
         </form>
 
@@ -993,7 +993,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "http://localhost/api/v1/auth/logout" \
+    "http://laravel-core.test/api/v1/auth/logout" \
     --header "Authorization: Bearer {TOKEN}" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
@@ -1001,7 +1001,7 @@ Có thể mở DevTools Console để debug.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/v1/auth/logout"
+    "http://laravel-core.test/api/v1/auth/logout"
 );
 
 const headers = {
