@@ -5,7 +5,7 @@ Tài liệu này định nghĩa format response thống nhất cho toàn bộ AP
 ## Quy ước chung
 
 - Response body luôn là JSON và field name dùng `snake_case`.
-- Tracing: client nên gửi header `correlation_id` cho mỗi request (tuỳ hệ thống). Nếu không có, server có thể tự generate.
+- Tracing: client nên gửi header `X-Request-Id` (hoặc `X-Correlation-Id`) cho mỗi request. Nếu không có, server sẽ tự generate và trả lại `X-Request-Id` trong response header.
 - Đa ngôn ngữ (vi/en): gửi `Accept-Language: vi|en` hoặc `X-Locale: vi|en` hoặc query `?lang=vi|en`.
 
 ## Format
@@ -17,7 +17,8 @@ Tài liệu này định nghĩa format response thống nhất cho toàn bộ AP
   "status": "success",
   "code": "SUCCESS",
   "message": "OK",
-  "data": {}
+  "data": {},
+  "trace_id": "01JNV... (ví dụ)"
 }
 ```
 
@@ -30,7 +31,8 @@ Tài liệu này định nghĩa format response thống nhất cho toàn bộ AP
   "message": "Dữ liệu không hợp lệ",
   "data": {
     "email": ["The email field is required."]
-  }
+  },
+  "trace_id": "01JNV... (ví dụ)"
 }
 ```
 
@@ -41,7 +43,8 @@ Tài liệu này định nghĩa format response thống nhất cho toàn bộ AP
   "status": "error",
   "code": "ERROR",
   "message": "Server error",
-  "data": {}
+  "data": {},
+  "trace_id": "01JNV... (ví dụ)"
 }
 ```
 

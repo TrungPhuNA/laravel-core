@@ -15,6 +15,7 @@ use App\Core\Http\Responses\ApiResponse;
 use App\Core\Http\Middleware\SetLocale;
 use App\Core\Http\Middleware\RequireUserType;
 use App\Core\Http\Middleware\ForceJsonAccept;
+use App\Core\Http\Middleware\RequestId;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,10 +25,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Buoc API luon "nhin" nhu JSON de tranh redirect ve trang login va tra ve HTML.
+        // Tạo trace id cho mỗi request /api/* để debug và trace giữa các service.
+        $middleware->prependToGroup('api', RequestId::class);
+
+        // Buộc API luôn "nhìn" như JSON để tránh redirect về trang login và trả về HTML.
         $middleware->prependToGroup('api', ForceJsonAccept::class);
 
-        // Cho phep doi ngon ngu thong bao loi (vi/en) theo tung request.
+        // Cho phép đổi ngôn ngữ thông báo lỗi (vi/en) theo từng request.
         $middleware->appendToGroup('api', SetLocale::class);
 
         $middleware->alias([

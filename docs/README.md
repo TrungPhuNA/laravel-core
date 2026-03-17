@@ -14,6 +14,7 @@
 
 ## Architecture
 
+- `docs/architecture/MICROSERVICE_INTEGRATION.md`
 - `docs/architecture/MODULES_MOCKUP.md`
 - `docs/architecture/OVERVIEW.md`
 

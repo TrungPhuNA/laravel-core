@@ -3,20 +3,45 @@
 namespace App\Core\Http\Responses;
 
 use Illuminate\Http\JsonResponse;
+use App\Core\Http\Middleware\RequestId;
 
 final class ApiResponse
 {
+    private static function traceId(): ?string
+    {
+        try {
+            $request = request();
+        } catch (\Throwable) {
+            return null;
+        }
+
+        $id = $request->attributes->get(RequestId::ATTRIBUTE_KEY)
+            ?? $request->header(RequestId::HEADER_KEY)
+            ?? $request->header('X-Correlation-Id')
+            ?? $request->header('correlation_id');
+
+        $id = is_string($id) ? trim($id) : '';
+
+        return $id !== '' ? $id : null;
+    }
+
     /**
      * JSend: success (thanh cong)
      */
     public static function success(mixed $data = null, string $code = 'SUCCESS', string $message = 'OK', int $status = 200): JsonResponse
     {
-        return response()->json([
+        $payload = [
             'status' => 'success',
             'code' => $code,
             'message' => $message,
             'data' => $data,
-        ], $status);
+        ];
+
+        if ($traceId = self::traceId()) {
+            $payload['trace_id'] = $traceId;
+        }
+
+        return response()->json($payload, $status);
     }
 
     /**
@@ -26,12 +51,18 @@ final class ApiResponse
      */
     public static function fail(array $data, string $code = 'FAIL', string $message = 'Request failed', int $status = 400): JsonResponse
     {
-        return response()->json([
+        $payload = [
             'status' => 'fail',
             'code' => $code,
             'message' => $message,
             'data' => $data,
-        ], $status);
+        ];
+
+        if ($traceId = self::traceId()) {
+            $payload['trace_id'] = $traceId;
+        }
+
+        return response()->json($payload, $status);
     }
 
     /**
@@ -52,6 +83,10 @@ final class ApiResponse
 
         if ($data !== null) {
             $payload['data'] = $data;
+        }
+
+        if ($traceId = self::traceId()) {
+            $payload['trace_id'] = $traceId;
         }
 
         return response()->json($payload, $status);
