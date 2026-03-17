@@ -66,6 +66,32 @@
                     <a href="#xac-thuc-request">Xác thực request</a>
                 </li>
                             </ul>
+                    <ul id="tocify-header-cai-dat" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="cai-dat">
+                    <a href="#cai-dat">Cài đặt</a>
+                </li>
+                                    <ul id="tocify-subheader-cai-dat" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="cai-dat-cong-khai">
+                                <a href="#cai-dat-cong-khai">Công khai</a>
+                            </li>
+                                                            <ul id="tocify-subheader-cai-dat-cong-khai" class="tocify-subheader">
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-public">
+                                            <a href="#cai-dat-GETapi-v1-settings-public">Danh sách setting công khai</a>
+                                        </li>
+                                                                    </ul>
+                                                                                <li class="tocify-item level-2" data-unique="cai-dat-quan-tri">
+                                <a href="#cai-dat-quan-tri">Quản trị</a>
+                            </li>
+                                                            <ul id="tocify-subheader-cai-dat-quan-tri" class="tocify-subheader">
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings">
+                                            <a href="#cai-dat-GETapi-v1-settings">Danh sách tất cả setting</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-PUTapi-v1-settings">
+                                            <a href="#cai-dat-PUTapi-v1-settings">Upsert settings (bulk)</a>
+                                        </li>
+                                                                    </ul>
+                                                                        </ul>
+                            </ul>
                     <ul id="tocify-header-xac-thuc" class="tocify-header">
                 <li class="tocify-item level-1" data-unique="xac-thuc">
                     <a href="#xac-thuc">Xác thực</a>
@@ -132,7 +158,483 @@
 <p>Tất cả endpoint cần xác thực sẽ có nhãn <code>requires authentication</code> trong tài liệu bên dưới.</p>
 <p>Lấy token qua <code>POST /api/v1/auth/login</code>, sau đó gửi header <code>Authorization: Bearer &lt;token&gt;</code>.</p>
 
-        <h1 id="xac-thuc">Xác thực</h1>
+        <h1 id="cai-dat">Cài đặt</h1>
+
+    
+
+                        <h2 id="cai-dat-cong-khai">Công khai</h2>
+                                                    <h2 id="cai-dat-GETapi-v1-settings-public">Danh sách setting công khai</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-public">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/public" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/public"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-public">
+    </span>
+<span id="execution-results-GETapi-v1-settings-public" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-public"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-public"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-public" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-public">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-public" data-method="GET"
+      data-path="api/v1/settings/public"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-public', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-public"
+                    onclick="tryItOut('GETapi-v1-settings-public');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-public"
+                    onclick="cancelTryOut('GETapi-v1-settings-public');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-public"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/public</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-public"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-public"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                                <h2 id="cai-dat-quan-tri">Quản trị</h2>
+                                                    <h2 id="cai-dat-GETapi-v1-settings">Danh sách tất cả setting</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings" \
+    --header "Authorization: Bearer {TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings"
+);
+
+const headers = {
+    "Authorization": "Bearer {TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings">
+    </span>
+<span id="execution-results-GETapi-v1-settings" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings" data-method="GET"
+      data-path="api/v1/settings"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings"
+                    onclick="tryItOut('GETapi-v1-settings');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings"
+                    onclick="cancelTryOut('GETapi-v1-settings');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="GETapi-v1-settings"
+               value="Bearer {TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="cai-dat-PUTapi-v1-settings">Upsert settings (bulk)</h2>
+
+<p>
+<small class="badge badge-darkred">requires authentication</small>
+</p>
+
+
+
+<span id="example-requests-PUTapi-v1-settings">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PUT \
+    "http://laravel-core.test/api/v1/settings" \
+    --header "Authorization: Bearer {TOKEN}" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"items\": [
+        {
+            \"key\": \"site_name\",
+            \"value\": \"Core API\",
+            \"group\": \"general\",
+            \"is_public\": true,
+            \"description\": \"Tên website\"
+        }
+    ]
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings"
+);
+
+const headers = {
+    "Authorization": "Bearer {TOKEN}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "items": [
+        {
+            "key": "site_name",
+            "value": "Core API",
+            "group": "general",
+            "is_public": true,
+            "description": "Tên website"
+        }
+    ]
+};
+
+fetch(url, {
+    method: "PUT",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PUTapi-v1-settings">
+</span>
+<span id="execution-results-PUTapi-v1-settings" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-PUTapi-v1-settings"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PUTapi-v1-settings"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PUTapi-v1-settings" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-PUTapi-v1-settings">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-PUTapi-v1-settings" data-method="PUT"
+      data-path="api/v1/settings"
+      data-authed="1"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PUTapi-v1-settings', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PUTapi-v1-settings"
+                    onclick="tryItOut('PUTapi-v1-settings');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PUTapi-v1-settings"
+                    onclick="cancelTryOut('PUTapi-v1-settings');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PUTapi-v1-settings"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-darkblue">PUT</small>
+            <b><code>api/v1/settings</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Authorization</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Authorization" class="auth-value"               data-endpoint="PUTapi-v1-settings"
+               value="Bearer {TOKEN}"
+               data-component="header">
+    <br>
+<p>Example: <code>Bearer {TOKEN}</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PUTapi-v1-settings"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PUTapi-v1-settings"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Tham số Body</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+        <details>
+            <summary style="padding-bottom: 10px;">
+                <b style="line-height: 2;"><code>items</code></b>&nbsp;&nbsp;
+<small>object[]</small>&nbsp;
+ &nbsp;
+ &nbsp;
+<br>
+<p>Danh sách settings cần upsert. Trường value phải có tối thiểu 1 phần tử.</p>
+            </summary>
+                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>key</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="items.0.key"                data-endpoint="PUTapi-v1-settings"
+               value="vmqeopfuudtdsufvyvddq"
+               data-component="body">
+    <br>
+<p>Trường value không được lớn hơn 150 ký tự. Example: <code>vmqeopfuudtdsufvyvddq</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>value</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="items.0.value"                data-endpoint="PUTapi-v1-settings"
+               value=""
+               data-component="body">
+    <br>
+
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>group</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="items.0.group"                data-endpoint="PUTapi-v1-settings"
+               value="amniihfqcoynlazghdtqt"
+               data-component="body">
+    <br>
+<p>Trường value không được lớn hơn 100 ký tự. Example: <code>amniihfqcoynlazghdtqt</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>is_public</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="PUTapi-v1-settings" style="display: none">
+            <input type="radio" name="items.0.is_public"
+                   value="true"
+                   data-endpoint="PUTapi-v1-settings"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="PUTapi-v1-settings" style="display: none">
+            <input type="radio" name="items.0.is_public"
+                   value="false"
+                   data-endpoint="PUTapi-v1-settings"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>true</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>description</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="items.0.description"                data-endpoint="PUTapi-v1-settings"
+               value="Necessitatibus architecto aut consequatur debitis et id."
+               data-component="body">
+    <br>
+<p>Trường value không được lớn hơn 255 ký tự. Example: <code>Necessitatibus architecto aut consequatur debitis et id.</code></p>
+                    </div>
+                                    </details>
+        </div>
+        </form>
+
+                <h1 id="xac-thuc">Xác thực</h1>
 
     <p>API đăng ký/đăng nhập/cập nhật profile sử dụng Bearer token (Sanctum).</p>
 

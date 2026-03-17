@@ -9,6 +9,7 @@
 ## Api
 
 - `docs/api/AUTH.md`
+- `docs/api/SETTINGS.md`
 
 ## Architecture
 

@@ -3,12 +3,18 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use App\Core\Exceptions\ApiException;
 use App\Core\Exceptions\ErrorCode;
 use App\Core\Http\Responses\ApiResponse;
 use App\Core\Http\Middleware\SetLocale;
+use App\Core\Http\Middleware\RequireUserType;
+use App\Core\Http\Middleware\ForceJsonAccept;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,10 +24,40 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Make API always behave as JSON (avoid redirect-to-login HTML responses).
+        $middleware->prependToGroup('api', ForceJsonAccept::class);
+
         // Allow switching validation/error messages between vi/en per request.
         $middleware->appendToGroup('api', SetLocale::class);
+
+        $middleware->alias([
+            'user_type' => RequireUserType::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // Force JSON for API routes even if client sends Accept: text/html (eg browsers).
+        $exceptions->shouldRenderJsonWhen(function (Request $request, \Throwable $e) {
+            return $request->is('api/*') || $request->expectsJson();
+        });
+
+        $exceptions->render(function (AuthenticationException $e) {
+            return ApiResponse::fail(
+                data: [],
+                code: ErrorCode::UNAUTHORIZED->value,
+                message: __('messages.unauthorized'),
+                status: 401,
+            );
+        });
+
+        $exceptions->render(function (AuthorizationException $e) {
+            return ApiResponse::fail(
+                data: [],
+                code: ErrorCode::FORBIDDEN->value,
+                message: __('messages.forbidden'),
+                status: 403,
+            );
+        });
+
         $exceptions->render(function (ApiException $e) {
             if ($e->status >= 500) {
                 return ApiResponse::error(
@@ -49,12 +85,40 @@ return Application::configure(basePath: dirname(__DIR__))
             );
         });
 
+        $exceptions->render(function (MethodNotAllowedHttpException $e, Request $request) {
+            if (!$request->is('api/*')) {
+                return null;
+            }
+
+            $allow = $e->getHeaders()['Allow'] ?? null;
+
+            return ApiResponse::fail(
+                data: $allow ? ['allow' => $allow] : [],
+                code: ErrorCode::METHOD_NOT_ALLOWED->value,
+                message: __('messages.method_not_allowed'),
+                status: 400,
+            );
+        });
+
         $exceptions->render(function (NotFoundHttpException $e) {
             return ApiResponse::fail(
                 data: [],
                 code: ErrorCode::NOT_FOUND->value,
                 message: __('messages.not_found'),
                 status: 404,
+            );
+        });
+
+        // Final fallback for API: never return HTML error pages.
+        $exceptions->render(function (\Throwable $e, Request $request) {
+            if (!$request->is('api/*')) {
+                return null;
+            }
+
+            return ApiResponse::error(
+                message: __('messages.internal_error'),
+                code: ErrorCode::INTERNAL_ERROR->value,
+                status: 500,
             );
         });
     })->create();
