@@ -2,6 +2,7 @@
 
 ## Dev
 
+- `docs/dev/COMMANDS.md`
 - `docs/dev/GITFLOW_JIRA.md`
 - `docs/dev/RESPONSE_API.md`
 - `docs/dev/SETUP.md`
