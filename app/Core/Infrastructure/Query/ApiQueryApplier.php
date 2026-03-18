@@ -78,6 +78,9 @@ final class ApiQueryApplier
             if (!array_key_exists($field, $allowedFilters)) {
                 continue;
             }
+            if (!self::isSafeColumn($field)) {
+                continue;
+            }
 
             $type = $allowedFilters[$field];
 
@@ -154,9 +157,18 @@ final class ApiQueryApplier
             if ($field === '' || !in_array($field, $allowedSorts, true)) {
                 continue;
             }
+            if (!self::isSafeColumn($field)) {
+                continue;
+            }
 
             $query->orderBy($field, $direction);
         }
+    }
+
+    private static function isSafeColumn(string $value): bool
+    {
+        // Cho phép qualified column: users.email
+        return (bool) preg_match('/^[A-Za-z0-9_\\.]+$/', $value);
     }
 
     private static function isSafeRelation(string $value): bool
