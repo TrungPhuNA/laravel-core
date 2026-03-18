@@ -12,6 +12,7 @@
 
 - `docs/api/AUTH.md`
 - `docs/api/SETTINGS.md`
+- `docs/api/USERS.md`
 
 ## Architecture
 

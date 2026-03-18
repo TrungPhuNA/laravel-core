@@ -11,4 +11,6 @@ return [
     'microservice_unavailable' => 'Không thể kết nối tới hệ thống liên kết (microservice)',
     'microservice_error' => 'Hệ thống liên kết (microservice) đang gặp lỗi',
     'microservice_bad_response' => 'Hệ thống liên kết (microservice) trả về dữ liệu không hợp lệ',
+
+    'invalid_user_type' => 'Giá trị user_type không hợp lệ',
 ];

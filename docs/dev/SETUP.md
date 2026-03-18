@@ -17,6 +17,23 @@ php artisan key:generate
 php artisan migrate
 ```
 
+### Nếu composer đang chạy sai PHP version
+
+Một số máy có nhiều version PHP nên `composer` có thể đang dùng PHP 7.x (sẽ lỗi vì project yêu cầu PHP >= 8.2).
+
+Kiểm tra nhanh:
+
+```bash
+composer --version
+```
+
+Nếu thấy `PHP version 7.x`, chạy composer bằng PHP 8.2:
+
+```bash
+/opt/homebrew/opt/php@8.2/bin/php "$(which composer)" install
+/opt/homebrew/opt/php@8.2/bin/php "$(which composer)" dump-autoload -o
+```
+
 ## Chạy local
 
 ```bash

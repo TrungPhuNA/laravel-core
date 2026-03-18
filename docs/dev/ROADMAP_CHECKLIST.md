@@ -17,6 +17,7 @@ File này dùng để theo dõi tiến độ build core-template. Tick vào chec
 
 - [x] Module Auth (register/login/me/profile/logout) + Sanctum
 - [x] Module Setting (public/admin, upsert, get by key) + cache
+- [x] Module User (quản trị tài khoản: list/show/create/update/user_type/password/soft delete/restore)
 - [ ] Module mẫu CRUD (Catalog: categories/products) để demo filter/sort/include/paginate
 
 ## Document (Scribe)
