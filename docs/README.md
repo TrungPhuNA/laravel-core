@@ -5,6 +5,7 @@
 - `docs/dev/COMMANDS.md`
 - `docs/dev/GITFLOW_JIRA.md`
 - `docs/dev/RESPONSE_API.md`
+- `docs/dev/ROADMAP_CHECKLIST.md`
 - `docs/dev/SETUP.md`
 
 ## Api
@@ -14,6 +15,7 @@
 
 ## Architecture
 
+- `docs/architecture/CRUD_TOOLKIT.md`
 - `docs/architecture/MICROSERVICE_INTEGRATION.md`
 - `docs/architecture/MODULES_MOCKUP.md`
 - `docs/architecture/OVERVIEW.md`

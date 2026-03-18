@@ -70,11 +70,14 @@ Khi trả list:
   "code": "SUCCESS",
   "message": "OK",
   "data": {
-    "items": [],
+    "items": []
+  },
+  "meta": {
     "pagination": {
       "page": 1,
-      "page_size": 20,
-      "total": 100
+      "per_page": 20,
+      "total": 100,
+      "last_page": 5
     }
   }
 }

@@ -45,5 +45,13 @@ return [
             ],
         ],
     ],
-];
 
+    'api' => [
+        'pagination' => [
+            'default_per_page' => (int) env('CORE_API_DEFAULT_PER_PAGE', 20),
+            'max_per_page' => (int) env('CORE_API_MAX_PER_PAGE', 100),
+            'page_param' => env('CORE_API_PAGE_PARAM', 'page'),
+            'per_page_param' => env('CORE_API_PER_PAGE_PARAM', 'per_page'),
+        ],
+    ],
+];

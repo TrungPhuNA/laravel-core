@@ -2,6 +2,8 @@
 
 namespace App\Core\Http\Responses;
 
+use App\Core\Support\Pagination\PaginationMeta;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use App\Core\Http\Middleware\RequestId;
 
@@ -28,7 +30,7 @@ final class ApiResponse
     /**
      * JSend: success (thanh cong)
      */
-    public static function success(mixed $data = null, string $code = 'SUCCESS', string $message = 'OK', int $status = 200): JsonResponse
+    public static function success(mixed $data = null, string $code = 'SUCCESS', string $message = 'OK', int $status = 200, ?array $meta = null): JsonResponse
     {
         $payload = [
             'status' => 'success',
@@ -37,6 +39,10 @@ final class ApiResponse
             'data' => $data,
         ];
 
+        if ($meta !== null) {
+            $payload['meta'] = $meta;
+        }
+
         if ($traceId = self::traceId()) {
             $payload['trace_id'] = $traceId;
         }
@@ -44,12 +50,23 @@ final class ApiResponse
         return response()->json($payload, $status);
     }
 
+    public static function paginated(LengthAwarePaginator $paginator, mixed $items, string $code = 'SUCCESS', string $message = 'OK', int $status = 200): JsonResponse
+    {
+        return self::success(
+            data: ['items' => $items],
+            code: $code,
+            message: $message,
+            status: $status,
+            meta: PaginationMeta::fromLengthAwarePaginator($paginator),
+        );
+    }
+
     /**
      * JSend: fail (loi phia client: validation, precondition, ...).
      *
      * @param array<string, mixed> $data
      */
-    public static function fail(array $data, string $code = 'FAIL', string $message = 'Request failed', int $status = 400): JsonResponse
+    public static function fail(array $data, string $code = 'FAIL', string $message = 'Request failed', int $status = 400, ?array $meta = null): JsonResponse
     {
         $payload = [
             'status' => 'fail',
@@ -57,6 +74,10 @@ final class ApiResponse
             'message' => $message,
             'data' => $data,
         ];
+
+        if ($meta !== null) {
+            $payload['meta'] = $meta;
+        }
 
         if ($traceId = self::traceId()) {
             $payload['trace_id'] = $traceId;
@@ -70,7 +91,7 @@ final class ApiResponse
      *
      * @param array<string, mixed>|null $data
      */
-    public static function error(string $message = 'Server error', ?string $code = 'ERROR', ?array $data = null, int $status = 500): JsonResponse
+    public static function error(string $message = 'Server error', ?string $code = 'ERROR', ?array $data = null, int $status = 500, ?array $meta = null): JsonResponse
     {
         $payload = [
             'status' => 'error',
@@ -83,6 +104,10 @@ final class ApiResponse
 
         if ($data !== null) {
             $payload['data'] = $data;
+        }
+
+        if ($meta !== null) {
+            $payload['meta'] = $meta;
         }
 
         if ($traceId = self::traceId()) {
