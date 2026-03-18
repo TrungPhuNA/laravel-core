@@ -37,5 +37,33 @@ final class UserUpdateRequest extends ApiFormRequest
             'bio' => ['sometimes', 'nullable', 'string'],
         ];
     }
-}
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => [
+                'description' => 'Tên hiển thị.',
+                'example' => 'Nguyễn Văn A',
+            ],
+            'email' => [
+                'description' => 'Email (duy nhất).',
+                'example' => 'demo@example.com',
+            ],
+            'user_type' => [
+                'description' => 'Loại tài khoản (ADMIN|USER|SYSTEM).',
+                'example' => 'USER',
+            ],
+            'phone' => [
+                'description' => 'Số điện thoại.',
+                'example' => '0900000000',
+            ],
+            'bio' => [
+                'description' => 'Giới thiệu ngắn.',
+                'example' => 'Mô tả ngắn về user',
+            ],
+        ];
+    }
+}

@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
  * Parse query params theo convention chung cho API list endpoint.
  *
  * Convention:
- * - filter[field]=value
+ * - filters[field]=value (khuyến nghị)
+ * - filter[field]=value (tương thích ngược)
  * - sort=field,-created_at
  * - include=category,brand
  * - page=1
@@ -32,10 +33,11 @@ final class ApiQueryParams
     public static function fromRequest(Request $request): self
     {
         /** @var array<string, mixed> $filters */
-        $filters = $request->input('filter', []);
+        $filters = $request->input('filters', $request->input('filter', []));
         if (!is_array($filters)) {
             $filters = [];
         }
+        $filters = self::sanitizeFilters($filters);
 
         $includes = self::csv($request->input('include'));
         $sorts = self::csv($request->input('sort'));
@@ -61,6 +63,51 @@ final class ApiQueryParams
     }
 
     /**
+     * Xoá các filter có value rỗng/null/"null"/"undefined" để tránh phải check ở từng module.
+     *
+     * @param array<string, mixed> $filters
+     * @return array<string, mixed>
+     */
+    private static function sanitizeFilters(array $filters): array
+    {
+        $out = [];
+
+        foreach ($filters as $key => $value) {
+            $key = (string) $key;
+
+            if (is_array($value)) {
+                /** @var array<string, mixed> $value */
+                $child = self::sanitizeFilters($value);
+                if ($child !== []) {
+                    $out[$key] = $child;
+                }
+                continue;
+            }
+
+            if ($value === null) {
+                continue;
+            }
+
+            if (is_string($value)) {
+                $v = trim($value);
+                if ($v === '') {
+                    continue;
+                }
+                $lower = strtolower($v);
+                if ($lower === 'null' || $lower === 'undefined') {
+                    continue;
+                }
+                $out[$key] = $v;
+                continue;
+            }
+
+            $out[$key] = $value;
+        }
+
+        return $out;
+    }
+
+    /**
      * @return list<string>
      */
     private static function csv(mixed $value): array
@@ -81,4 +128,3 @@ final class ApiQueryParams
         return $parts;
     }
 }
-

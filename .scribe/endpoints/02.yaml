@@ -25,9 +25,18 @@ endpoints:
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
+    queryParameters:
+      filters:
+        custom: []
+        name: filters
+        description: ''
+        required: false
+        example: null
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
       filter:
         custom: []
         name: filter
@@ -48,25 +57,25 @@ endpoints:
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
       sort:
         custom: []
         name: sort
-        description: ''
+        description: 'Sắp xếp. Ví dụ: "-id" (mặc định nếu bỏ trống), "-created_at,name".'
         required: false
-        example: consequatur
+        example: '-id'
         type: string
         enumValues: []
         exampleWasSpecified: false
-        nullable: false
+        nullable: true
         deprecated: false
       page:
         custom: []
         name: page
-        description: 'Trường value phải tối thiểu 1.'
+        description: 'Trang hiện tại. Trường value phải tối thiểu 1.'
         required: false
-        example: 45
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -75,19 +84,21 @@ endpoints:
       per_page:
         custom: []
         name: per_page
-        description: 'Trường value phải tối thiểu 1.'
+        description: 'Số item mỗi trang (giới hạn theo CORE_API_MAX_PER_PAGE). Trường value phải tối thiểu 1.'
         required: false
-        example: 56
+        example: 20
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
-    cleanBodyParameters:
+    cleanQueryParameters:
       include: consequatur
-      sort: consequatur
-      page: 45
-      per_page: 56
+      sort: '-id'
+      page: 1
+      per_page: 20
+    bodyParameters: []
+    cleanBodyParameters: []
     fileParameters: []
     responses: []
     responseFields: []
@@ -164,9 +175,9 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Trường value không được lớn hơn 255 ký tự.'
+        description: 'Tên hiển thị của tài khoản. Trường value không được lớn hơn 255 ký tự.'
         required: true
-        example: vmqeopfuudtdsufvyvddq
+        example: 'Demo User'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -175,9 +186,9 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
+        description: 'Email (duy nhất). Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
         required: true
-        example: kunde.eloisa@example.com
+        example: demo2@example.com
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -186,9 +197,9 @@ endpoints:
       password:
         custom: []
         name: password
-        description: 'Trường value phải tối thiểu 8 ký tự. Trường value không được lớn hơn 255 ký tự.'
+        description: 'Mật khẩu (tối thiểu 8 ký tự). Trường value phải tối thiểu 8 ký tự. Trường value không được lớn hơn 255 ký tự.'
         required: true
-        example: '4[*UyPJ"}6'
+        example: '123456789'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -197,7 +208,7 @@ endpoints:
       user_type:
         custom: []
         name: user_type
-        description: ''
+        description: 'Loại tài khoản (ADMIN|USER|SYSTEM).'
         required: false
         example: USER
         type: string
@@ -211,9 +222,9 @@ endpoints:
       phone:
         custom: []
         name: phone
-        description: 'Trường value không được lớn hơn 30 ký tự.'
+        description: 'Số điện thoại. Trường value không được lớn hơn 30 ký tự.'
         required: false
-        example: hdtqtqxbajwbpilpmufin
+        example: '0986420994'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -224,7 +235,7 @@ endpoints:
         name: avatar_url
         description: 'Must be a valid URL.'
         required: false
-        example: 'https://www.kemmer.net/similique-accusantium-et-a-qui-ducimus'
+        example: 'http://kunze.biz/iste-laborum-eius-est-dolor.html'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -235,7 +246,7 @@ endpoints:
         name: date_of_birth
         description: 'Trường value không phải là ngày hợp lệ.'
         required: false
-        example: '2026-03-18T03:55:10'
+        example: '2026-03-18T04:27:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -246,7 +257,7 @@ endpoints:
         name: gender
         description: 'Trường value không được lớn hơn 20 ký tự.'
         required: false
-        example: smsjuryvojcybzvrb
+        example: dtdsufvyvddqamnii
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -257,7 +268,7 @@ endpoints:
         name: address_line1
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: yickznkygloigmkwxphlv
+        example: hfqcoynlazghdtqtqxbaj
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -268,7 +279,7 @@ endpoints:
         name: address_line2
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: azjrcnfbaqywuxhgjjmzu
+        example: wbpilpmufinllwloauydl
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -279,7 +290,7 @@ endpoints:
         name: ward
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: xjubqouzswiwxtrkimfca
+        example: smsjuryvojcybzvrbyick
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -290,7 +301,7 @@ endpoints:
         name: district
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: tbxspzmrazsroyjpxmqes
+        example: znkygloigmkwxphlvazjr
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -299,9 +310,9 @@ endpoints:
       province:
         custom: []
         name: province
-        description: 'Trường value không được lớn hơn 255 ký tự.'
+        description: 'Tỉnh/Thành. Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: edyghenqcopwvownkbaml
+        example: HCM
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -312,7 +323,7 @@ endpoints:
         name: country
         description: 'Trường value phải có 2 ký tự.'
         required: false
-        example: nf
+        example: cn
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -323,7 +334,7 @@ endpoints:
         name: postal_code
         description: 'Trường value không được lớn hơn 20 ký tự.'
         required: false
-        example: ngefbeilfzsyuxoez
+        example: fbaqywuxhgjjmzuxj
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -334,7 +345,7 @@ endpoints:
         name: company
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: bdtabptcyyerevrljcbwk
+        example: ubqouzswiwxtrkimfcatb
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -345,7 +356,7 @@ endpoints:
         name: job_title
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: thjnescwsestcouxpqsyd
+        example: xspzmrazsroyjpxmqesed
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -356,7 +367,7 @@ endpoints:
         name: timezone
         description: 'Trường value không được lớn hơn 50 ký tự.'
         required: false
-        example: America/Santo_Domingo
+        example: Pacific/Guam
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -367,7 +378,7 @@ endpoints:
         name: locale
         description: 'Trường value không được lớn hơn 10 ký tự.'
         required: false
-        example: es_GT
+        example: en_MP
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -385,25 +396,25 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      name: vmqeopfuudtdsufvyvddq
-      email: kunde.eloisa@example.com
-      password: '4[*UyPJ"}6'
+      name: 'Demo User'
+      email: demo2@example.com
+      password: '123456789'
       user_type: USER
-      phone: hdtqtqxbajwbpilpmufin
-      avatar_url: 'https://www.kemmer.net/similique-accusantium-et-a-qui-ducimus'
-      date_of_birth: '2026-03-18T03:55:10'
-      gender: smsjuryvojcybzvrb
-      address_line1: yickznkygloigmkwxphlv
-      address_line2: azjrcnfbaqywuxhgjjmzu
-      ward: xjubqouzswiwxtrkimfca
-      district: tbxspzmrazsroyjpxmqes
-      province: edyghenqcopwvownkbaml
-      country: nf
-      postal_code: ngefbeilfzsyuxoez
-      company: bdtabptcyyerevrljcbwk
-      job_title: thjnescwsestcouxpqsyd
-      timezone: America/Santo_Domingo
-      locale: es_GT
+      phone: '0986420994'
+      avatar_url: 'http://kunze.biz/iste-laborum-eius-est-dolor.html'
+      date_of_birth: '2026-03-18T04:27:06'
+      gender: dtdsufvyvddqamnii
+      address_line1: hfqcoynlazghdtqtqxbaj
+      address_line2: wbpilpmufinllwloauydl
+      ward: smsjuryvojcybzvrbyick
+      district: znkygloigmkwxphlvazjr
+      province: HCM
+      country: cn
+      postal_code: fbaqywuxhgjjmzuxj
+      company: ubqouzswiwxtrkimfcatb
+      job_title: xspzmrazsroyjpxmqesed
+      timezone: Pacific/Guam
+      locale: en_MP
       bio: consequatur
     fileParameters: []
     responses: []
@@ -450,9 +461,9 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Trường value không được lớn hơn 255 ký tự.'
+        description: 'Tên hiển thị. Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: vmqeopfuudtdsufvyvddq
+        example: 'Nguyễn Văn A'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -461,9 +472,9 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
+        description: 'Email (duy nhất). Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: kunde.eloisa@example.com
+        example: demo@example.com
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -472,7 +483,7 @@ endpoints:
       user_type:
         custom: []
         name: user_type
-        description: ''
+        description: 'Loại tài khoản (ADMIN|USER|SYSTEM).'
         required: false
         example: USER
         type: string
@@ -486,9 +497,9 @@ endpoints:
       phone:
         custom: []
         name: phone
-        description: 'Trường value không được lớn hơn 30 ký tự.'
+        description: 'Số điện thoại. Trường value không được lớn hơn 30 ký tự.'
         required: false
-        example: hfqcoynlazghdtqtqxbaj
+        example: '0900000000'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -499,7 +510,7 @@ endpoints:
         name: avatar_url
         description: 'Must be a valid URL.'
         required: false
-        example: 'http://bergnaum.biz/qui-id-totam-temporibus-quia-ipsam.html'
+        example: 'http://kunze.biz/iste-laborum-eius-est-dolor.html'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -510,7 +521,7 @@ endpoints:
         name: date_of_birth
         description: 'Trường value không phải là ngày hợp lệ.'
         required: false
-        example: '2026-03-18T03:55:10'
+        example: '2026-03-18T04:27:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -521,7 +532,7 @@ endpoints:
         name: gender
         description: 'Trường value không được lớn hơn 20 ký tự.'
         required: false
-        example: nllwloauydlsmsjur
+        example: dtdsufvyvddqamnii
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -532,7 +543,7 @@ endpoints:
         name: address_line1
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: yvojcybzvrbyickznkygl
+        example: hfqcoynlazghdtqtqxbaj
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -543,7 +554,7 @@ endpoints:
         name: address_line2
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: oigmkwxphlvazjrcnfbaq
+        example: wbpilpmufinllwloauydl
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -554,7 +565,7 @@ endpoints:
         name: ward
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: ywuxhgjjmzuxjubqouzsw
+        example: smsjuryvojcybzvrbyick
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -565,7 +576,7 @@ endpoints:
         name: district
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: iwxtrkimfcatbxspzmraz
+        example: znkygloigmkwxphlvazjr
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -576,7 +587,7 @@ endpoints:
         name: province
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: sroyjpxmqesedyghenqco
+        example: cnfbaqywuxhgjjmzuxjub
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -587,7 +598,7 @@ endpoints:
         name: country
         description: 'Trường value phải có 2 ký tự.'
         required: false
-        example: pw
+        example: qo
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -598,7 +609,7 @@ endpoints:
         name: postal_code
         description: 'Trường value không được lớn hơn 20 ký tự.'
         required: false
-        example: vownkbamlnfngefbe
+        example: uzswiwxtrkimfcatb
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -609,7 +620,7 @@ endpoints:
         name: company
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: ilfzsyuxoezbdtabptcyy
+        example: xspzmrazsroyjpxmqesed
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -620,7 +631,7 @@ endpoints:
         name: job_title
         description: 'Trường value không được lớn hơn 255 ký tự.'
         required: false
-        example: erevrljcbwkthjnescwse
+        example: yghenqcopwvownkbamlnf
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -631,7 +642,7 @@ endpoints:
         name: timezone
         description: 'Trường value không được lớn hơn 50 ký tự.'
         required: false
-        example: Australia/Eucla
+        example: Asia/Colombo
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -642,7 +653,7 @@ endpoints:
         name: locale
         description: 'Trường value không được lớn hơn 10 ký tự.'
         required: false
-        example: pt_PT
+        example: en_PH
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -651,34 +662,34 @@ endpoints:
       bio:
         custom: []
         name: bio
-        description: ''
+        description: 'Giới thiệu ngắn.'
         required: false
-        example: consequatur
+        example: 'Mô tả ngắn về user'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      name: vmqeopfuudtdsufvyvddq
-      email: kunde.eloisa@example.com
+      name: 'Nguyễn Văn A'
+      email: demo@example.com
       user_type: USER
-      phone: hfqcoynlazghdtqtqxbaj
-      avatar_url: 'http://bergnaum.biz/qui-id-totam-temporibus-quia-ipsam.html'
-      date_of_birth: '2026-03-18T03:55:10'
-      gender: nllwloauydlsmsjur
-      address_line1: yvojcybzvrbyickznkygl
-      address_line2: oigmkwxphlvazjrcnfbaq
-      ward: ywuxhgjjmzuxjubqouzsw
-      district: iwxtrkimfcatbxspzmraz
-      province: sroyjpxmqesedyghenqco
-      country: pw
-      postal_code: vownkbamlnfngefbe
-      company: ilfzsyuxoezbdtabptcyy
-      job_title: erevrljcbwkthjnescwse
-      timezone: Australia/Eucla
-      locale: pt_PT
-      bio: consequatur
+      phone: '0900000000'
+      avatar_url: 'http://kunze.biz/iste-laborum-eius-est-dolor.html'
+      date_of_birth: '2026-03-18T04:27:06'
+      gender: dtdsufvyvddqamnii
+      address_line1: hfqcoynlazghdtqtqxbaj
+      address_line2: wbpilpmufinllwloauydl
+      ward: smsjuryvojcybzvrbyick
+      district: znkygloigmkwxphlvazjr
+      province: cnfbaqywuxhgjjmzuxjub
+      country: qo
+      postal_code: uzswiwxtrkimfcatb
+      company: xspzmrazsroyjpxmqesed
+      job_title: yghenqcopwvownkbamlnf
+      timezone: Asia/Colombo
+      locale: en_PH
+      bio: 'Mô tả ngắn về user'
     fileParameters: []
     responses: []
     responseFields: []
@@ -724,9 +735,9 @@ endpoints:
       user_type:
         custom: []
         name: user_type
-        description: ''
+        description: 'Loại tài khoản mới (ADMIN|USER|SYSTEM).'
         required: true
-        example: USER
+        example: ADMIN
         type: string
         enumValues:
           - ADMIN
@@ -736,7 +747,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      user_type: USER
+      user_type: ADMIN
     fileParameters: []
     responses: []
     responseFields: []
@@ -782,9 +793,9 @@ endpoints:
       password:
         custom: []
         name: password
-        description: 'Trường value phải tối thiểu 8 ký tự. Trường value không được lớn hơn 255 ký tự.'
+        description: 'Mật khẩu mới (tối thiểu 8 ký tự). Trường value phải tối thiểu 8 ký tự. Trường value không được lớn hơn 255 ký tự.'
         required: true
-        example: 'O[2UZ5ij-e/dl4m{o,'
+        example: '123456789'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -793,17 +804,17 @@ endpoints:
       password_confirmation:
         custom: []
         name: password_confirmation
-        description: 'The value and <code>password</code> must match.'
+        description: 'Nhập lại mật khẩu mới (phải giống password). The value and <code>password</code> must match.'
         required: true
-        example: consequatur
+        example: '123456789'
         type: string
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      password: 'O[2UZ5ij-e/dl4m{o,'
-      password_confirmation: consequatur
+      password: '123456789'
+      password_confirmation: '123456789'
     fileParameters: []
     responses: []
     responseFields: []

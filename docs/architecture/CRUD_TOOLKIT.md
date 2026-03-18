@@ -16,7 +16,8 @@ Mục tiêu: tái sử dụng cho mọi dự án để tạo nhanh endpoint dạ
 
 ## Convention query params
 
-- `filter[field]=value`
+- `filters[field]=value` (khuyến nghị)
+- `filter[field]=value` (tương thích ngược)
 - `sort=field,-created_at`
 - `include=category,brand`
 - `page=1`
@@ -42,9 +43,12 @@ ApiQueryApplier::apply(
         'name' => ApiQueryApplier::FILTER_LIKE,
         'category_id' => ApiQueryApplier::FILTER_EXACT,
         'status' => ApiQueryApplier::FILTER_IN,
+        // Khoảng thời gian / range:
+        'created_at' => ApiQueryApplier::FILTER_RANGE,
     ],
     allowedSorts: ['id', 'name', 'created_at'],
     allowedIncludes: ['category'],
+    defaultSorts: ['-id'],
 );
 
 $paginator = $query->paginate(perPage: $params->perPage, page: $params->page);
@@ -62,6 +66,9 @@ return ApiResponse::paginated(
 - Bạn phải truyền allow-list (`allowedFilters`, `allowedSorts`, `allowedIncludes`). Mặc định ignore các field không được phép.
 - Với filter `in`, client có thể gửi `filter[status]=active,inactive` hoặc `filter[status][]=active&filter[status][]=inactive`.
 - Nếu dự án cần filter phức tạp hơn (range, date, json column), hãy extend `ApiQueryApplier` hoặc viết applier riêng trong module.
+- Với filter `range`, client có thể gửi:
+- `filters[created_at]=2026-01-01,2026-01-31`
+- hoặc `filters[created_at][from]=2026-01-01&filters[created_at][to]=2026-01-31`
 
 ## Ví dụ repository (khuyến nghị)
 

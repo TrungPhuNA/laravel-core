@@ -17,11 +17,13 @@ final class ApiQueryApplier
     public const FILTER_EXACT = 'exact';
     public const FILTER_LIKE = 'like';
     public const FILTER_IN = 'in';
+    public const FILTER_RANGE = 'range';
 
     /**
      * @param array<string, string> $allowedFilters Map: field => type (exact|like|in)
      * @param list<string> $allowedSorts
      * @param list<string> $allowedIncludes
+     * @param list<string> $defaultSorts Ví dụ: ['-id'] hoặc ['-created_at', 'id']
      */
     public static function apply(
         Builder $query,
@@ -29,10 +31,11 @@ final class ApiQueryApplier
         array $allowedFilters = [],
         array $allowedSorts = [],
         array $allowedIncludes = [],
+        array $defaultSorts = [],
     ): Builder {
         self::applyIncludes($query, $params, $allowedIncludes);
         self::applyFilters($query, $params, $allowedFilters);
-        self::applySorts($query, $params, $allowedSorts);
+        self::applySorts($query, $params, $allowedSorts, $defaultSorts);
 
         return $query;
     }
@@ -106,19 +109,36 @@ final class ApiQueryApplier
                 $query->whereIn($field, $values);
                 continue;
             }
+
+            if ($type === self::FILTER_RANGE) {
+                [$from, $to] = self::normalizeRange($value);
+
+                if ($from !== null) {
+                    $query->where($field, '>=', $from);
+                }
+
+                if ($to !== null) {
+                    $query->where($field, '<=', $to);
+                }
+
+                continue;
+            }
         }
     }
 
     /**
      * @param list<string> $allowedSorts
+     * @param list<string> $defaultSorts
      */
-    private static function applySorts(Builder $query, ApiQueryParams $params, array $allowedSorts): void
+    private static function applySorts(Builder $query, ApiQueryParams $params, array $allowedSorts, array $defaultSorts): void
     {
-        if ($allowedSorts === [] || $params->sorts === []) {
+        if ($allowedSorts === []) {
             return;
         }
 
-        foreach ($params->sorts as $sort) {
+        $sorts = $params->sorts !== [] ? $params->sorts : $defaultSorts;
+
+        foreach ($sorts as $sort) {
             $sort = trim($sort);
             if ($sort === '') {
                 continue;
@@ -165,5 +185,38 @@ final class ApiQueryApplier
 
         return [];
     }
-}
 
+    /**
+     * @return array{0: string|null, 1: string|null} [from, to]
+     */
+    private static function normalizeRange(mixed $value): array
+    {
+        // Accept array: ['from' => '2026-01-01', 'to' => '2026-01-31']
+        if (is_array($value)) {
+            $from = $value['from'] ?? $value['gte'] ?? $value['min'] ?? null;
+            $to = $value['to'] ?? $value['lte'] ?? $value['max'] ?? null;
+
+            $from = is_string($from) ? trim($from) : null;
+            $to = is_string($to) ? trim($to) : null;
+
+            return [$from !== '' ? $from : null, $to !== '' ? $to : null];
+        }
+
+        // Accept string: "from,to"
+        if (is_string($value)) {
+            $value = trim($value);
+            if ($value === '') {
+                return [null, null];
+            }
+
+            [$from, $to] = array_pad(array_map('trim', explode(',', $value, 2)), 2, null);
+
+            $from = is_string($from) ? trim($from) : null;
+            $to = is_string($to) ? trim($to) : null;
+
+            return [$from !== '' ? $from : null, $to !== '' ? $to : null];
+        }
+
+        return [null, null];
+    }
+}

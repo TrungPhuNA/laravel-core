@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         // Seed các tài khoản mặc định (admin, system...) để test nhanh.
         $this->call([
             AdminUserSeeder::class,
+            DemoUsersSeeder::class,
         ]);
     }
 }

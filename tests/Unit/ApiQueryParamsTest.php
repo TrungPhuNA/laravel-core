@@ -18,12 +18,14 @@ final class ApiQueryParamsTest extends TestCase
         ]);
 
         $request = Request::create('/api/v1/products', 'GET', [
-            'filter' => [
+            'filters' => [
                 'name' => 'Core',
                 'status' => 'active,inactive',
+                'id' => 'null',
+                'phone' => '',
             ],
             'include' => 'category,brand',
-            'sort' => 'name,-created_at',
+            'sort' => '',
             'page' => 2,
             'per_page' => 999,
         ]);
@@ -33,9 +35,10 @@ final class ApiQueryParamsTest extends TestCase
         $this->assertSame(2, $params->page);
         $this->assertSame(50, $params->perPage);
         $this->assertSame(['category', 'brand'], $params->includes);
-        $this->assertSame(['name', '-created_at'], $params->sorts);
+        $this->assertSame([], $params->sorts);
         $this->assertSame('Core', $params->filters['name']);
         $this->assertSame('active,inactive', $params->filters['status']);
+        $this->assertArrayNotHasKey('id', $params->filters);
+        $this->assertArrayNotHasKey('phone', $params->filters);
     }
 }
-

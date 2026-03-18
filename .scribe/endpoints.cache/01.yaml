@@ -193,7 +193,7 @@ endpoints:
         name: 'items[].is_public'
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false

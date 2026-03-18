@@ -15,5 +15,17 @@ final class UserUpdateUserTypeRequest extends ApiFormRequest
             'user_type' => ['required', 'string', "in:{$types}"],
         ];
     }
-}
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'user_type' => [
+                'description' => 'Loại tài khoản mới (ADMIN|USER|SYSTEM).',
+                'example' => 'ADMIN',
+            ],
+        ];
+    }
+}

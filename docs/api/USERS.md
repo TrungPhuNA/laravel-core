@@ -15,17 +15,23 @@ Yêu cầu:
 
 Query hỗ trợ:
 
-- `filter[name]`
-- `filter[email]`
-- `filter[user_type]`
-- `filter[phone]`
+- `filters[name]` (LIKE)
+- `filters[email]` (LIKE)
+- `filters[user_type]` (exact)
+- `filters[phone]` (LIKE)
+- `filters[created_at]` (range: `from,to` hoặc `{from,to}`)
 - `sort=id,name,email,user_type,created_at,updated_at` (thêm `-` để sort desc)
 - `page`, `per_page`
+
+Ghi chú:
+
+- Nếu bạn truyền key nhưng value rỗng/`null`/`undefined` (ví dụ `filters[name]=null` hoặc `sort=`) thì server sẽ coi như không truyền.
+- Nếu bỏ `sort` (hoặc `sort=`), API sẽ dùng sort mặc định `-id`.
 
 Curl mẫu:
 
 ```bash
-curl --location "${APP_URL}/api/v1/users?filter[name]=demo&sort=-created_at&page=1&per_page=20" \
+curl --location "${APP_URL}/api/v1/users?filters[name]=demo&filters[created_at]=2026-01-01,2026-01-31&sort=-id&page=1&per_page=20" \
   --header "Accept: application/json" \
   --header "X-Locale: vi" \
   --header "Authorization: Bearer ${TOKEN}"
@@ -128,4 +134,3 @@ curl --location --request POST "${APP_URL}/api/v1/users/1/restore" \
   --header "X-Locale: vi" \
   --header "Authorization: Bearer ${TOKEN}"
 ```
-

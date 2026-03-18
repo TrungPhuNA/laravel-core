@@ -7,6 +7,7 @@ use App\Core\Support\Query\ApiQueryParams;
 use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Modules\User\Infrastructure\Contracts\UserRepositoryInterface;
+use Modules\User\Infrastructure\Query\UserQueryConfig;
 
 final class EloquentUserRepository implements UserRepositoryInterface
 {
@@ -17,15 +18,10 @@ final class EloquentUserRepository implements UserRepositoryInterface
         ApiQueryApplier::apply(
             query: $query,
             params: $params,
-            allowedFilters: [
-                'id' => ApiQueryApplier::FILTER_EXACT,
-                'name' => ApiQueryApplier::FILTER_LIKE,
-                'email' => ApiQueryApplier::FILTER_LIKE,
-                'user_type' => ApiQueryApplier::FILTER_EXACT,
-                'phone' => ApiQueryApplier::FILTER_LIKE,
-            ],
-            allowedSorts: ['id', 'name', 'email', 'user_type', 'created_at', 'updated_at'],
+            allowedFilters: UserQueryConfig::allowedFilters(),
+            allowedSorts: UserQueryConfig::allowedSorts(),
             allowedIncludes: [],
+            defaultSorts: UserQueryConfig::defaultSorts(),
         );
 
         return $query->paginate(
@@ -78,4 +74,3 @@ final class EloquentUserRepository implements UserRepositoryInterface
         return $user->refresh();
     }
 }
-

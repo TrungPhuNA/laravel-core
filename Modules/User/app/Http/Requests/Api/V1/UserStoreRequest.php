@@ -38,5 +38,37 @@ final class UserStoreRequest extends ApiFormRequest
             'bio' => ['sometimes', 'nullable', 'string'],
         ];
     }
-}
 
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public function bodyParameters(): array
+    {
+        return [
+            'name' => [
+                'description' => 'Tên hiển thị của tài khoản.',
+                'example' => 'Demo User',
+            ],
+            'email' => [
+                'description' => 'Email (duy nhất).',
+                'example' => 'demo2@example.com',
+            ],
+            'password' => [
+                'description' => 'Mật khẩu (tối thiểu 8 ký tự).',
+                'example' => '123456789',
+            ],
+            'user_type' => [
+                'description' => 'Loại tài khoản (ADMIN|USER|SYSTEM).',
+                'example' => 'USER',
+            ],
+            'phone' => [
+                'description' => 'Số điện thoại.',
+                'example' => '0986420994',
+            ],
+            'province' => [
+                'description' => 'Tỉnh/Thành.',
+                'example' => 'HCM',
+            ],
+        ];
+    }
+}
