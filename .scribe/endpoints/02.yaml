@@ -246,7 +246,7 @@ endpoints:
         name: date_of_birth
         description: 'Trường value không phải là ngày hợp lệ.'
         required: false
-        example: '2026-03-18T04:27:06'
+        example: '2026-03-18T07:06:46'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -402,7 +402,7 @@ endpoints:
       user_type: USER
       phone: '0986420994'
       avatar_url: 'http://kunze.biz/iste-laborum-eius-est-dolor.html'
-      date_of_birth: '2026-03-18T04:27:06'
+      date_of_birth: '2026-03-18T07:06:46'
       gender: dtdsufvyvddqamnii
       address_line1: hfqcoynlazghdtqtqxbaj
       address_line2: wbpilpmufinllwloauydl
@@ -521,7 +521,7 @@ endpoints:
         name: date_of_birth
         description: 'Trường value không phải là ngày hợp lệ.'
         required: false
-        example: '2026-03-18T04:27:06'
+        example: '2026-03-18T07:06:46'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -676,7 +676,7 @@ endpoints:
       user_type: USER
       phone: '0900000000'
       avatar_url: 'http://kunze.biz/iste-laborum-eius-est-dolor.html'
-      date_of_birth: '2026-03-18T04:27:06'
+      date_of_birth: '2026-03-18T07:06:46'
       gender: dtdsufvyvddqamnii
       address_line1: hfqcoynlazghdtqtqxbaj
       address_line2: wbpilpmufinllwloauydl

@@ -11,6 +11,7 @@
 ## Api
 
 - `docs/api/AUTH.md`
+- `docs/api/QUEUE.md`
 - `docs/api/SETTINGS.md`
 - `docs/api/USERS.md`
 

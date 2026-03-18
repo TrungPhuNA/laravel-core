@@ -79,14 +79,6 @@
                                             <a href="#cai-dat-GETapi-v1-settings-public">Danh sách setting công khai</a>
                                         </li>
                                                                     </ul>
-                                                                                <li class="tocify-item level-2" data-unique="cai-dat-theo-key">
-                                <a href="#cai-dat-theo-key">Theo key</a>
-                            </li>
-                                                            <ul id="tocify-subheader-cai-dat-theo-key" class="tocify-subheader">
-                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings--key-">
-                                            <a href="#cai-dat-GETapi-v1-settings--key-">Lấy setting theo key</a>
-                                        </li>
-                                                                    </ul>
                                                                                 <li class="tocify-item level-2" data-unique="cai-dat-quan-tri">
                                 <a href="#cai-dat-quan-tri">Quản trị</a>
                             </li>
@@ -96,6 +88,46 @@
                                         </li>
                                                                             <li class="tocify-item level-3" data-unique="cai-dat-PUTapi-v1-settings">
                                             <a href="#cai-dat-PUTapi-v1-settings">Upsert settings (bulk)</a>
+                                        </li>
+                                                                    </ul>
+                                                                                <li class="tocify-item level-2" data-unique="cai-dat-hang-doi">
+                                <a href="#cai-dat-hang-doi">Hàng đợi</a>
+                            </li>
+                                                            <ul id="tocify-subheader-cai-dat-hang-doi" class="tocify-subheader">
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-queue-stats">
+                                            <a href="#cai-dat-GETapi-v1-settings-queue-stats">Thống kê queue</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-queue-jobs">
+                                            <a href="#cai-dat-GETapi-v1-settings-queue-jobs">Danh sách job (jobs)</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-queue-jobs--id-">
+                                            <a href="#cai-dat-GETapi-v1-settings-queue-jobs--id-">Chi tiết job</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-queue-failed-jobs">
+                                            <a href="#cai-dat-GETapi-v1-settings-queue-failed-jobs">Danh sách failed jobs</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-queue-failed-jobs--id-">
+                                            <a href="#cai-dat-GETapi-v1-settings-queue-failed-jobs--id-">Chi tiết failed job</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-POSTapi-v1-settings-queue-failed-jobs--id--retry">
+                                            <a href="#cai-dat-POSTapi-v1-settings-queue-failed-jobs--id--retry">Retry failed job</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-DELETEapi-v1-settings-queue-failed-jobs--id-">
+                                            <a href="#cai-dat-DELETEapi-v1-settings-queue-failed-jobs--id-">Xoá failed job khỏi failed_jobs</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-queue-batches">
+                                            <a href="#cai-dat-GETapi-v1-settings-queue-batches">Danh sách job batches</a>
+                                        </li>
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings-queue-batches--id-">
+                                            <a href="#cai-dat-GETapi-v1-settings-queue-batches--id-">Chi tiết batch</a>
+                                        </li>
+                                                                    </ul>
+                                                                                <li class="tocify-item level-2" data-unique="cai-dat-theo-key">
+                                <a href="#cai-dat-theo-key">Theo key</a>
+                            </li>
+                                                            <ul id="tocify-subheader-cai-dat-theo-key" class="tocify-subheader">
+                                                                            <li class="tocify-item level-3" data-unique="cai-dat-GETapi-v1-settings--key-">
+                                            <a href="#cai-dat-GETapi-v1-settings--key-">Lấy setting theo key</a>
                                         </li>
                                                                     </ul>
                                                                         </ul>
@@ -317,132 +349,6 @@ Có thể mở DevTools Console để debug.</code></pre>
 <p>Example: <code>application/json</code></p>
             </div>
                         </form>
-
-                                <h2 id="cai-dat-theo-key">Theo key</h2>
-                                                    <h2 id="cai-dat-GETapi-v1-settings--key-">Lấy setting theo key</h2>
-
-<p>
-</p>
-
-<p>Nếu setting là public: không cần đăng nhập.
-Nếu setting không public: yêu cầu user_type là ADMIN hoặc SYSTEM.</p>
-
-<span id="example-requests-GETapi-v1-settings--key-">
-<blockquote>Ví dụ request:</blockquote>
-
-
-<div class="bash-example">
-    <pre><code class="language-bash">curl --request GET \
-    --get "http://laravel-core.test/api/v1/settings/!public$Z" \
-    --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
-
-
-<div class="javascript-example">
-    <pre><code class="language-javascript">const url = new URL(
-    "http://laravel-core.test/api/v1/settings/!public$Z"
-);
-
-const headers = {
-    "Content-Type": "application/json",
-    "Accept": "application/json",
-};
-
-
-fetch(url, {
-    method: "GET",
-    headers,
-}).then(response =&gt; response.json());</code></pre></div>
-
-</span>
-
-<span id="example-responses-GETapi-v1-settings--key-">
-    </span>
-<span id="execution-results-GETapi-v1-settings--key-" hidden>
-    <blockquote>Đã nhận response<span
-                id="execution-response-status-GETapi-v1-settings--key-"></span>:
-    </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-v1-settings--key-"
-      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
-</span>
-<span id="execution-error-GETapi-v1-settings--key-" hidden>
-    <blockquote>Request bị lỗi:</blockquote>
-    <pre><code id="execution-error-message-GETapi-v1-settings--key-">
-
-Gợi ý: Kiểm tra kết nối mạng.
-Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
-Có thể mở DevTools Console để debug.</code></pre>
-</span>
-<form id="form-GETapi-v1-settings--key-" data-method="GET"
-      data-path="api/v1/settings/{key}"
-      data-authed="0"
-      data-hasfiles="0"
-      data-isarraybody="0"
-      autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings--key-', this);">
-    <h3>
-        Yêu cầu&nbsp;&nbsp;&nbsp;
-                    <button type="button"
-                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-v1-settings--key-"
-                    onclick="tryItOut('GETapi-v1-settings--key-');">Thử ngay
-            </button>
-            <button type="button"
-                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-v1-settings--key-"
-                    onclick="cancelTryOut('GETapi-v1-settings--key-');" hidden>Hủy
-            </button>&nbsp;&nbsp;
-            <button type="submit"
-                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-v1-settings--key-"
-                    data-initial-text="Gửi request"
-                    data-loading-text="Đang gửi..."
-                    hidden>Gửi request
-            </button>
-            </h3>
-            <p>
-            <small class="badge badge-green">GET</small>
-            <b><code>api/v1/settings/{key}</code></b>
-        </p>
-                <h4 class="fancy-heading-panel"><b>Header</b></h4>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-v1-settings--key-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                                <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
-&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-v1-settings--key-"
-               value="application/json"
-               data-component="header">
-    <br>
-<p>Example: <code>application/json</code></p>
-            </div>
-                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
-                    <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>key</code></b>&nbsp;&nbsp;
-<small>string</small>&nbsp;
- &nbsp;
- &nbsp;
-                <input type="text" style="display: none"
-                              name="key"                data-endpoint="GETapi-v1-settings--key-"
-               value="!public$Z"
-               data-component="url">
-    <br>
-<p>Example: <code>!public$Z</code></p>
-            </div>
-                    </form>
 
                                 <h2 id="cai-dat-quan-tri">Quản trị</h2>
                                                     <h2 id="cai-dat-GETapi-v1-settings">Danh sách tất cả setting</h2>
@@ -804,6 +710,1404 @@ Có thể mở DevTools Console để debug.</code></pre>
         </div>
         </form>
 
+                                <h2 id="cai-dat-hang-doi">Hàng đợi</h2>
+                                                    <h2 id="cai-dat-GETapi-v1-settings-queue-stats">Thống kê queue</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-queue-stats">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/queue/stats" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/stats"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-queue-stats">
+    </span>
+<span id="execution-results-GETapi-v1-settings-queue-stats" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-queue-stats"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-queue-stats"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-queue-stats" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-queue-stats">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-queue-stats" data-method="GET"
+      data-path="api/v1/settings/queue/stats"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-queue-stats', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-queue-stats"
+                    onclick="tryItOut('GETapi-v1-settings-queue-stats');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-queue-stats"
+                    onclick="cancelTryOut('GETapi-v1-settings-queue-stats');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-queue-stats"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/queue/stats</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-queue-stats"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-queue-stats"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="cai-dat-GETapi-v1-settings-queue-jobs">Danh sách job (jobs)</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-queue-jobs">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/queue/jobs?sort=-id&amp;page=1&amp;per_page=20" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/jobs"
+);
+
+const params = {
+    "sort": "-id",
+    "page": "1",
+    "per_page": "20",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-queue-jobs">
+    </span>
+<span id="execution-results-GETapi-v1-settings-queue-jobs" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-queue-jobs"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-queue-jobs"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-queue-jobs" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-queue-jobs">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-queue-jobs" data-method="GET"
+      data-path="api/v1/settings/queue/jobs"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-queue-jobs', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-queue-jobs"
+                    onclick="tryItOut('GETapi-v1-settings-queue-jobs');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-queue-jobs"
+                    onclick="cancelTryOut('GETapi-v1-settings-queue-jobs');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-queue-jobs"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/queue/jobs</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-queue-jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-queue-jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Tham số Query</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filters</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="filters"                data-endpoint="GETapi-v1-settings-queue-jobs"
+               value=""
+               data-component="query">
+    <br>
+
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filter</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="filter"                data-endpoint="GETapi-v1-settings-queue-jobs"
+               value=""
+               data-component="query">
+    <br>
+
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort"                data-endpoint="GETapi-v1-settings-queue-jobs"
+               value="-id"
+               data-component="query">
+    <br>
+<p>Sắp xếp. Mặc định -id. Example: <code>-id</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="page"                data-endpoint="GETapi-v1-settings-queue-jobs"
+               value="1"
+               data-component="query">
+    <br>
+<p>Trang hiện tại. Trường value phải tối thiểu 1. Example: <code>1</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-v1-settings-queue-jobs"
+               value="20"
+               data-component="query">
+    <br>
+<p>Số item mỗi trang. Trường value phải tối thiểu 1. Example: <code>20</code></p>
+            </div>
+                </form>
+
+                    <h2 id="cai-dat-GETapi-v1-settings-queue-jobs--id-">Chi tiết job</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-queue-jobs--id-">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/queue/jobs/1562" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/jobs/1562"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-queue-jobs--id-">
+    </span>
+<span id="execution-results-GETapi-v1-settings-queue-jobs--id-" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-queue-jobs--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-queue-jobs--id-"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-queue-jobs--id-" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-queue-jobs--id-">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-queue-jobs--id-" data-method="GET"
+      data-path="api/v1/settings/queue/jobs/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-queue-jobs--id-', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-queue-jobs--id-"
+                    onclick="tryItOut('GETapi-v1-settings-queue-jobs--id-');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-queue-jobs--id-"
+                    onclick="cancelTryOut('GETapi-v1-settings-queue-jobs--id-');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-queue-jobs--id-"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/queue/jobs/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-queue-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-queue-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-settings-queue-jobs--id-"
+               value="1562"
+               data-component="url">
+    <br>
+<p>The ID of the job. Example: <code>1562</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="cai-dat-GETapi-v1-settings-queue-failed-jobs">Danh sách failed jobs</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-queue-failed-jobs">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/queue/failed-jobs?sort=-id&amp;page=1&amp;per_page=20" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/failed-jobs"
+);
+
+const params = {
+    "sort": "-id",
+    "page": "1",
+    "per_page": "20",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-queue-failed-jobs">
+    </span>
+<span id="execution-results-GETapi-v1-settings-queue-failed-jobs" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-queue-failed-jobs"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-queue-failed-jobs"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-queue-failed-jobs" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-queue-failed-jobs">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-queue-failed-jobs" data-method="GET"
+      data-path="api/v1/settings/queue/failed-jobs"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-queue-failed-jobs', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-queue-failed-jobs"
+                    onclick="tryItOut('GETapi-v1-settings-queue-failed-jobs');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-queue-failed-jobs"
+                    onclick="cancelTryOut('GETapi-v1-settings-queue-failed-jobs');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-queue-failed-jobs"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/queue/failed-jobs</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-queue-failed-jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-queue-failed-jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Tham số Query</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filters</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="filters"                data-endpoint="GETapi-v1-settings-queue-failed-jobs"
+               value=""
+               data-component="query">
+    <br>
+
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filter</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="filter"                data-endpoint="GETapi-v1-settings-queue-failed-jobs"
+               value=""
+               data-component="query">
+    <br>
+
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort"                data-endpoint="GETapi-v1-settings-queue-failed-jobs"
+               value="-id"
+               data-component="query">
+    <br>
+<p>Sắp xếp. Mặc định -id. Example: <code>-id</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="page"                data-endpoint="GETapi-v1-settings-queue-failed-jobs"
+               value="1"
+               data-component="query">
+    <br>
+<p>Trang hiện tại. Trường value phải tối thiểu 1. Example: <code>1</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-v1-settings-queue-failed-jobs"
+               value="20"
+               data-component="query">
+    <br>
+<p>Số item mỗi trang. Trường value phải tối thiểu 1. Example: <code>20</code></p>
+            </div>
+                </form>
+
+                    <h2 id="cai-dat-GETapi-v1-settings-queue-failed-jobs--id-">Chi tiết failed job</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-queue-failed-jobs--id-">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/queue/failed-jobs/1562" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/failed-jobs/1562"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-queue-failed-jobs--id-">
+    </span>
+<span id="execution-results-GETapi-v1-settings-queue-failed-jobs--id-" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-queue-failed-jobs--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-queue-failed-jobs--id-"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-queue-failed-jobs--id-" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-queue-failed-jobs--id-">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-queue-failed-jobs--id-" data-method="GET"
+      data-path="api/v1/settings/queue/failed-jobs/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-queue-failed-jobs--id-', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-queue-failed-jobs--id-"
+                    onclick="tryItOut('GETapi-v1-settings-queue-failed-jobs--id-');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-queue-failed-jobs--id-"
+                    onclick="cancelTryOut('GETapi-v1-settings-queue-failed-jobs--id-');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-queue-failed-jobs--id-"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/queue/failed-jobs/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-queue-failed-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-queue-failed-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-settings-queue-failed-jobs--id-"
+               value="1562"
+               data-component="url">
+    <br>
+<p>The ID of the failed job. Example: <code>1562</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="cai-dat-POSTapi-v1-settings-queue-failed-jobs--id--retry">Retry failed job</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v1-settings-queue-failed-jobs--id--retry">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://laravel-core.test/api/v1/settings/queue/failed-jobs/1562/retry" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/failed-jobs/1562/retry"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v1-settings-queue-failed-jobs--id--retry">
+</span>
+<span id="execution-results-POSTapi-v1-settings-queue-failed-jobs--id--retry" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-POSTapi-v1-settings-queue-failed-jobs--id--retry"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v1-settings-queue-failed-jobs--id--retry"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v1-settings-queue-failed-jobs--id--retry" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v1-settings-queue-failed-jobs--id--retry">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-POSTapi-v1-settings-queue-failed-jobs--id--retry" data-method="POST"
+      data-path="api/v1/settings/queue/failed-jobs/{id}/retry"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v1-settings-queue-failed-jobs--id--retry', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v1-settings-queue-failed-jobs--id--retry"
+                    onclick="tryItOut('POSTapi-v1-settings-queue-failed-jobs--id--retry');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v1-settings-queue-failed-jobs--id--retry"
+                    onclick="cancelTryOut('POSTapi-v1-settings-queue-failed-jobs--id--retry');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v1-settings-queue-failed-jobs--id--retry"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v1/settings/queue/failed-jobs/{id}/retry</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v1-settings-queue-failed-jobs--id--retry"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v1-settings-queue-failed-jobs--id--retry"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="POSTapi-v1-settings-queue-failed-jobs--id--retry"
+               value="1562"
+               data-component="url">
+    <br>
+<p>The ID of the failed job. Example: <code>1562</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="cai-dat-DELETEapi-v1-settings-queue-failed-jobs--id-">Xoá failed job khỏi failed_jobs</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-v1-settings-queue-failed-jobs--id-">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "http://laravel-core.test/api/v1/settings/queue/failed-jobs/1562" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/failed-jobs/1562"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-v1-settings-queue-failed-jobs--id-">
+</span>
+<span id="execution-results-DELETEapi-v1-settings-queue-failed-jobs--id-" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-DELETEapi-v1-settings-queue-failed-jobs--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-v1-settings-queue-failed-jobs--id-"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-v1-settings-queue-failed-jobs--id-" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-v1-settings-queue-failed-jobs--id-">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-DELETEapi-v1-settings-queue-failed-jobs--id-" data-method="DELETE"
+      data-path="api/v1/settings/queue/failed-jobs/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v1-settings-queue-failed-jobs--id-', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-v1-settings-queue-failed-jobs--id-"
+                    onclick="tryItOut('DELETEapi-v1-settings-queue-failed-jobs--id-');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-v1-settings-queue-failed-jobs--id-"
+                    onclick="cancelTryOut('DELETEapi-v1-settings-queue-failed-jobs--id-');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-v1-settings-queue-failed-jobs--id-"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/v1/settings/queue/failed-jobs/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-v1-settings-queue-failed-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-v1-settings-queue-failed-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="DELETEapi-v1-settings-queue-failed-jobs--id-"
+               value="1562"
+               data-component="url">
+    <br>
+<p>The ID of the failed job. Example: <code>1562</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="cai-dat-GETapi-v1-settings-queue-batches">Danh sách job batches</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-queue-batches">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/queue/batches?sort=-created_at&amp;page=1&amp;per_page=20" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/batches"
+);
+
+const params = {
+    "sort": "-created_at",
+    "page": "1",
+    "per_page": "20",
+};
+Object.keys(params)
+    .forEach(key =&gt; url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-queue-batches">
+    </span>
+<span id="execution-results-GETapi-v1-settings-queue-batches" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-queue-batches"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-queue-batches"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-queue-batches" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-queue-batches">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-queue-batches" data-method="GET"
+      data-path="api/v1/settings/queue/batches"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-queue-batches', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-queue-batches"
+                    onclick="tryItOut('GETapi-v1-settings-queue-batches');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-queue-batches"
+                    onclick="cancelTryOut('GETapi-v1-settings-queue-batches');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-queue-batches"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/queue/batches</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-queue-batches"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-queue-batches"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Tham số Query</b></h4>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filters</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="filters"                data-endpoint="GETapi-v1-settings-queue-batches"
+               value=""
+               data-component="query">
+    <br>
+
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>filter</code></b>&nbsp;&nbsp;
+<small>object</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="filter"                data-endpoint="GETapi-v1-settings-queue-batches"
+               value=""
+               data-component="query">
+    <br>
+
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>sort</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="sort"                data-endpoint="GETapi-v1-settings-queue-batches"
+               value="-created_at"
+               data-component="query">
+    <br>
+<p>Sắp xếp. Mặc định -created_at. Example: <code>-created_at</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="page"                data-endpoint="GETapi-v1-settings-queue-batches"
+               value="1"
+               data-component="query">
+    <br>
+<p>Trang hiện tại. Trường value phải tối thiểu 1. Example: <code>1</code></p>
+            </div>
+                                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>per_page</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="per_page"                data-endpoint="GETapi-v1-settings-queue-batches"
+               value="20"
+               data-component="query">
+    <br>
+<p>Số item mỗi trang. Trường value phải tối thiểu 1. Example: <code>20</code></p>
+            </div>
+                </form>
+
+                    <h2 id="cai-dat-GETapi-v1-settings-queue-batches--id-">Chi tiết batch</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v1-settings-queue-batches--id-">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/queue/batches/consequatur" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/queue/batches/consequatur"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings-queue-batches--id-">
+    </span>
+<span id="execution-results-GETapi-v1-settings-queue-batches--id-" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings-queue-batches--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings-queue-batches--id-"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings-queue-batches--id-" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings-queue-batches--id-">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings-queue-batches--id-" data-method="GET"
+      data-path="api/v1/settings/queue/batches/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings-queue-batches--id-', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings-queue-batches--id-"
+                    onclick="tryItOut('GETapi-v1-settings-queue-batches--id-');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings-queue-batches--id-"
+                    onclick="cancelTryOut('GETapi-v1-settings-queue-batches--id-');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings-queue-batches--id-"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/queue/batches/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings-queue-batches--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings-queue-batches--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v1-settings-queue-batches--id-"
+               value="consequatur"
+               data-component="url">
+    <br>
+<p>The ID of the batch. Example: <code>consequatur</code></p>
+            </div>
+                    </form>
+
+                                <h2 id="cai-dat-theo-key">Theo key</h2>
+                                                    <h2 id="cai-dat-GETapi-v1-settings--key-">Lấy setting theo key</h2>
+
+<p>
+</p>
+
+<p>Nếu setting là public: không cần đăng nhập.
+Nếu setting không public: yêu cầu user_type là ADMIN hoặc SYSTEM.</p>
+
+<span id="example-requests-GETapi-v1-settings--key-">
+<blockquote>Ví dụ request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "http://laravel-core.test/api/v1/settings/!public$)!queue$^//^" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://laravel-core.test/api/v1/settings/!public$)!queue$^//^"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v1-settings--key-">
+    </span>
+<span id="execution-results-GETapi-v1-settings--key-" hidden>
+    <blockquote>Đã nhận response<span
+                id="execution-response-status-GETapi-v1-settings--key-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v1-settings--key-"
+      data-empty-response-text="<Response rỗng>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v1-settings--key-" hidden>
+    <blockquote>Request bị lỗi:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v1-settings--key-">
+
+Gợi ý: Kiểm tra kết nối mạng.
+Nếu bạn là người vận hành API, hãy đảm bảo API đang chạy và đã bật CORS.
+Có thể mở DevTools Console để debug.</code></pre>
+</span>
+<form id="form-GETapi-v1-settings--key-" data-method="GET"
+      data-path="api/v1/settings/{key}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v1-settings--key-', this);">
+    <h3>
+        Yêu cầu&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v1-settings--key-"
+                    onclick="tryItOut('GETapi-v1-settings--key-');">Thử ngay
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v1-settings--key-"
+                    onclick="cancelTryOut('GETapi-v1-settings--key-');" hidden>Hủy
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v1-settings--key-"
+                    data-initial-text="Gửi request"
+                    data-loading-text="Đang gửi..."
+                    hidden>Gửi request
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v1/settings/{key}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Header</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v1-settings--key-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v1-settings--key-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>Tham số URL</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>key</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="key"                data-endpoint="GETapi-v1-settings--key-"
+               value="!public$)!queue$^//^"
+               data-component="url">
+    <br>
+<p>Example: <code>!public$)!queue$^//^</code></p>
+            </div>
+                    </form>
+
                 <h1 id="tai-khoan">Tài khoản</h1>
 
     
@@ -1154,7 +2458,7 @@ Có thể mở DevTools Console để debug.</code></pre>
     \"user_type\": \"USER\",
     \"phone\": \"0986420994\",
     \"avatar_url\": \"http:\\/\\/kunze.biz\\/iste-laborum-eius-est-dolor.html\",
-    \"date_of_birth\": \"2026-03-18T04:27:06\",
+    \"date_of_birth\": \"2026-03-18T07:06:46\",
     \"gender\": \"dtdsufvyvddqamnii\",
     \"address_line1\": \"hfqcoynlazghdtqtqxbaj\",
     \"address_line2\": \"wbpilpmufinllwloauydl\",
@@ -1189,7 +2493,7 @@ let body = {
     "user_type": "USER",
     "phone": "0986420994",
     "avatar_url": "http:\/\/kunze.biz\/iste-laborum-eius-est-dolor.html",
-    "date_of_birth": "2026-03-18T04:27:06",
+    "date_of_birth": "2026-03-18T07:06:46",
     "gender": "dtdsufvyvddqamnii",
     "address_line1": "hfqcoynlazghdtqtqxbaj",
     "address_line2": "wbpilpmufinllwloauydl",
@@ -1368,10 +2672,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_of_birth"                data-endpoint="POSTapi-v1-users"
-               value="2026-03-18T04:27:06"
+               value="2026-03-18T07:06:46"
                data-component="body">
     <br>
-<p>Trường value không phải là ngày hợp lệ. Example: <code>2026-03-18T04:27:06</code></p>
+<p>Trường value không phải là ngày hợp lệ. Example: <code>2026-03-18T07:06:46</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>gender</code></b>&nbsp;&nbsp;
@@ -1553,7 +2857,7 @@ Must be one of:
     \"user_type\": \"USER\",
     \"phone\": \"0900000000\",
     \"avatar_url\": \"http:\\/\\/kunze.biz\\/iste-laborum-eius-est-dolor.html\",
-    \"date_of_birth\": \"2026-03-18T04:27:06\",
+    \"date_of_birth\": \"2026-03-18T07:06:46\",
     \"gender\": \"dtdsufvyvddqamnii\",
     \"address_line1\": \"hfqcoynlazghdtqtqxbaj\",
     \"address_line2\": \"wbpilpmufinllwloauydl\",
@@ -1587,7 +2891,7 @@ let body = {
     "user_type": "USER",
     "phone": "0900000000",
     "avatar_url": "http:\/\/kunze.biz\/iste-laborum-eius-est-dolor.html",
-    "date_of_birth": "2026-03-18T04:27:06",
+    "date_of_birth": "2026-03-18T07:06:46",
     "gender": "dtdsufvyvddqamnii",
     "address_line1": "hfqcoynlazghdtqtqxbaj",
     "address_line2": "wbpilpmufinllwloauydl",
@@ -1767,10 +3071,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="date_of_birth"                data-endpoint="PUTapi-v1-users--id-"
-               value="2026-03-18T04:27:06"
+               value="2026-03-18T07:06:46"
                data-component="body">
     <br>
-<p>Trường value không phải là ngày hợp lệ. Example: <code>2026-03-18T04:27:06</code></p>
+<p>Trường value không phải là ngày hợp lệ. Example: <code>2026-03-18T07:06:46</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>gender</code></b>&nbsp;&nbsp;

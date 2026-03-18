@@ -58,8 +58,10 @@ final class SettingController extends Controller
             );
         }
 
+        // Route nay co the goi voi token Sanctum ma khong can boc bang middleware auth:sanctum
+        // (vi no cho phep public key). Vi vay can lay user theo guard sanctum.
         /** @var \App\Models\User|null $user */
-        $user = $request->user();
+        $user = $request->user('sanctum');
 
         if (!$user) {
             throw new ApiException(
