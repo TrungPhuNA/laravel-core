@@ -1,0 +1,899 @@
+name: 'Tài khoản'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/v1/users
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Danh sách tài khoản'
+      description: |-
+        Hỗ trợ query:
+        - filter[name], filter[email], filter[user_type], filter[phone]
+        - sort=id,name,email,user_type,created_at,updated_at (có thể thêm dấu "-" để desc)
+        - page, per_page
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      filter:
+        custom: []
+        name: filter
+        description: ''
+        required: false
+        example: null
+        type: object
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      include:
+        custom: []
+        name: include
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      sort:
+        custom: []
+        name: sort
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      page:
+        custom: []
+        name: page
+        description: 'Trường value phải tối thiểu 1.'
+        required: false
+        example: 45
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      per_page:
+        custom: []
+        name: per_page
+        description: 'Trường value phải tối thiểu 1.'
+        required: false
+        example: 56
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      include: consequatur
+      sort: consequatur
+      page: 45
+      per_page: 56
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v1/users/{id}'
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Chi tiết tài khoản'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: '1562'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: '1562'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/v1/users
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Tạo tài khoản'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: true
+        example: vmqeopfuudtdsufvyvddq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
+        required: true
+        example: kunde.eloisa@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password:
+        custom: []
+        name: password
+        description: 'Trường value phải tối thiểu 8 ký tự. Trường value không được lớn hơn 255 ký tự.'
+        required: true
+        example: '4[*UyPJ"}6'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      user_type:
+        custom: []
+        name: user_type
+        description: ''
+        required: false
+        example: USER
+        type: string
+        enumValues:
+          - ADMIN
+          - USER
+          - SYSTEM
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Trường value không được lớn hơn 30 ký tự.'
+        required: false
+        example: hdtqtqxbajwbpilpmufin
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      avatar_url:
+        custom: []
+        name: avatar_url
+        description: 'Must be a valid URL.'
+        required: false
+        example: 'https://www.kemmer.net/similique-accusantium-et-a-qui-ducimus'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      date_of_birth:
+        custom: []
+        name: date_of_birth
+        description: 'Trường value không phải là ngày hợp lệ.'
+        required: false
+        example: '2026-03-18T03:55:10'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      gender:
+        custom: []
+        name: gender
+        description: 'Trường value không được lớn hơn 20 ký tự.'
+        required: false
+        example: smsjuryvojcybzvrb
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      address_line1:
+        custom: []
+        name: address_line1
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: yickznkygloigmkwxphlv
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      address_line2:
+        custom: []
+        name: address_line2
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: azjrcnfbaqywuxhgjjmzu
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      ward:
+        custom: []
+        name: ward
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: xjubqouzswiwxtrkimfca
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      district:
+        custom: []
+        name: district
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: tbxspzmrazsroyjpxmqes
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      province:
+        custom: []
+        name: province
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: edyghenqcopwvownkbaml
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country:
+        custom: []
+        name: country
+        description: 'Trường value phải có 2 ký tự.'
+        required: false
+        example: nf
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      postal_code:
+        custom: []
+        name: postal_code
+        description: 'Trường value không được lớn hơn 20 ký tự.'
+        required: false
+        example: ngefbeilfzsyuxoez
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      company:
+        custom: []
+        name: company
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: bdtabptcyyerevrljcbwk
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      job_title:
+        custom: []
+        name: job_title
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: thjnescwsestcouxpqsyd
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      timezone:
+        custom: []
+        name: timezone
+        description: 'Trường value không được lớn hơn 50 ký tự.'
+        required: false
+        example: America/Santo_Domingo
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      locale:
+        custom: []
+        name: locale
+        description: 'Trường value không được lớn hơn 10 ký tự.'
+        required: false
+        example: es_GT
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      bio:
+        custom: []
+        name: bio
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: vmqeopfuudtdsufvyvddq
+      email: kunde.eloisa@example.com
+      password: '4[*UyPJ"}6'
+      user_type: USER
+      phone: hdtqtqxbajwbpilpmufin
+      avatar_url: 'https://www.kemmer.net/similique-accusantium-et-a-qui-ducimus'
+      date_of_birth: '2026-03-18T03:55:10'
+      gender: smsjuryvojcybzvrb
+      address_line1: yickznkygloigmkwxphlv
+      address_line2: azjrcnfbaqywuxhgjjmzu
+      ward: xjubqouzswiwxtrkimfca
+      district: tbxspzmrazsroyjpxmqes
+      province: edyghenqcopwvownkbaml
+      country: nf
+      postal_code: ngefbeilfzsyuxoez
+      company: bdtabptcyyerevrljcbwk
+      job_title: thjnescwsestcouxpqsyd
+      timezone: America/Santo_Domingo
+      locale: es_GT
+      bio: consequatur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/v1/users/{id}'
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Cập nhật tài khoản'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: '1562'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: '1562'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      name:
+        custom: []
+        name: name
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: vmqeopfuudtdsufvyvddq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      email:
+        custom: []
+        name: email
+        description: 'Trường value phải là địa chỉ email hợp lệ. Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: kunde.eloisa@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      user_type:
+        custom: []
+        name: user_type
+        description: ''
+        required: false
+        example: USER
+        type: string
+        enumValues:
+          - ADMIN
+          - USER
+          - SYSTEM
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Trường value không được lớn hơn 30 ký tự.'
+        required: false
+        example: hfqcoynlazghdtqtqxbaj
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      avatar_url:
+        custom: []
+        name: avatar_url
+        description: 'Must be a valid URL.'
+        required: false
+        example: 'http://bergnaum.biz/qui-id-totam-temporibus-quia-ipsam.html'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      date_of_birth:
+        custom: []
+        name: date_of_birth
+        description: 'Trường value không phải là ngày hợp lệ.'
+        required: false
+        example: '2026-03-18T03:55:10'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      gender:
+        custom: []
+        name: gender
+        description: 'Trường value không được lớn hơn 20 ký tự.'
+        required: false
+        example: nllwloauydlsmsjur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      address_line1:
+        custom: []
+        name: address_line1
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: yvojcybzvrbyickznkygl
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      address_line2:
+        custom: []
+        name: address_line2
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: oigmkwxphlvazjrcnfbaq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      ward:
+        custom: []
+        name: ward
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: ywuxhgjjmzuxjubqouzsw
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      district:
+        custom: []
+        name: district
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: iwxtrkimfcatbxspzmraz
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      province:
+        custom: []
+        name: province
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: sroyjpxmqesedyghenqco
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      country:
+        custom: []
+        name: country
+        description: 'Trường value phải có 2 ký tự.'
+        required: false
+        example: pw
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      postal_code:
+        custom: []
+        name: postal_code
+        description: 'Trường value không được lớn hơn 20 ký tự.'
+        required: false
+        example: vownkbamlnfngefbe
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      company:
+        custom: []
+        name: company
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: ilfzsyuxoezbdtabptcyy
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      job_title:
+        custom: []
+        name: job_title
+        description: 'Trường value không được lớn hơn 255 ký tự.'
+        required: false
+        example: erevrljcbwkthjnescwse
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      timezone:
+        custom: []
+        name: timezone
+        description: 'Trường value không được lớn hơn 50 ký tự.'
+        required: false
+        example: Australia/Eucla
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      locale:
+        custom: []
+        name: locale
+        description: 'Trường value không được lớn hơn 10 ký tự.'
+        required: false
+        example: pt_PT
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      bio:
+        custom: []
+        name: bio
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+    cleanBodyParameters:
+      name: vmqeopfuudtdsufvyvddq
+      email: kunde.eloisa@example.com
+      user_type: USER
+      phone: hfqcoynlazghdtqtqxbaj
+      avatar_url: 'http://bergnaum.biz/qui-id-totam-temporibus-quia-ipsam.html'
+      date_of_birth: '2026-03-18T03:55:10'
+      gender: nllwloauydlsmsjur
+      address_line1: yvojcybzvrbyickznkygl
+      address_line2: oigmkwxphlvazjrcnfbaq
+      ward: ywuxhgjjmzuxjubqouzsw
+      district: iwxtrkimfcatbxspzmraz
+      province: sroyjpxmqesedyghenqco
+      country: pw
+      postal_code: vownkbamlnfngefbe
+      company: ilfzsyuxoezbdtabptcyy
+      job_title: erevrljcbwkthjnescwse
+      timezone: Australia/Eucla
+      locale: pt_PT
+      bio: consequatur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/users/{id}/user-type'
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Đổi user_type'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: '1562'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: '1562'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      user_type:
+        custom: []
+        name: user_type
+        description: ''
+        required: true
+        example: USER
+        type: string
+        enumValues:
+          - ADMIN
+          - USER
+          - SYSTEM
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      user_type: USER
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PATCH
+    uri: 'api/v1/users/{id}/password'
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Reset mật khẩu'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: '1562'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: '1562'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      password:
+        custom: []
+        name: password
+        description: 'Trường value phải tối thiểu 8 ký tự. Trường value không được lớn hơn 255 ký tự.'
+        required: true
+        example: 'O[2UZ5ij-e/dl4m{o,'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      password_confirmation:
+        custom: []
+        name: password_confirmation
+        description: 'The value and <code>password</code> must match.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      password: 'O[2UZ5ij-e/dl4m{o,'
+      password_confirmation: consequatur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/v1/users/{id}'
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Xoá tài khoản (soft delete)'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: '1562'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: '1562'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/v1/users/{id}/restore'
+    metadata:
+      custom: []
+      groupName: 'Tài khoản'
+      groupDescription: ''
+      subgroup: 'Quản trị'
+      subgroupDescription: ''
+      title: 'Khôi phục tài khoản đã xoá'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the user.'
+        required: true
+        example: '1562'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: '1562'
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
