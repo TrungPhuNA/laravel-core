@@ -60,6 +60,18 @@ Files:
 - `Modules/Setting/resources/views/admin.blade.php`
 - `Modules/Setting/resources/frontend/admin/*`
 
+Ví dụ module Webhook:
+
+- Prefix web: `/webhook`
+- Laravel web route: catch-all trả về Blade view của SPA
+- React Router set `basename="/webhook"`
+
+Files:
+
+- `Modules/Webhook/routes/web.php`
+- `Modules/Webhook/resources/views/app.blade.php`
+- `Modules/Webhook/resources/frontend/app/*`
+
 Ghi chú auth:
 
 - Hiện tại template chưa tích hợp web login/session (route `login`), nên trang SPA không đặt dưới middleware `auth`.
