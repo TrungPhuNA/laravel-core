@@ -3,6 +3,7 @@
 ## Dev
 
 - `docs/dev/COMMANDS.md`
+- `docs/dev/FRONTEND_REACT_MODULES.md`
 - `docs/dev/GITFLOW_JIRA.md`
 - `docs/dev/RESPONSE_API.md`
 - `docs/dev/ROADMAP_CHECKLIST.md`

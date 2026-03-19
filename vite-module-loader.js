@@ -1,6 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function collectModuleAssetsPaths(paths, modulesPath) {
   modulesPath = path.join(__dirname, modulesPath);
@@ -23,21 +26,20 @@ async function collectModuleAssetsPaths(paths, modulesPath) {
 
       // Check if the module is enabled (status is true)
       if (moduleStatuses[moduleDir] === true) {
-        const viteConfigPath = path.join(modulesPath, moduleDir, 'vite.config.js');
+        // Prefer a simple JSON manifest so we don't have to import/execute module vite.config.js.
+        // File format:
+        // { "paths": ["Modules/Setting/resources/frontend/admin/main.tsx", ...] }
+        const pathsJson = path.join(modulesPath, moduleDir, 'vite.paths.json');
 
         try {
-          await fs.access(viteConfigPath);
-          // Convert to a file URL for Windows compatibility
-          const moduleConfigURL = pathToFileURL(viteConfigPath);
+          const raw = await fs.readFile(pathsJson, 'utf-8');
+          const parsed = JSON.parse(raw);
 
-          // Import the module-specific Vite configuration
-          const moduleConfig = await import(moduleConfigURL.href);
-
-          if (moduleConfig.paths && Array.isArray(moduleConfig.paths)) {
-            paths.push(...moduleConfig.paths);
+          if (parsed?.paths && Array.isArray(parsed.paths)) {
+            paths.push(...parsed.paths);
           }
         } catch (error) {
-          // vite.config.js does not exist, skip this module
+          // vite.paths.json does not exist or invalid, skip this module
         }
       }
     }
