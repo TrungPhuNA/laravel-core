@@ -1,0 +1,7 @@
+{
+    "paths": [
+        "Modules/Auth/resources/frontend/app/index.css",
+        "Modules/Auth/resources/frontend/app/main.tsx"
+    ]
+}
+

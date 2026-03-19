@@ -1,7 +1,9 @@
 import { createApiClient } from "@shared/http/apiClient";
+import { CORE_LOCALE_KEY, CORE_TOKEN_KEY } from "@shared/state/authStorage";
 
-const STORAGE_TOKEN = "setting_admin_token";
-const STORAGE_LOCALE = "setting_admin_locale";
+// Legacy keys (giu tam thoi). Token dung chung se luu vao core keys.
+const LEGACY_TOKEN_KEY = "setting_admin_token";
+const LEGACY_LOCALE_KEY = "setting_admin_locale";
 
 declare global {
   interface Window {
@@ -19,7 +21,11 @@ function getApiBase() {
 
 function getTokenFromStorage() {
   try {
-    return (localStorage.getItem(STORAGE_TOKEN) ?? "").trim();
+    const core = (localStorage.getItem(CORE_TOKEN_KEY) ?? "").trim();
+    if (core) return core;
+    const legacy = (localStorage.getItem(LEGACY_TOKEN_KEY) ?? "").trim();
+    if (legacy) localStorage.setItem(CORE_TOKEN_KEY, legacy);
+    return legacy;
   } catch {
     return "";
   }
@@ -27,7 +33,11 @@ function getTokenFromStorage() {
 
 function getLocaleFromStorage() {
   try {
-    return (localStorage.getItem(STORAGE_LOCALE) ?? "vi").trim();
+    const core = (localStorage.getItem(CORE_LOCALE_KEY) ?? "").trim();
+    if (core) return core;
+    const legacy = (localStorage.getItem(LEGACY_LOCALE_KEY) ?? "vi").trim();
+    if (legacy) localStorage.setItem(CORE_LOCALE_KEY, legacy);
+    return legacy;
   } catch {
     return "vi";
   }

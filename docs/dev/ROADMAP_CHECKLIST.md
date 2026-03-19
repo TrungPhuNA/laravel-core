@@ -19,6 +19,7 @@ File này dùng để theo dõi tiến độ build core-template. Tick vào chec
 - [x] Module Setting (public/admin, upsert, get by key) + cache
 - [x] Module User (quản trị tài khoản: list/show/create/update/user_type/password/soft delete/restore)
 - [x] Quản lý queue trong module Setting (jobs/failed_jobs/batches)
+- [x] Module Webhook (user tạo nhiều kênh, receiver public GET/POST, auth token tuỳ chọn, validate params)
 - [ ] Module mẫu CRUD (Catalog: categories/products) để demo filter/sort/include/paginate
 
 ## Document (Scribe)

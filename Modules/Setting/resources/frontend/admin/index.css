@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@shared/styles/ui.css";
 
 /* Base styles cho admin SPA (module Setting) */
 html, body {
