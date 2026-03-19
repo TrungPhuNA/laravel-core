@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "useDefineForClassFields": true,
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "skipLibCheck": true,
+        "moduleResolution": "Bundler",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "types": ["vite/client"],
+        "baseUrl": ".",
+        "paths": {
+            "@shared/*": ["resources/frontend/shared/*"]
+        }
+    },
+    "include": [
+        "resources/frontend/**/*.ts",
+        "resources/frontend/**/*.tsx",
+        "Modules/**/resources/frontend/**/*.ts",
+        "Modules/**/resources/frontend/**/*.tsx",
+        "vite.config.js",
+        "vite-module-loader.js"
+    ]
+}
+
