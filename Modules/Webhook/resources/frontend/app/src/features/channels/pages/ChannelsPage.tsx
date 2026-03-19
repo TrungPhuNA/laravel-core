@@ -10,6 +10,7 @@ import Modal from "@shared/ui/Modal";
 import Pagination from "@shared/ui/Pagination";
 import type { ApiMetaPagination, ApiResponseError, ApiResponseFail } from "@shared/http/types";
 import { prettyJson, shortText } from "@shared/lib/format";
+import { copyToClipboard } from "@shared/lib/clipboard";
 import type { WebhookChannel } from "../types";
 import { createChannel, deleteChannel, listChannels, rotateSecret, rotateToken, updateChannel } from "../services/webhooksApi";
 
@@ -24,6 +25,10 @@ function normalizeError(err: Err): { title: string; details?: string } {
     }
     if (err instanceof Error) return { title: err.message };
     return { title: "Có lỗi xảy ra", details: prettyJson(err) };
+}
+
+function receiveUrlFor(publicId: string) {
+    return `${window.location.origin}/api/v1/webhooks/receive/${publicId}`;
 }
 
 export default function ChannelsPage() {
@@ -64,6 +69,11 @@ export default function ChannelsPage() {
     const [secretTitle, setSecretTitle] = React.useState("");
     const [secretValue, setSecretValue] = React.useState("");
     const [receiveUrl, setReceiveUrl] = React.useState("");
+    const [receiveHelp, setReceiveHelp] = React.useState<string>("");
+
+    const [urlOpen, setUrlOpen] = React.useState(false);
+    const [urlValue, setUrlValue] = React.useState("");
+    const [toast, setToast] = React.useState<string>("");
 
     async function reload(next?: Partial<{ page: number; per_page: number }>) {
         const page = next?.page ?? meta.page;
@@ -131,7 +141,18 @@ export default function ChannelsPage() {
         setSecretTitle(title);
         setSecretValue(value);
         setReceiveUrl(url);
+        setReceiveHelp("");
         setSecretOpen(true);
+    }
+
+    function openReceiveUrl(url: string) {
+        setUrlValue(url);
+        setUrlOpen(true);
+    }
+
+    function toastOnce(message: string) {
+        setToast(message);
+        window.setTimeout(() => setToast(""), 2500);
     }
 
     async function submitEditor() {
@@ -157,8 +178,18 @@ export default function ChannelsPage() {
                 setEditorOpen(false);
                 await reload({ page: 1 });
 
-                if (res.auth_token) showSecret("Token Webhook (chỉ hiển thị 1 lần)", res.auth_token, res.receive_url);
-                if (res.auth_secret) showSecret("Secret HMAC (chỉ hiển thị 1 lần)", res.auth_secret, res.receive_url);
+                if (res.auth_token) {
+                    setReceiveHelp(
+                        "Dùng header `X-Webhook-Token: <token>` hoặc query `?token=<token>` khi gọi receiver."
+                    );
+                    showSecret("Token Webhook (chỉ hiển thị 1 lần)", res.auth_token, res.receive_url);
+                }
+                if (res.auth_secret) {
+                    setReceiveHelp(
+                        "Dùng header `X-Webhook-Timestamp` (unix seconds) và `X-Webhook-Signature` để ký HMAC SHA-256."
+                    );
+                    showSecret("Secret HMAC (chỉ hiển thị 1 lần)", res.auth_secret, res.receive_url);
+                }
             } else {
                 const res = await updateChannel(editor.id, {
                     name: editor.name,
@@ -173,8 +204,18 @@ export default function ChannelsPage() {
                 setEditorOpen(false);
                 await reload();
 
-                if (res.auth_token) showSecret("Token mới (chỉ hiển thị 1 lần)", res.auth_token, res.receive_url);
-                if (res.auth_secret) showSecret("Secret mới (chỉ hiển thị 1 lần)", res.auth_secret, res.receive_url);
+                if (res.auth_token) {
+                    setReceiveHelp(
+                        "Dùng header `X-Webhook-Token: <token>` hoặc query `?token=<token>` khi gọi receiver."
+                    );
+                    showSecret("Token mới (chỉ hiển thị 1 lần)", res.auth_token, res.receive_url);
+                }
+                if (res.auth_secret) {
+                    setReceiveHelp(
+                        "Dùng header `X-Webhook-Timestamp` (unix seconds) và `X-Webhook-Signature` để ký HMAC SHA-256."
+                    );
+                    showSecret("Secret mới (chỉ hiển thị 1 lần)", res.auth_secret, res.receive_url);
+                }
             }
         } catch (e) {
             setError(e);
@@ -247,6 +288,28 @@ export default function ChannelsPage() {
             </div>
 
             {errView ? <Alert tone="danger" title={errView.title} details={errView.details} /> : null}
+            {toast ? <Alert tone="success" title={toast} /> : null}
+
+            <Card title="Hướng dẫn nhanh">
+                <div className="text-sm text-slate-700 space-y-2">
+                    <div>
+                        Link nhận postback (receiver) của mỗi kênh nằm ở cột <b>Receive URL</b>.
+                        Dạng chung:
+                        <code className="ml-2 rounded bg-slate-100 px-1 py-0.5 font-mono">
+                            /api/v1/webhooks/receive/&lt;public_id&gt;
+                        </code>
+                    </div>
+                    <div>
+                        Auth:
+                        <span className="ml-2 font-semibold">token</span> (đơn giản) hoặc{" "}
+                        <span className="font-semibold">hmac</span> (an toàn hơn). Token/secret chỉ trả 1 lần khi tạo hoặc rotate,
+                        nhớ lưu lại.
+                    </div>
+                    <div className="text-xs text-slate-500">
+                        Tip: bấm vào Receive URL hoặc nút Copy để lấy full URL.
+                    </div>
+                </div>
+            </Card>
 
             <Card
                 title="Bộ lọc"
@@ -259,11 +322,11 @@ export default function ChannelsPage() {
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                     <div>
                         <div className="text-xs font-medium text-slate-600">Tên (LIKE)</div>
-                        <Input value={filters.name} onChange={(e) => setFilters({ ...filters, name: e.target.value })} placeholder="payment" />
+                        <Input className="mt-1" value={filters.name} onChange={(e) => setFilters({ ...filters, name: e.target.value })} placeholder="payment" />
                     </div>
                     <div>
                         <div className="text-xs font-medium text-slate-600">Auth</div>
-                        <Select value={filters.auth_type} onChange={(e) => setFilters({ ...filters, auth_type: e.target.value as any })}>
+                        <Select className="mt-1" value={filters.auth_type} onChange={(e) => setFilters({ ...filters, auth_type: e.target.value as any })}>
                             <option value="all">Tất cả</option>
                             <option value="none">none</option>
                             <option value="token">token</option>
@@ -272,7 +335,7 @@ export default function ChannelsPage() {
                     </div>
                     <div>
                         <div className="text-xs font-medium text-slate-600">Trạng thái</div>
-                        <Select value={filters.is_active} onChange={(e) => setFilters({ ...filters, is_active: e.target.value as any })}>
+                        <Select className="mt-1" value={filters.is_active} onChange={(e) => setFilters({ ...filters, is_active: e.target.value as any })}>
                             <option value="all">Tất cả</option>
                             <option value="1">Đang bật</option>
                             <option value="0">Đang tắt</option>
@@ -288,6 +351,7 @@ export default function ChannelsPage() {
                             <tr className="border-b">
                                 <th className="py-2 pr-4">ID</th>
                                 <th className="py-2 pr-4">Tên</th>
+                                <th className="py-2 pr-4">Public ID</th>
                                 <th className="py-2 pr-4">Auth</th>
                                 <th className="py-2 pr-4">Methods</th>
                                 <th className="py-2 pr-4">Receive URL</th>
@@ -298,7 +362,7 @@ export default function ChannelsPage() {
                         <tbody>
                             {items.map((it) => {
                                 const methods = it.allowed_methods?.length ? it.allowed_methods.join(",") : "GET,POST";
-                                const url = `${window.location.origin}/api/v1/webhooks/receive/${it.public_id}`;
+                                const url = receiveUrlFor(it.public_id);
                                 return (
                                     <tr key={it.id} className="border-b last:border-b-0">
                                         <td className="py-2 pr-4 font-medium">{it.id}</td>
@@ -306,13 +370,39 @@ export default function ChannelsPage() {
                                             <div className="font-medium">{it.name}</div>
                                             <div className="text-xs text-slate-500">{it.description ?? "-"}</div>
                                         </td>
+                                        <td className="py-2 pr-4 font-mono text-xs text-slate-700">{shortText(it.public_id, 18)}</td>
                                         <td className="py-2 pr-4">
                                             <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
                                                 {it.auth_type}
                                             </Badge>
                                         </td>
                                         <td className="py-2 pr-4 text-slate-700">{methods}</td>
-                                        <td className="py-2 pr-4 font-mono text-xs text-slate-700">{shortText(url, 54)}</td>
+                                        <td className="py-2 pr-4">
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    type="button"
+                                                    className="font-mono text-xs text-slate-700 hover:underline max-w-[260px] truncate"
+                                                    title={url}
+                                                    onClick={() => openReceiveUrl(url)}
+                                                >
+                                                    {url}
+                                                </button>
+                                                <Button
+                                                    variant="ghost"
+                                                    className="h-8 px-2 py-1 text-xs"
+                                                    onClick={async () => {
+                                                        const ok = await copyToClipboard(url);
+                                                        toastOnce(
+                                                            ok
+                                                                ? "Đã copy Receive URL"
+                                                                : "Không copy được. Tip: mở Receive URL rồi bấm Cmd/Ctrl+C."
+                                                        );
+                                                    }}
+                                                >
+                                                    Copy
+                                                </Button>
+                                            </div>
+                                        </td>
                                         <td className="py-2 pr-4 text-slate-600">{it.last_received_at ?? "-"}</td>
                                         <td className="py-2 pr-2">
                                             <div className="flex flex-wrap items-center gap-2">
@@ -379,15 +469,33 @@ export default function ChannelsPage() {
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                         <div>
                             <div className="text-xs font-medium text-slate-600">Tên</div>
-                            <Input value={editor.name} onChange={(e) => setEditor({ ...editor, name: e.target.value })} placeholder="Payment callback" />
+                            <Input className="mt-1" value={editor.name} onChange={(e) => setEditor({ ...editor, name: e.target.value })} placeholder="Payment callback" />
                         </div>
                         <div>
                             <div className="text-xs font-medium text-slate-600">Auth</div>
-                            <Select value={editor.auth_type} onChange={(e) => setEditor({ ...editor, auth_type: e.target.value as any })}>
+                            <Select className="mt-1" value={editor.auth_type} onChange={(e) => setEditor({ ...editor, auth_type: e.target.value as any })}>
                                 <option value="none">none</option>
                                 <option value="token">token</option>
                                 <option value="hmac">hmac</option>
                             </Select>
+                            <div className="mt-2 text-xs text-slate-600">
+                                {editor.auth_type === "none" ? (
+                                    <span>Không yêu cầu auth. Bên thứ 3 gọi receiver trực tiếp.</span>
+                                ) : editor.auth_type === "token" ? (
+                                    <span>
+                                        Token sẽ được trả về 1 lần khi tạo/rotate. Bên thứ 3 gửi{" "}
+                                        <code className="rounded bg-slate-100 px-1 py-0.5">X-Webhook-Token</code> hoặc query{" "}
+                                        <code className="rounded bg-slate-100 px-1 py-0.5">?token=</code>.
+                                    </span>
+                                ) : (
+                                    <span>
+                                        Secret HMAC sẽ được trả về 1 lần khi tạo/rotate. Bên thứ 3 ký HMAC SHA-256 với canonical string
+                                        và gửi{" "}
+                                        <code className="rounded bg-slate-100 px-1 py-0.5">X-Webhook-Timestamp</code> +{" "}
+                                        <code className="rounded bg-slate-100 px-1 py-0.5">X-Webhook-Signature</code>.
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
 
@@ -395,6 +503,7 @@ export default function ChannelsPage() {
                         <div>
                             <div className="text-xs font-medium text-slate-600">Trạng thái</div>
                             <Select
+                                className="mt-1"
                                 value={editor.is_active ? "1" : "0"}
                                 onChange={(e) => setEditor({ ...editor, is_active: e.target.value === "1" })}
                             >
@@ -405,6 +514,7 @@ export default function ChannelsPage() {
                         <div>
                             <div className="text-xs font-medium text-slate-600">Methods</div>
                             <Select
+                                className="mt-1"
                                 value={editor.allowed_methods.join(",")}
                                 onChange={(e) => {
                                     const v = e.target.value;
@@ -418,7 +528,7 @@ export default function ChannelsPage() {
                         </div>
                         <div>
                             <div className="text-xs font-medium text-slate-600">Mô tả</div>
-                            <Input value={editor.description} onChange={(e) => setEditor({ ...editor, description: e.target.value })} placeholder="Nhận callback..." />
+                            <Input className="mt-1" value={editor.description} onChange={(e) => setEditor({ ...editor, description: e.target.value })} placeholder="Nhận callback..." />
                         </div>
                     </div>
 
@@ -472,9 +582,59 @@ export default function ChannelsPage() {
                     title="Lưu lại ngay"
                     details="Token/secret chỉ hiển thị 1 lần. Mất token/secret thì phải rotate để tạo cái mới."
                 />
+                {receiveHelp ? (
+                    <div className="mt-2 text-xs text-slate-700">
+                        <b>Cách dùng:</b> {receiveHelp}
+                    </div>
+                ) : null}
                 <pre className="mt-3 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs">{secretValue}</pre>
+                <div className="mt-2 flex items-center gap-2">
+                    <Button
+                        variant="primary"
+                        className="h-8 px-2 py-1 text-xs"
+                        onClick={async () => {
+                            const ok = await copyToClipboard(secretValue);
+                            toastOnce(ok ? "Đã copy" : "Không copy được. Tip: chọn text rồi Cmd/Ctrl+C.");
+                        }}
+                    >
+                        Copy
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        className="h-8 px-2 py-1 text-xs"
+                        onClick={() => openReceiveUrl(receiveUrl)}
+                    >
+                        Xem Receive URL
+                    </Button>
+                </div>
+            </Modal>
+
+            <Modal
+                open={urlOpen}
+                title="Receive URL"
+                onClose={() => setUrlOpen(false)}
+                footer={
+                    <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" onClick={() => setUrlOpen(false)}>
+                            Đóng
+                        </Button>
+                        <Button
+                            variant="primary"
+                            onClick={async () => {
+                                const ok = await copyToClipboard(urlValue);
+                                toastOnce(ok ? "Đã copy Receive URL" : "Không copy được. Tip: chọn text rồi Cmd/Ctrl+C.");
+                            }}
+                        >
+                            Copy URL
+                        </Button>
+                    </div>
+                }
+            >
+                <div className="text-sm text-slate-700">
+                    Đây là link bên thứ 3 sẽ gọi để gửi postback.
+                </div>
+                <pre className="mt-3 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs font-mono">{urlValue}</pre>
             </Modal>
         </div>
     );
 }
-

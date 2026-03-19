@@ -156,7 +156,7 @@ export default function ChannelLogsPage() {
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
                     <div>
                         <div className="text-xs font-medium text-slate-600">Method</div>
-                        <Select value={filters.method} onChange={(e) => setFilters({ ...filters, method: e.target.value as any })}>
+                        <Select className="mt-1" value={filters.method} onChange={(e) => setFilters({ ...filters, method: e.target.value as any })}>
                             <option value="all">Tất cả</option>
                             <option value="GET">GET</option>
                             <option value="POST">POST</option>
@@ -164,11 +164,12 @@ export default function ChannelLogsPage() {
                     </div>
                     <div>
                         <div className="text-xs font-medium text-slate-600">IP</div>
-                        <Input value={filters.ip} onChange={(e) => setFilters({ ...filters, ip: e.target.value })} placeholder="127.0.0.1" />
+                        <Input className="mt-1" value={filters.ip} onChange={(e) => setFilters({ ...filters, ip: e.target.value })} placeholder="127.0.0.1" />
                     </div>
                     <div>
                         <div className="text-xs font-medium text-slate-600">Received at (from,to)</div>
                         <Input
+                            className="mt-1"
                             value={filters.received_at}
                             onChange={(e) => setFilters({ ...filters, received_at: e.target.value })}
                             placeholder="2026-03-01,2026-03-31"
@@ -276,7 +277,7 @@ export default function ChannelLogsPage() {
                 />
                 <div className="mt-3">
                     <div className="text-xs font-medium text-slate-600">Xoá log cũ hơn N ngày</div>
-                    <Input value={pruneDays} onChange={(e) => setPruneDays(e.target.value)} placeholder="30" />
+                    <Input className="mt-1" value={pruneDays} onChange={(e) => setPruneDays(e.target.value)} placeholder="30" />
                 </div>
             </Modal>
         </div>
@@ -291,4 +292,3 @@ function Info(props: { label: string; value: string }) {
         </div>
     );
 }
-

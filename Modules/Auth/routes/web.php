@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Auth\Http\Controllers\AuthController;
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('auths', AuthController::class)->names('auth');
+// API-first: auth FE dung React SPA, goi API /api/v1/auth/*.
+Route::prefix('auth')->group(function () {
+    Route::view('/{any?}', 'auth::app')->where('any', '.*');
 });
