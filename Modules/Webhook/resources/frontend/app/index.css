@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "@shared/styles/ui.css";
 
 html, body {
     height: 100%;
@@ -14,4 +15,3 @@ body {
 pre {
     tab-size: 2;
 }
-

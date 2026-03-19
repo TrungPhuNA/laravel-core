@@ -8,6 +8,7 @@ import Badge from "@shared/ui/Badge";
 import Alert from "@shared/ui/Alert";
 import Modal from "@shared/ui/Modal";
 import Pagination from "@shared/ui/Pagination";
+import Dropdown from "@shared/ui/Dropdown";
 import type { ApiMetaPagination, ApiResponseError, ApiResponseFail } from "@shared/http/types";
 import { prettyJson, shortText } from "@shared/lib/format";
 import { copyToClipboard } from "@shared/lib/clipboard";
@@ -346,17 +347,17 @@ export default function ChannelsPage() {
 
             <Card title="Danh sách">
                 <div className="overflow-auto">
-                    <table className="min-w-full text-sm">
-                        <thead className="text-left text-slate-600">
-                            <tr className="border-b">
-                                <th className="py-2 pr-4">ID</th>
-                                <th className="py-2 pr-4">Tên</th>
-                                <th className="py-2 pr-4">Public ID</th>
-                                <th className="py-2 pr-4">Auth</th>
-                                <th className="py-2 pr-4">Methods</th>
-                                <th className="py-2 pr-4">Receive URL</th>
-                                <th className="py-2 pr-4">Last</th>
-                                <th className="py-2 pr-2">Hành động</th>
+                    <table className="ui-table min-w-[1100px] w-full table-fixed">
+                        <thead className="ui-thead">
+                            <tr>
+                                <th className="ui-th w-[64px]">ID</th>
+                                <th className="ui-th w-[260px]">Kênh</th>
+                                <th className="ui-th w-[180px]">Public ID</th>
+                                <th className="ui-th w-[110px]">Auth</th>
+                                <th className="ui-th w-[110px]">Methods</th>
+                                <th className="ui-th w-[360px]">Receive URL</th>
+                                <th className="ui-th w-[220px]">Last</th>
+                                <th className="ui-th w-[86px] text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -364,24 +365,35 @@ export default function ChannelsPage() {
                                 const methods = it.allowed_methods?.length ? it.allowed_methods.join(",") : "GET,POST";
                                 const url = receiveUrlFor(it.public_id);
                                 return (
-                                    <tr key={it.id} className="border-b last:border-b-0">
-                                        <td className="py-2 pr-4 font-medium">{it.id}</td>
-                                        <td className="py-2 pr-4">
-                                            <div className="font-medium">{it.name}</div>
-                                            <div className="text-xs text-slate-500">{it.description ?? "-"}</div>
+                                    <tr key={it.id} className="ui-tr align-top">
+                                        <td className="ui-td font-medium text-slate-900 whitespace-nowrap">{it.id}</td>
+                                        <td className="ui-td">
+                                            <div className="font-semibold text-slate-900 leading-5 truncate" title={it.name}>
+                                                {it.name}
+                                            </div>
+                                            <div
+                                                className="text-xs text-slate-500 leading-4 truncate"
+                                                title={it.description ?? ""}
+                                            >
+                                                {it.description ?? "-"}
+                                            </div>
                                         </td>
-                                        <td className="py-2 pr-4 font-mono text-xs text-slate-700">{shortText(it.public_id, 18)}</td>
-                                        <td className="py-2 pr-4">
+                                        <td className="ui-td font-mono text-xs text-slate-700 whitespace-nowrap">
+                                            <span className="truncate block" title={it.public_id}>
+                                                {shortText(it.public_id, 18)}
+                                            </span>
+                                        </td>
+                                        <td className="ui-td">
                                             <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
                                                 {it.auth_type}
                                             </Badge>
                                         </td>
-                                        <td className="py-2 pr-4 text-slate-700">{methods}</td>
-                                        <td className="py-2 pr-4">
+                                        <td className="ui-td text-slate-700 whitespace-nowrap">{methods}</td>
+                                        <td className="ui-td">
                                             <div className="flex items-center gap-2">
                                                 <button
                                                     type="button"
-                                                    className="font-mono text-xs text-slate-700 hover:underline max-w-[260px] truncate"
+                                                    className="font-mono text-xs text-slate-700 hover:underline truncate text-left cursor-pointer"
                                                     title={url}
                                                     onClick={() => openReceiveUrl(url)}
                                                 >
@@ -403,36 +415,83 @@ export default function ChannelsPage() {
                                                 </Button>
                                             </div>
                                         </td>
-                                        <td className="py-2 pr-4 text-slate-600">{it.last_received_at ?? "-"}</td>
-                                        <td className="py-2 pr-2">
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <Button variant="ghost" onClick={() => openEdit(it)}>
-                                                    Sửa
-                                                </Button>
-                                                <Button variant="ghost" onClick={() => doDelete(it.id)} disabled={loading}>
-                                                    Xoá
-                                                </Button>
-                                                <Link className="text-sm font-semibold text-slate-900 hover:underline" to={`/channels/${it.id}/logs`}>
-                                                    Logs
-                                                </Link>
-                                                {it.auth_type === "token" ? (
-                                                    <Button variant="primary" onClick={() => doRotateToken(it)} disabled={loading}>
-                                                        Rotate token
-                                                    </Button>
-                                                ) : null}
-                                                {it.auth_type === "hmac" ? (
-                                                    <Button variant="primary" onClick={() => doRotateSecret(it)} disabled={loading}>
-                                                        Rotate secret
-                                                    </Button>
-                                                ) : null}
-                                            </div>
+                                        <td className="ui-td text-slate-600 whitespace-nowrap">{it.last_received_at ?? "-"}</td>
+                                        <td className="ui-td text-right whitespace-nowrap">
+                                            <Dropdown
+                                                align="right"
+                                                trigger={
+                                                    <span className="ui-btn ui-btn-ghost h-9 w-9 px-0 py-0 grid place-items-center">
+                                                        ⋯
+                                                    </span>
+                                                }
+                                            >
+                                                {({ close }) => (
+                                                    <>
+                                                        <button
+                                                            type="button"
+                                                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
+                                                            onClick={() => {
+                                                                close();
+                                                                openEdit(it);
+                                                            }}
+                                                        >
+                                                            Sửa
+                                                        </button>
+                                                        <Link
+                                                            className="block px-4 py-2 text-sm hover:bg-slate-50"
+                                                            to={`/channels/${it.id}/logs`}
+                                                            onClick={() => close()}
+                                                        >
+                                                            Logs
+                                                        </Link>
+                                                        {it.auth_type === "token" ? (
+                                                            <button
+                                                                type="button"
+                                                                className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
+                                                                onClick={() => {
+                                                                    close();
+                                                                    doRotateToken(it);
+                                                                }}
+                                                                disabled={loading}
+                                                            >
+                                                                Rotate token
+                                                            </button>
+                                                        ) : null}
+                                                        {it.auth_type === "hmac" ? (
+                                                            <button
+                                                                type="button"
+                                                                className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
+                                                                onClick={() => {
+                                                                    close();
+                                                                    doRotateSecret(it);
+                                                                }}
+                                                                disabled={loading}
+                                                            >
+                                                                Rotate secret
+                                                            </button>
+                                                        ) : null}
+                                                        <div className="h-px bg-slate-100" />
+                                                        <button
+                                                            type="button"
+                                                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-rose-700"
+                                                            onClick={() => {
+                                                                close();
+                                                                doDelete(it.id);
+                                                            }}
+                                                            disabled={loading}
+                                                        >
+                                                            Xoá
+                                                        </button>
+                                                    </>
+                                                )}
+                                            </Dropdown>
                                         </td>
                                     </tr>
                                 );
                             })}
                             {items.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="py-6 text-center text-slate-500">
+                                    <td colSpan={8} className="py-10 text-center text-slate-500 border-b-0">
                                         Không có dữ liệu.
                                     </td>
                                 </tr>

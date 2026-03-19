@@ -119,23 +119,26 @@ export default function AppLayout() {
     return (
         <div className="min-h-dvh text-slate-900">
             <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur">
-                <div className="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center gap-3">
-                    <div className="font-semibold tracking-tight">
-                        Webhook
-                        <span className="ml-2 text-xs font-normal text-slate-500">Quản lý kênh + logs</span>
+                <div className="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
+                    <div className="flex items-center gap-4 min-w-0">
+                        <div className="font-semibold tracking-tight shrink-0">
+                            Webhook
+                            <span className="ml-2 text-xs font-normal text-slate-500">Quản lý kênh + logs</span>
+                        </div>
+
+                        <nav className="flex items-center gap-4 text-sm min-w-0">
+                            <Link className={linkClass(loc.pathname, "/channels")} to="/channels">
+                                Kênh webhook
+                            </Link>
+                        </nav>
                     </div>
 
-                    <nav className="flex items-center gap-4 text-sm">
-                        <Link className={linkClass(loc.pathname, "/channels")} to="/channels">
-                            Kênh webhook
-                        </Link>
-                    </nav>
-
-                    <div className="ml-auto flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-end md:flex-nowrap">
                         <Select
                             value={auth.locale}
                             onChange={(e) => auth.setLocale(e.target.value as "vi" | "en")}
                             aria-label="Ngôn ngữ"
+                            className="w-[88px] shrink-0"
                         >
                             <option value="vi">VI</option>
                             <option value="en">EN</option>
@@ -148,6 +151,7 @@ export default function AppLayout() {
                                     className={[
                                         "h-10 inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm shadow-sm",
                                         "hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300",
+                                        "whitespace-nowrap",
                                     ].join(" ")}
                                     onClick={() => setMenuOpen((v) => !v)}
                                 >
@@ -158,7 +162,9 @@ export default function AppLayout() {
                                             {initialsFrom(me)}
                                         </span>
                                     )}
-                                    <span className="max-w-[180px] truncate font-semibold">{me.name ?? me.email ?? "Tài khoản"}</span>
+                                    <span className="max-w-[180px] truncate font-semibold whitespace-nowrap">
+                                        {me.name ?? me.email ?? "Tài khoản"}
+                                    </span>
                                     <span className="text-slate-500">▾</span>
                                 </button>
 
@@ -197,7 +203,7 @@ export default function AppLayout() {
                         ) : (
                             <>
                                 <Input
-                                    className="w-full md:w-[420px]"
+                                    className="w-full md:w-[420px] min-w-0"
                                     placeholder="Dán token Sanctum của bạn (hoặc đăng nhập ở /auth/login)"
                                     value={auth.token}
                                     onChange={(e) => auth.setToken(e.target.value)}
@@ -219,14 +225,14 @@ export default function AppLayout() {
 
                 {!auth.hasToken ? (
                     <div className="border-t bg-amber-50 text-amber-900">
-                        <div className="mx-auto max-w-6xl px-4 py-2 text-xs">
+                        <div className="mx-auto max-w-7xl px-4 py-2 text-xs">
                             Chưa có token. Vui lòng tạo token qua API Auth, sau đó dán vào ô ở trên.
                         </div>
                     </div>
                 ) : null}
             </header>
 
-            <main className="mx-auto max-w-6xl px-4 py-6">
+            <main className="mx-auto max-w-7xl px-4 py-6">
                 <Outlet />
             </main>
 
