@@ -15,6 +15,7 @@
 - `docs/api/QUEUE.md`
 - `docs/api/SETTINGS.md`
 - `docs/api/USERS.md`
+- `docs/api/WEBHOOK.md`
 
 ## Architecture
 

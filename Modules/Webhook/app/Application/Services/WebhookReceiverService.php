@@ -1,0 +1,214 @@
+<?php
+
+namespace Modules\Webhook\Application\Services;
+
+use App\Core\Exceptions\ApiException;
+use App\Core\Exceptions\ErrorCode;
+use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Modules\Webhook\Application\Contracts\WebhookReceiverServiceInterface;
+use Modules\Webhook\Domain\Models\Webhook;
+use Modules\Webhook\Domain\Models\WebhookRequest;
+use Modules\Webhook\Infrastructure\Contracts\WebhookRepositoryInterface;
+
+final class WebhookReceiverService implements WebhookReceiverServiceInterface
+{
+    public function __construct(
+        private readonly WebhookRepositoryInterface $webhooks,
+    ) {}
+
+    public function receive(string $publicId, Request $request): array
+    {
+        $webhook = $this->webhooks->findByPublicIdOrFail($publicId);
+
+        if (!$webhook->is_active) {
+            throw new ApiException(
+                errorCode: ErrorCode::FORBIDDEN->value,
+                message: 'Webhook đang bị tắt',
+                status: 403,
+            );
+        }
+
+        $method = strtoupper((string) $request->method());
+        $allowed = $this->normalizeAllowedMethods($webhook);
+
+        if (!in_array($method, $allowed, true)) {
+            throw new ApiException(
+                errorCode: ErrorCode::METHOD_NOT_ALLOWED->value,
+                message: 'Webhook không hỗ trợ method này',
+                status: 405,
+                details: ['method' => $method, 'allowed' => $allowed],
+            );
+        }
+
+        $this->checkAuth($webhook, $request);
+
+        // Payload validate: hop nhat query + body (Laravel: $request->all()).
+        // Neu auth dung query param token=... -> remove de khong can validate.
+        $payload = Arr::except($request->all(), ['token']);
+
+        $validated = $payload;
+        $rules = $webhook->validation_rules;
+        if (is_array($rules) && $rules !== []) {
+            $validated = Validator::make($payload, $rules)->validate();
+        }
+
+        $this->logRequest($webhook, $request);
+        $webhook->forceFill(['last_received_at' => now()])->save();
+
+        return ['webhook' => $webhook, 'validated' => $validated];
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function normalizeAllowedMethods(Webhook $webhook): array
+    {
+        $methods = $webhook->allowed_methods;
+        if (!is_array($methods) || $methods === []) {
+            return ['GET', 'POST'];
+        }
+
+        $out = [];
+        foreach ($methods as $m) {
+            $m = strtoupper((string) $m);
+            if (in_array($m, ['GET', 'POST'], true)) {
+                $out[] = $m;
+            }
+        }
+
+        return $out !== [] ? array_values(array_unique($out)) : ['GET', 'POST'];
+    }
+
+    private function checkAuth(Webhook $webhook, Request $request): void
+    {
+        if ($webhook->auth_type === 'none') {
+            return;
+        }
+
+        if ($webhook->auth_type === 'token') {
+            $token = (string) ($request->header('X-Webhook-Token')
+                ?? $request->query('token')
+                ?? '');
+            $token = trim($token);
+
+            if ($token === '' || !$webhook->auth_token_hash || !Hash::check($token, $webhook->auth_token_hash)) {
+                throw new ApiException(
+                    errorCode: ErrorCode::UNAUTHORIZED->value,
+                    message: 'Webhook token không hợp lệ',
+                    status: 401,
+                );
+            }
+
+            return;
+        }
+
+        if ($webhook->auth_type === 'hmac') {
+            if (!$webhook->auth_secret_encrypted) {
+                throw new ApiException(
+                    errorCode: ErrorCode::UNAUTHORIZED->value,
+                    message: 'Webhook chưa có secret để verify signature',
+                    status: 401,
+                );
+            }
+
+            $tsHeader = config('webhook.hmac.headers.timestamp', 'X-Webhook-Timestamp');
+            $sigHeader = config('webhook.hmac.headers.signature', 'X-Webhook-Signature');
+            $maxSkew = (int) config('webhook.hmac.max_skew_seconds', 300);
+
+            $timestamp = (string) ($request->header($tsHeader) ?? '');
+            $signature = (string) ($request->header($sigHeader) ?? '');
+
+            $timestamp = trim($timestamp);
+            $signature = trim($signature);
+
+            if ($timestamp === '' || $signature === '') {
+                throw new ApiException(
+                    errorCode: ErrorCode::UNAUTHORIZED->value,
+                    message: 'Thiếu header chữ ký webhook',
+                    status: 401,
+                );
+            }
+
+            if (!ctype_digit($timestamp)) {
+                throw new ApiException(
+                    errorCode: ErrorCode::UNAUTHORIZED->value,
+                    message: 'Timestamp không hợp lệ',
+                    status: 401,
+                );
+            }
+
+            $ts = (int) $timestamp;
+            $now = Carbon::now()->timestamp;
+            if (abs($now - $ts) > $maxSkew) {
+                throw new ApiException(
+                    errorCode: ErrorCode::UNAUTHORIZED->value,
+                    message: 'Timestamp vượt quá giới hạn cho phép',
+                    status: 401,
+                );
+            }
+
+            $secret = Crypt::decryptString($webhook->auth_secret_encrypted);
+
+            $expected = $this->computeSignature($request, $ts, $secret);
+            $given = $this->normalizeSignature($signature);
+
+            if ($given === '' || !hash_equals($expected, $given)) {
+                throw new ApiException(
+                    errorCode: ErrorCode::UNAUTHORIZED->value,
+                    message: 'Chữ ký webhook không hợp lệ',
+                    status: 401,
+                );
+            }
+
+            return;
+        }
+    }
+
+    private function computeSignature(Request $request, int $timestamp, string $secret): string
+    {
+        $method = strtoupper((string) $request->method());
+        $path = (string) $request->getPathInfo(); // includes publicId
+        $query = (string) ($request->getQueryString() ?? '');
+        $body = (string) $request->getContent();
+
+        // Canonical string: timestamp\nMETHOD\nPATH\nQUERY\nBODY
+        $canonical = $timestamp."\n".$method."\n".$path."\n".$query."\n".$body;
+
+        return hash_hmac('sha256', $canonical, $secret);
+    }
+
+    private function normalizeSignature(string $value): string
+    {
+        // Accept formats:
+        // - "sha256=<hex>"
+        // - "<hex>"
+        $value = trim($value);
+        if (str_starts_with($value, 'sha256=')) {
+            $value = substr($value, strlen('sha256='));
+        }
+        return trim($value);
+    }
+
+    private function logRequest(Webhook $webhook, Request $request): void
+    {
+        $headers = $request->headers->all();
+
+        // Mask thong tin nhay cam.
+        unset($headers['authorization'], $headers['x-webhook-token'], $headers['cookie']);
+
+        WebhookRequest::query()->create([
+            'webhook_id' => $webhook->id,
+            'method' => strtoupper((string) $request->method()),
+            'ip' => (string) ($request->ip() ?? ''),
+            'headers' => $headers,
+            'query' => $request->query(),
+            'body' => $request->getContent(),
+            'received_at' => now(),
+        ]);
+    }
+}

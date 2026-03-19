@@ -1,5 +1,6 @@
 {
     "Auth": true,
     "Setting": true,
-    "User": true
+    "User": true,
+    "Webhook": true
 }
