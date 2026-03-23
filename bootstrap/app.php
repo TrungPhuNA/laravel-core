@@ -16,6 +16,7 @@ use App\Core\Http\Middleware\SetLocale;
 use App\Core\Http\Middleware\RequireUserType;
 use App\Core\Http\Middleware\ForceJsonAccept;
 use App\Core\Http\Middleware\RequestId;
+use App\Core\Http\Middleware\ResponseTime;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -30,6 +31,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Buộc API luôn "nhìn" như JSON để tránh redirect về trang login và trả về HTML.
         $middleware->prependToGroup('api', ForceJsonAccept::class);
+
+        // Thoi gian xu ly response (ms) cho moi request /api/*.
+        // (prepend sau cung de nam ngoai cung trong middleware stack)
+        $middleware->prependToGroup('api', ResponseTime::class);
 
         // Cho phép đổi ngôn ngữ thông báo lỗi (vi/en) theo từng request.
         $middleware->appendToGroup('api', SetLocale::class);
