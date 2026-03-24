@@ -30,6 +30,8 @@ final class UserEndpointsTest extends TestCase
     {
         $admin = User::factory()->create([
             'user_type' => UserType::ADMIN,
+            // Super admin emails bo qua check permission (config/core.php).
+            'email' => 'codethue94@gmail.com',
         ]);
 
         Sanctum::actingAs($admin);
@@ -68,4 +70,3 @@ final class UserEndpointsTest extends TestCase
         $restore->assertJsonPath('data.user.deleted_at', null);
     }
 }
-

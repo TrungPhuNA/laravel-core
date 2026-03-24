@@ -6,6 +6,9 @@ use Modules\Setting\Http\Controllers\Api\V1\Queue\QueueBatchController;
 use Modules\Setting\Http\Controllers\Api\V1\Queue\QueueFailedJobController;
 use Modules\Setting\Http\Controllers\Api\V1\Queue\QueueJobController;
 use Modules\Setting\Http\Controllers\Api\V1\Queue\QueueStatsController;
+use Modules\Setting\Http\Controllers\Api\V1\Rbac\PermissionController;
+use Modules\Setting\Http\Controllers\Api\V1\Rbac\RoleController;
+use Modules\Setting\Http\Controllers\Api\V1\Rbac\UserRbacController;
 
 Route::prefix('v1/settings')->group(function () {
     Route::get('public', [SettingController::class, 'public']);
@@ -13,6 +16,22 @@ Route::prefix('v1/settings')->group(function () {
     Route::middleware(['auth:sanctum', 'user_type:ADMIN,SYSTEM'])->group(function () {
         Route::get('/', [SettingController::class, 'index']);
         Route::put('/', [SettingController::class, 'upsert']);
+
+        // RBAC (role/permission + gan cho user)
+        Route::prefix('rbac')->group(function () {
+            Route::get('roles', [RoleController::class, 'index'])->middleware('perm:setting.roles.read');
+            Route::post('roles', [RoleController::class, 'store'])->middleware('perm:setting.roles.write');
+            Route::get('roles/{id}', [RoleController::class, 'show'])->whereNumber('id')->middleware('perm:setting.roles.read');
+            Route::put('roles/{id}', [RoleController::class, 'update'])->whereNumber('id')->middleware('perm:setting.roles.write');
+            Route::delete('roles/{id}', [RoleController::class, 'destroy'])->whereNumber('id')->middleware('perm:setting.roles.delete');
+
+            Route::get('permissions', [PermissionController::class, 'index'])->middleware('perm:setting.permissions.read');
+            Route::post('permissions', [PermissionController::class, 'store'])->middleware('perm:setting.permissions.write');
+
+            Route::get('users/{id}', [UserRbacController::class, 'show'])->whereNumber('id')->middleware('perm:setting.users.read');
+            Route::put('users/{id}/roles', [UserRbacController::class, 'syncRoles'])->whereNumber('id')->middleware('perm:setting.users.write');
+            Route::put('users/{id}/permissions', [UserRbacController::class, 'syncPermissions'])->whereNumber('id')->middleware('perm:setting.users.write');
+        });
 
         // Quan ly queue (jobs/failed_jobs/job_batches) de debug/van hanh.
         Route::prefix('queue')->group(function () {

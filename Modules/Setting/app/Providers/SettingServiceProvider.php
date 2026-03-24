@@ -6,8 +6,10 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Modules\Setting\Application\Contracts\SettingServiceInterface;
 use Modules\Setting\Application\Contracts\QueueServiceInterface;
+use Modules\Setting\Application\Contracts\RbacServiceInterface;
 use Modules\Setting\Application\Services\SettingService;
 use Modules\Setting\Application\Services\QueueService;
+use Modules\Setting\Application\Services\RbacService;
 use Modules\Setting\Infrastructure\Contracts\SettingRepositoryInterface;
 use Modules\Setting\Infrastructure\Contracts\QueueRepositoryInterface;
 use Modules\Setting\Infrastructure\Repositories\CachedSettingRepository;
@@ -48,6 +50,7 @@ class SettingServiceProvider extends ServiceProvider
 
         $this->app->bind(SettingServiceInterface::class, SettingService::class);
         $this->app->bind(QueueServiceInterface::class, QueueService::class);
+        $this->app->bind(RbacServiceInterface::class, RbacService::class);
 
         $this->app->bind(SettingRepositoryInterface::class, function ($app) {
             return new CachedSettingRepository(

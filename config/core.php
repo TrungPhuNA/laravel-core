@@ -54,4 +54,17 @@ return [
             'per_page_param' => env('CORE_API_PER_PAGE_PARAM', 'per_page'),
         ],
     ],
+
+    'rbac' => [
+        // Guard su dung cho RBAC (spatie/laravel-permission).
+        // Default la sanctum vi project nay API-first (token-based).
+        'guard' => env('CORE_RBAC_GUARD', 'sanctum'),
+
+        // Super admin: bo qua check permission cho cac email nay.
+        // Format env: "a@x.com,b@y.com"
+        'super_admin_emails' => array_values(array_filter(array_map(
+            static fn ($v) => strtolower(trim((string) $v)),
+            explode(',', (string) env('CORE_RBAC_SUPER_ADMIN_EMAILS', 'admin@gmail.com,codethue94@gmail.com')),
+        ))),
+    ],
 ];

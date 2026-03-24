@@ -6,6 +6,11 @@ Muc tieu: ghi ro cach test thu cong (curl/Postman) va expected outputs.
 
 - Doc: `docs/api/AUTH.md`
 
+## RBAC (roles/permissions)
+
+- Doc: `docs/api/RBAC.md`
+- Admin UI (SPA): `/admin/settings` (dán Sanctum token vào header trên cùng)
+
 ## Commands
 
 ```bash
@@ -20,4 +25,3 @@ php artisan serve
 - [ ] Me ok (bearer token)
 - [ ] Update profile ok
 - [ ] Logout ok
-

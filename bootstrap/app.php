@@ -14,6 +14,7 @@ use App\Core\Exceptions\ErrorCode;
 use App\Core\Http\Responses\ApiResponse;
 use App\Core\Http\Middleware\SetLocale;
 use App\Core\Http\Middleware\RequireUserType;
+use App\Core\Http\Middleware\RequirePermission;
 use App\Core\Http\Middleware\ForceJsonAccept;
 use App\Core\Http\Middleware\RequestId;
 use App\Core\Http\Middleware\ResponseTime;
@@ -41,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'user_type' => RequireUserType::class,
+            'perm' => RequirePermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -13,6 +13,7 @@
 
 - `docs/api/AUTH.md`
 - `docs/api/QUEUE.md`
+- `docs/api/RBAC.md`
 - `docs/api/SETTINGS.md`
 - `docs/api/USERS.md`
 - `docs/api/WEBHOOK.md`
@@ -38,4 +39,3 @@
 ## Tooling
 
 - `scripts/index-docs.sh`
-
