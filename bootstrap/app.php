@@ -18,6 +18,7 @@ use App\Core\Http\Middleware\RequirePermission;
 use App\Core\Http\Middleware\ForceJsonAccept;
 use App\Core\Http\Middleware\RequestId;
 use App\Core\Http\Middleware\ResponseTime;
+use Modules\Ecommerce\Http\Middleware\ResolveShopContext;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -43,6 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'user_type' => RequireUserType::class,
             'perm' => RequirePermission::class,
+            'ecm_shop' => ResolveShopContext::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

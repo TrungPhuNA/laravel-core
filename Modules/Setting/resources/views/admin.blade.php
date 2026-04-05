@@ -13,6 +13,14 @@
             apiBase: '/api/v1',
             moduleBase: '/admin/settings',
         };
+
+        // Enforce login for /admin/*
+        try {
+            const token = (localStorage.getItem('core_api_token') ?? '').trim();
+            if (!token) window.location.href = '/auth/login';
+        } catch {
+            // ignore
+        }
     </script>
 
     @viteReactRefresh

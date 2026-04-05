@@ -5,6 +5,7 @@ type CreateApiClientOptions = {
   baseURL: string;
   getToken: () => string;
   getLocale: () => string;
+  getShopId?: () => number | null;
 };
 
 export function createApiClient(opts: CreateApiClientOptions) {
@@ -22,6 +23,7 @@ export function createApiClient(opts: CreateApiClientOptions) {
   client.interceptors.request.use((config) => {
     const token = opts.getToken().trim();
     const locale = opts.getLocale().trim();
+    const shopId = opts.getShopId ? opts.getShopId() : null;
 
     if (token !== "") {
       config.headers = config.headers ?? {};
@@ -31,6 +33,11 @@ export function createApiClient(opts: CreateApiClientOptions) {
     if (locale !== "") {
       config.headers = config.headers ?? {};
       config.headers["X-Locale"] = locale;
+    }
+
+    if (shopId && Number.isFinite(shopId) && shopId > 0) {
+      config.headers = config.headers ?? {};
+      config.headers["X-Shop-Id"] = String(shopId);
     }
 
     return config;
@@ -49,4 +56,3 @@ export function createApiClient(opts: CreateApiClientOptions) {
 
   return client;
 }
-

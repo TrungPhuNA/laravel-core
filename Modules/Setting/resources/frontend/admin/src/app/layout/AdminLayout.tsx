@@ -37,6 +37,12 @@ export default function AdminLayout() {
   const nav = useNavigate();
   const auth = useAuth();
 
+  React.useEffect(() => {
+    if (!auth.hasToken) {
+      window.location.href = "/auth/login";
+    }
+  }, [auth.hasToken]);
+
   const [me, setMe] = React.useState<MeUser | null>(null);
   const [meLoading, setMeLoading] = React.useState(false);
 
@@ -65,7 +71,11 @@ export default function AdminLayout() {
         const user = (res.data?.data?.user ?? null) as MeUser | null;
         if (!cancelled) setMe(user);
       } catch {
-        if (!cancelled) setMe(null);
+        if (!cancelled) {
+          setMe(null);
+          auth.clear();
+          window.location.href = "/auth/login";
+        }
       } finally {
         if (!cancelled) setMeLoading(false);
       }

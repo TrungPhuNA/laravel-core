@@ -33,8 +33,17 @@ final class RbacSeeder extends Seeder
             Permission::findOrCreate($name, $guard);
         }
 
+        // Tránh case Spatie cache/registrar chưa refresh kịp sau findOrCreate()
+        // dẫn tới syncPermissions() không tìm thấy permission theo name+guard.
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+
         $adminRole = Role::findOrCreate('Admin', $guard);
-        $adminRole->syncPermissions($permissions);
+        $permissionModels = Permission::query()
+            ->where('guard_name', $guard)
+            ->whereIn('name', $permissions)
+            ->get();
+
+        $adminRole->syncPermissions($permissionModels);
 
         $superAdminEmails = (array) config('core.rbac.super_admin_emails', []);
         if ($superAdminEmails !== []) {
@@ -50,4 +59,3 @@ final class RbacSeeder extends Seeder
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }
-

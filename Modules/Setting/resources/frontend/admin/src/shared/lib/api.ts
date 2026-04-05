@@ -1,5 +1,5 @@
 import { createApiClient } from "@shared/http/apiClient";
-import { CORE_LOCALE_KEY, CORE_TOKEN_KEY } from "@shared/state/authStorage";
+import { CORE_LOCALE_KEY, CORE_TOKEN_KEY, getCoreShopId } from "@shared/state/authStorage";
 
 // Legacy keys (giu tam thoi). Token dung chung se luu vao core keys.
 const LEGACY_TOKEN_KEY = "setting_admin_token";
@@ -48,4 +48,5 @@ export const api = createApiClient({
   baseURL: getApiBase(),
   getToken: getTokenFromStorage,
   getLocale: getLocaleFromStorage,
+  getShopId: getCoreShopId,
 });
