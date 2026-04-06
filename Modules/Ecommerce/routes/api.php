@@ -15,6 +15,7 @@ Route::prefix('v1/ecm')->middleware(['auth:sanctum', 'user_type:ADMIN,SYSTEM'])-
     Route::prefix('admin')->middleware(['ecm_shop'])->group(function () {
         // Dashboard
         Route::get('dashboard/overview', [DashboardController::class, 'overview'])->middleware('perm:ecommerce.dashboard.read');
+        Route::get('dashboard/revenue', [DashboardController::class, 'revenue'])->middleware('perm:ecommerce.dashboard.read');
 
         // Categories
         Route::get('categories', [CategoryController::class, 'index'])->middleware('perm:ecommerce.categories.read');

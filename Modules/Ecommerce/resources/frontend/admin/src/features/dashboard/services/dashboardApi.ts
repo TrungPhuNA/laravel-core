@@ -5,3 +5,7 @@ export async function fetchDashboardOverview() {
   return res.data?.data ?? null;
 }
 
+export async function fetchDashboardRevenue(range: "7d" | "30d" | "90d" | "12m") {
+  const res = await api.get("/ecm/admin/dashboard/revenue", { params: { range } });
+  return res.data?.data ?? null;
+}

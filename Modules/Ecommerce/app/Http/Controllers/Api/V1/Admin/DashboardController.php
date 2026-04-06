@@ -4,6 +4,7 @@ namespace Modules\Ecommerce\Http\Controllers\Api\V1\Admin;
 
 use App\Core\Http\Responses\ApiResponse;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Ecommerce\Domain\Models\Customer;
 use Modules\Ecommerce\Domain\Models\Order;
 use Modules\Ecommerce\Domain\Models\Product;
@@ -69,5 +70,162 @@ final class DashboardController extends Controller
             message: 'Lấy dashboard thành công',
         );
     }
-}
 
+    /**
+     * Revenue series để vẽ biểu đồ.
+     *
+     * Query:
+     * - range: 7d|30d|90d|12m (default: 30d)
+     */
+    public function revenue()
+    {
+        $shopId = ShopResolver::id();
+
+        $range = strtoupper(trim((string) request()->query('range', '30d')));
+        $range = $range !== '' ? $range : '30D';
+
+        $unit = 'day';
+        $points = 30;
+        if ($range === '7D') {
+            $unit = 'day';
+            $points = 7;
+        } elseif ($range === '90D') {
+            $unit = 'day';
+            $points = 90;
+        } elseif ($range === '12M') {
+            $unit = 'month';
+            $points = 12;
+        } else {
+            $unit = 'day';
+            $points = 30;
+        }
+
+        $now = now();
+        $from = $unit === 'month'
+            ? $now->copy()->startOfMonth()->subMonths($points - 1)
+            : $now->copy()->startOfDay()->subDays($points - 1);
+        $to = $unit === 'month'
+            ? $now->copy()->endOfMonth()
+            : $now->copy()->endOfDay();
+
+        // Previous range for growth comparison
+        $prevFrom = $unit === 'month'
+            ? $from->copy()->subMonths($points)
+            : $from->copy()->subDays($points);
+        $prevTo = $unit === 'month'
+            ? $to->copy()->subMonths($points)
+            : $to->copy()->subDays($points);
+
+        $driver = DB::connection()->getDriverName();
+
+        if ($unit === 'month') {
+            // Group by YYYY-MM.
+            // MySQL: DATE_FORMAT(paid_at, '%Y-%m')
+            // SQLite: strftime('%Y-%m', paid_at)
+            $bucketExpr = match ($driver) {
+                'sqlite' => "strftime('%Y-%m', paid_at)",
+                default => "DATE_FORMAT(paid_at, '%Y-%m')",
+            };
+
+            $rows = Order::query()
+                ->selectRaw($bucketExpr.' as bucket')
+                ->selectRaw('COALESCE(SUM(total),0) as revenue')
+                ->selectRaw('COUNT(*) as orders')
+                ->where('shop_id', $shopId)
+                ->whereNotNull('paid_at')
+                ->whereBetween('paid_at', [$from, $to])
+                ->groupBy('bucket')
+                ->orderBy('bucket')
+                ->get();
+
+            $map = [];
+            foreach ($rows as $r) {
+                $k = (string) $r->bucket;
+                $map[$k] = [
+                    'x' => $k,
+                    'revenue' => (float) $r->revenue,
+                    'orders' => (int) $r->orders,
+                ];
+            }
+
+            $series = [];
+            $cursor = $from->copy();
+            for ($i = 0; $i < $points; $i++) {
+                $k = $cursor->format('Y-m');
+                $series[] = $map[$k] ?? ['x' => $k, 'revenue' => 0.0, 'orders' => 0];
+                $cursor->addMonth();
+            }
+        } else {
+            // Group by YYYY-MM-DD.
+            // MySQL/SQLite: DATE(paid_at)
+            $bucketExpr = "DATE(paid_at)";
+
+            $rows = Order::query()
+                ->selectRaw($bucketExpr.' as bucket')
+                ->selectRaw('COALESCE(SUM(total),0) as revenue')
+                ->selectRaw('COUNT(*) as orders')
+                ->where('shop_id', $shopId)
+                ->whereNotNull('paid_at')
+                ->whereBetween('paid_at', [$from, $to])
+                ->groupBy('bucket')
+                ->orderBy('bucket')
+                ->get();
+
+            $map = [];
+            foreach ($rows as $r) {
+                $k = (string) $r->bucket;
+                $map[$k] = [
+                    'x' => $k,
+                    'revenue' => (float) $r->revenue,
+                    'orders' => (int) $r->orders,
+                ];
+            }
+
+            $series = [];
+            $cursor = $from->copy();
+            for ($i = 0; $i < $points; $i++) {
+                $k = $cursor->format('Y-m-d');
+                $series[] = $map[$k] ?? ['x' => $k, 'revenue' => 0.0, 'orders' => 0];
+                $cursor->addDay();
+            }
+        }
+
+        $totalRevenue = array_sum(array_map(static fn ($p) => (float) ($p['revenue'] ?? 0), $series));
+        $totalOrders = array_sum(array_map(static fn ($p) => (int) ($p['orders'] ?? 0), $series));
+
+        $prevTotalRevenue = (float) Order::query()
+            ->where('shop_id', $shopId)
+            ->whereNotNull('paid_at')
+            ->whereBetween('paid_at', [$prevFrom, $prevTo])
+            ->sum('total');
+
+        $revenueGrowthPercent = null;
+        if ($prevTotalRevenue > 0) {
+            $revenueGrowthPercent = (($totalRevenue - $prevTotalRevenue) / $prevTotalRevenue) * 100.0;
+        } elseif ($totalRevenue > 0) {
+            $revenueGrowthPercent = 100.0;
+        }
+
+        return ApiResponse::success(
+            data: [
+                'shop_id' => $shopId,
+                'range' => [
+                    'key' => strtolower($range),
+                    'unit' => $unit,
+                    'points' => $points,
+                    'from' => $from->toISOString(),
+                    'to' => $to->toISOString(),
+                ],
+                'totals' => [
+                    'revenue' => $totalRevenue,
+                    'orders' => $totalOrders,
+                    'prev_revenue' => $prevTotalRevenue,
+                    'revenue_growth_percent' => $revenueGrowthPercent,
+                ],
+                'series' => $series,
+            ],
+            code: 'ECM_DASHBOARD_REVENUE_SUCCESS',
+            message: 'Lấy dữ liệu doanh thu thành công',
+        );
+    }
+}
