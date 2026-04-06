@@ -185,6 +185,9 @@ export default function AdminLayout() {
               <Link className={linkClass(loc.pathname, "/dashboard")} to="/dashboard">
                 Dashboard
               </Link>
+              <Link className={linkClass(loc.pathname, "/shops")} to="/shops">
+                Shops
+              </Link>
               <Link className={linkClass(loc.pathname, "/orders")} to="/orders">
                 Đơn hàng
               </Link>
@@ -206,7 +209,7 @@ export default function AdminLayout() {
                 value={shopId ? String(shopId) : String(shops[0]!.id)}
                 onChange={(e) => changeShop(Number(e.target.value))}
                 aria-label="Shop"
-                className="min-w-[180px] shrink-0"
+                className="min-w-[120px] shrink-0"
               >
                 {shops.map((s) => (
                   <option key={s.id} value={String(s.id)}>

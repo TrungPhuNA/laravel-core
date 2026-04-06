@@ -7,10 +7,27 @@ use Modules\Ecommerce\Http\Controllers\Api\V1\Admin\DashboardController;
 use Modules\Ecommerce\Http\Controllers\Api\V1\Admin\OrderController;
 use Modules\Ecommerce\Http\Controllers\Api\V1\Admin\ProductController;
 use Modules\Ecommerce\Http\Controllers\Api\V1\Admin\ShopController;
+use Modules\Ecommerce\Http\Controllers\Api\V1\Admin\ShopUserController;
+use Modules\Ecommerce\Http\Controllers\Api\V1\Admin\UserLookupController;
 
 Route::prefix('v1/ecm')->middleware(['auth:sanctum', 'user_type:ADMIN,SYSTEM'])->group(function () {
     // Shops (không cần chọn shop context trước)
     Route::get('admin/shops', [ShopController::class, 'index'])->middleware('perm:ecommerce.shops.read');
+    Route::get('admin/shops/{id}', [ShopController::class, 'show'])->whereNumber('id')->middleware('perm:ecommerce.shops.read');
+    Route::post('admin/shops', [ShopController::class, 'store'])->middleware('perm:ecommerce.shops.write');
+    Route::put('admin/shops/{id}', [ShopController::class, 'update'])->whereNumber('id')->middleware('perm:ecommerce.shops.write');
+    Route::delete('admin/shops/{id}', [ShopController::class, 'destroy'])->whereNumber('id')->middleware('perm:ecommerce.shops.write');
+
+    Route::get('admin/shops/{id}/users', [ShopUserController::class, 'index'])->whereNumber('id')->middleware('perm:ecommerce.shops.read');
+    Route::put('admin/shops/{id}/users', [ShopUserController::class, 'sync'])->whereNumber('id')->middleware('perm:ecommerce.shops.write');
+    Route::delete('admin/shops/{id}/users/{userId}', [ShopUserController::class, 'detach'])
+        ->whereNumber('id')
+        ->whereNumber('userId')
+        ->middleware('perm:ecommerce.shops.write');
+
+    Route::get('admin/users', [UserLookupController::class, 'index'])->middleware('perm:ecommerce.shops.write');
+
+    Route::get('admin/dashboard/shops-summary', [DashboardController::class, 'shopsSummary'])->middleware('perm:ecommerce.dashboard.read');
 
     Route::prefix('admin')->middleware(['ecm_shop'])->group(function () {
         // Dashboard

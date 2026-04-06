@@ -6,7 +6,7 @@ import Button from "@shared/ui/Button";
 import Select from "@shared/ui/Select";
 import { prettyJson } from "@shared/lib/format";
 import type { ApiResponseError, ApiResponseFail } from "@shared/http/types";
-import { fetchDashboardOverview, fetchDashboardRevenue } from "../services/dashboardApi";
+import { fetchDashboardOverview, fetchDashboardRevenue, fetchDashboardShopsSummary } from "../services/dashboardApi";
 
 type Err = ApiResponseFail | ApiResponseError | Error | unknown;
 
@@ -114,6 +114,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = React.useState(false);
   const [data, setData] = React.useState<any>(null);
   const [rev, setRev] = React.useState<any>(null);
+  const [shopsSummary, setShopsSummary] = React.useState<any>(null);
   const [error, setError] = React.useState<Err>(null);
   const [range, setRange] = React.useState<"7d" | "30d" | "90d" | "12m">("30d");
 
@@ -121,9 +122,14 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const [d, r] = await Promise.all([fetchDashboardOverview(), fetchDashboardRevenue(range)]);
+      const [d, r, s] = await Promise.all([
+        fetchDashboardOverview(),
+        fetchDashboardRevenue(range),
+        fetchDashboardShopsSummary(range),
+      ]);
       setData(d);
       setRev(r);
+      setShopsSummary(s);
     } catch (e) {
       setError(e);
     } finally {
@@ -142,13 +148,25 @@ export default function DashboardPage() {
   const series = (rev?.series ?? []) as Point[];
   const totals = rev?.totals ?? {};
   const growth = totals?.revenue_growth_percent;
+  const shop = data?.shop ?? rev?.shop ?? null;
+  const byShop = (shopsSummary?.items ?? []) as Array<{ shop: { id: number; code: string; name: string }; revenue: number; orders_paid: number }>;
 
   return (
     <div className="space-y-4">
       <div className="flex items-end justify-between gap-3">
         <div>
           <div className="text-lg font-semibold">Dashboard</div>
-          <div className="text-sm text-slate-600">Tổng quan bán hàng theo shop.</div>
+          <div className="text-sm text-slate-600">
+            Tổng quan bán hàng theo shop{" "}
+            {shop ? (
+              <>
+                <span className="text-slate-400">•</span>{" "}
+                <span className="font-medium text-slate-900">
+                  {shop.name} ({shop.code})
+                </span>
+              </>
+            ) : null}
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Select value={range} onChange={(e) => setRange(e.target.value as any)} aria-label="Range" className="w-[140px]">
@@ -192,6 +210,41 @@ export default function DashboardPage() {
 
       <Card title="Biểu đồ tăng trưởng (so với điểm trước)">
         {series.length > 1 ? <GrowthBars points={series} /> : <div className="text-sm text-slate-500">Chưa có dữ liệu.</div>}
+      </Card>
+
+      <Card title="Thống kê theo shop (so sánh)">
+        <div className="overflow-auto">
+          <table className="min-w-full text-sm">
+            <thead className="text-left text-slate-600">
+              <tr className="border-b">
+                <th className="py-2 pr-4">Shop</th>
+                <th className="py-2 pr-4">Revenue</th>
+                <th className="py-2 pr-4">Orders paid</th>
+              </tr>
+            </thead>
+            <tbody>
+              {byShop.slice(0, 10).map((row) => (
+                <tr key={row.shop.id} className="border-b last:border-0">
+                  <td className="py-2 pr-4">
+                    <div className="font-medium">{row.shop.name}</div>
+                    <div className="text-xs text-slate-500 font-mono">
+                      {row.shop.code} (#{row.shop.id})
+                    </div>
+                  </td>
+                  <td className="py-2 pr-4 text-slate-700">{Number(row.revenue ?? 0).toFixed(0)}</td>
+                  <td className="py-2 pr-4 text-slate-700">{row.orders_paid ?? 0}</td>
+                </tr>
+              ))}
+              {byShop.length === 0 ? (
+                <tr>
+                  <td className="py-6 text-center text-slate-500" colSpan={3}>
+                    Chưa có dữ liệu.
+                  </td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
       </Card>
 
       <Card title="Đơn theo trạng thái">
