@@ -26,6 +26,12 @@ php artisan serve
 php artisan db:seed --class="Modules\\Ecommerce\\Database\\Seeders\\EcommerceDatabaseSeeder"
 ```
 
+- Seeder demo data (customers/categories/products/orders):
+
+```bash
+ECM_SEED_DEMO_DATA=1 ECM_DEMO_SEED_RESET=1 php artisan db:seed --class="Modules\\Ecommerce\\Database\\Seeders\\EcommerceDatabaseSeeder"
+```
+
 - Admin UI: `/admin/ecommerce`
   - Dán Sanctum token (ADMIN/SYSTEM) lên header.
   - Chọn shop ở dropdown (nếu có nhiều shop).

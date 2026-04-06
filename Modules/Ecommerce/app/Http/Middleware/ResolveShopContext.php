@@ -21,16 +21,22 @@ final class ResolveShopContext
         $wanted = $request->header('X-Shop-Id');
         $wanted = is_string($wanted) ? (int) trim($wanted) : null;
 
-        $isSystem = ($user->user_type instanceof UserType)
-            ? $user->user_type === UserType::SYSTEM
-            : strtoupper((string) $user->user_type) === 'SYSTEM';
+        $userType = ($user->user_type instanceof UserType)
+            ? $user->user_type
+            : null;
+
+        $userTypeStr = $userType ? $userType->value : strtoupper((string) $user->user_type);
+
+        // Quy ước: ADMIN được xem/tác vụ trên tất cả shop (đồ án/demo dễ test).
+        // SYSTEM cũng tương tự.
+        $isPrivileged = $userTypeStr === 'SYSTEM' || $userTypeStr === 'ADMIN';
 
         $shopQuery = Shop::query()
             ->whereNull('deleted_at')
             ->where('is_active', true);
 
         if ($wanted && $wanted > 0) {
-            if (!$isSystem) {
+            if (!$isPrivileged) {
                 $shopQuery->whereHas('users', fn ($q) => $q->where('users.id', $user->id));
             }
 
@@ -52,7 +58,7 @@ final class ResolveShopContext
         }
 
         // Auto-pick first accessible shop.
-        if (!$isSystem) {
+        if (!$isPrivileged) {
             $shopQuery->whereHas('users', fn ($q) => $q->where('users.id', $user->id));
         }
 
@@ -73,4 +79,3 @@ final class ResolveShopContext
         return $next($request);
     }
 }
-

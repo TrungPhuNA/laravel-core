@@ -17,15 +17,17 @@ final class ShopController extends Controller
     public function index()
     {
         $user = request()->user();
-        $isSystem = ($user?->user_type instanceof UserType)
-            ? $user->user_type === UserType::SYSTEM
-            : strtoupper((string) $user?->user_type) === 'SYSTEM';
+        $userType = ($user?->user_type instanceof UserType) ? $user->user_type : null;
+        $userTypeStr = $userType ? $userType->value : strtoupper((string) $user?->user_type);
+
+        // Admin/System được xem all shops.
+        $isPrivileged = $userTypeStr === 'SYSTEM' || $userTypeStr === 'ADMIN';
 
         $q = Shop::query()
             ->whereNull('deleted_at')
             ->orderBy('id');
 
-        if (!$isSystem && $user) {
+        if (!$isPrivileged && $user) {
             $q->whereHas('users', fn ($qq) => $qq->where('users.id', $user->id));
         }
 
@@ -38,4 +40,3 @@ final class ShopController extends Controller
         );
     }
 }
-

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             DemoUsersSeeder::class,
             \Modules\Setting\Database\Seeders\SettingDatabaseSeeder::class,
+            \Modules\Ecommerce\Database\Seeders\EcommerceDatabaseSeeder::class,
         ]);
     }
 }

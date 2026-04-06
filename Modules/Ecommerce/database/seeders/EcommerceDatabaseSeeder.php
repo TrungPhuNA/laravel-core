@@ -12,5 +12,11 @@ class EcommerceDatabaseSeeder extends Seeder
             ShopSeeder::class,
             RbacSeeder::class,
         ]);
+
+        if ((bool) env('ECM_SEED_DEMO_DATA', false)) {
+            $this->call([
+                DemoDataSeeder::class,
+            ]);
+        }
     }
 }
