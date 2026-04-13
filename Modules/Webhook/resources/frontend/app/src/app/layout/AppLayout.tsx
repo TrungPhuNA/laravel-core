@@ -169,7 +169,6 @@ export default function AppLayout() {
 
                         <Link to="/channels" className="min-w-0 group block hover:opacity-80 transition-opacity">
                             <div className="font-semibold tracking-tight leading-5 truncate group-hover:text-sky-600 transition-colors">
-                                Webhook
                                 <span className="hidden sm:inline ml-2 text-xs font-normal text-slate-500">Quản lý kênh + logs</span>
                             </div>
                             <div className="md:hidden text-xs text-slate-600 truncate">Kênh webhook</div>
@@ -201,16 +200,7 @@ export default function AppLayout() {
                     </div>
 
                     <div className="flex items-center gap-2 w-full md:w-auto justify-end md:flex-nowrap">
-                        <Select
-                            value={auth.locale}
-                            onChange={(e) => auth.setLocale(e.target.value as "vi" | "en")}
-                            aria-label="Ngôn ngữ"
-                            className="w-[88px] shrink-0"
-                        >
-                            <option value="vi">VI</option>
-                            <option value="en">EN</option>
-                        </Select>
-
+                      
                         {auth.hasToken && me ? (
                             <div className="relative" ref={menuRef}>
                                 <button

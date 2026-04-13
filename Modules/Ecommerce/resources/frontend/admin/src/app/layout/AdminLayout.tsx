@@ -218,17 +218,6 @@ export default function AdminLayout() {
                 ))}
               </Select>
             ) : null}
-
-            <Select
-              value={auth.locale}
-              onChange={(e) => auth.setLocale(e.target.value as any)}
-              aria-label="Ngôn ngữ"
-              className="w-[88px] shrink-0"
-            >
-              <option value="vi">VI</option>
-              <option value="en">EN</option>
-            </Select>
-
             {auth.hasToken && me ? (
               <div className="relative" ref={menuRef}>
                 <button

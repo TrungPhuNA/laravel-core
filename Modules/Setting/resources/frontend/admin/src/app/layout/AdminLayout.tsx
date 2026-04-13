@@ -157,16 +157,6 @@ export default function AdminLayout() {
           </div>
 
           <div className="flex items-center gap-2 w-full md:w-auto justify-end md:flex-nowrap">
-            <Select
-              value={auth.locale}
-              onChange={(e) => auth.setLocale(e.target.value as "vi" | "en")}
-              aria-label="Ngôn ngữ"
-              className="w-[88px] shrink-0"
-            >
-              <option value="vi">VI</option>
-              <option value="en">EN</option>
-            </Select>
-
             {auth.hasToken && me ? (
               <div className="relative" ref={menuRef}>
                 <button

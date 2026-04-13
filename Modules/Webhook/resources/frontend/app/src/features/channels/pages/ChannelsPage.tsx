@@ -530,9 +530,9 @@ export default function ChannelsPage() {
                                             <Dropdown
                                                 align="right"
                                                 trigger={
-                                                    <button className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
+                                                    <div className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors cursor-pointer">
                                                         <span className="text-xl leading-none -mt-2">...</span>
-                                                    </button>
+                                                    </div>
                                                 }
                                             >
                                                 {({ close }) => (
@@ -662,9 +662,9 @@ export default function ChannelsPage() {
                                                     <Dropdown
                                                         align="right"
                                                         trigger={
-                                                            <button className="ui-btn ui-btn-ghost h-8 w-8 p-0 flex items-center justify-center border border-transparent hover:border-slate-200 bg-transparent text-slate-400 hover:text-slate-900 transition-all">
+                                                            <div className="ui-btn ui-btn-ghost h-8 w-8 p-0 flex items-center justify-center border border-transparent hover:border-slate-200 bg-transparent text-slate-400 hover:text-slate-900 transition-all cursor-pointer">
                                                                 <span className="text-xl leading-none -mt-2">...</span>
-                                                            </button>
+                                                            </div>
                                                         }
                                                     >
                                                         {({ close }) => (
