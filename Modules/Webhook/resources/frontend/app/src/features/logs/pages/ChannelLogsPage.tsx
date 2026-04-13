@@ -9,8 +9,9 @@ import Modal from "@shared/ui/Modal";
 import Pagination from "@shared/ui/Pagination";
 import type { ApiMetaPagination, ApiResponseError, ApiResponseFail } from "@shared/http/types";
 import { formatDateTime, prettyJson, shortText } from "@shared/lib/format";
-import type { WebhookRequestLog, WebhookRequestLogDetail } from "../types";
-import { getLog, listLogs, pruneLogs } from "../services/logsApi";
+import type { WebhookRequestLog } from "../types";
+import { listLogs, pruneLogs } from "../services/logsApi";
+import LogDetailModal from "../components/LogDetailModal";
 
 type Err = ApiResponseFail | ApiResponseError | Error | unknown;
 
@@ -48,9 +49,10 @@ export default function ChannelLogsPage() {
         received_at: "",
     });
 
+    const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
+
     const [detailOpen, setDetailOpen] = React.useState(false);
-    const [detailLoading, setDetailLoading] = React.useState(false);
-    const [detail, setDetail] = React.useState<WebhookRequestLogDetail | null>(null);
+    const [selectedRequestId, setSelectedRequestId] = React.useState<number | null>(null);
 
     const [pruneOpen, setPruneOpen] = React.useState(false);
     const [pruneDays, setPruneDays] = React.useState("30");
@@ -74,6 +76,8 @@ export default function ChannelLogsPage() {
             });
             setItems(res.items);
             setMeta(res.meta);
+            // Tự động đóng lọc trên mobile sau khi áp dụng
+            setMobileFiltersOpen(false);
         } catch (e) {
             setError(e);
         } finally {
@@ -87,19 +91,9 @@ export default function ChannelLogsPage() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [webhookId]);
 
-    async function openDetail(id: number) {
+    function openDetail(id: number) {
+        setSelectedRequestId(id);
         setDetailOpen(true);
-        setDetailLoading(true);
-        setDetail(null);
-        try {
-            const d = await getLog(webhookId, id);
-            setDetail(d);
-        } catch (e) {
-            setError(e);
-            setDetailOpen(false);
-        } finally {
-            setDetailLoading(false);
-        }
     }
 
     async function doPrune() {
@@ -130,9 +124,16 @@ export default function ChannelLogsPage() {
                     <div className="text-xs sm:text-sm text-slate-500 font-medium">Theo dõi các request nhận về (headers/query/body) để debug và kiểm tra tích hợp.</div>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
-                    <Link className="text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors" to="/channels">
+                    <Link className="hidden sm:block text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors" to="/channels">
                         Quay lại
                     </Link>
+                    <Button 
+                        variant="ghost" 
+                        className={`md:hidden h-8 w-8 !p-0 ${mobileFiltersOpen ? 'bg-slate-100 text-sky-600' : ''}`} 
+                        onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                    </Button>
                     <Button variant="ghost" className="h-8 text-xs font-bold" onClick={() => reload()} disabled={loading}>
                         Tải lại
                     </Button>
@@ -145,40 +146,52 @@ export default function ChannelLogsPage() {
             {errView ? <Alert tone="danger" title={errView.title} details={errView.details} /> : null}
             {pruneResult ? <Alert tone="success" title="Prune thành công" details={pruneResult} /> : null}
 
-            <Card
-                title="Bộ lọc"
-                actions={
-                    <Button variant="primary" onClick={() => reload({ page: 1 })} disabled={loading}>
-                        Áp dụng
-                    </Button>
-                }
-            >
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Method</div>
-                        <Select className="mt-1" value={filters.method} onChange={(e) => setFilters({ ...filters, method: e.target.value as any })}>
-                            <option value="all">Tất cả</option>
-                            <option value="GET">GET</option>
-                            <option value="POST">POST</option>
-                        </Select>
+            <div className={`${mobileFiltersOpen ? 'block' : 'hidden'} md:block`}>
+                <Card
+                    title="Bộ lọc"
+                    bodyClassName="p-4 md:p-6"
+                    actions={
+                        <div className="flex items-center gap-2">
+                            <Button variant="ghost" className="md:hidden h-8 text-xs font-bold" onClick={() => setMobileFiltersOpen(false)}>
+                                Đóng
+                            </Button>
+                            <Button variant="primary" className="h-8 text-xs font-bold" onClick={() => reload({ page: 1 })} disabled={loading}>
+                                Áp dụng
+                            </Button>
+                        </div>
+                    }
+                >
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                        <div>
+                            <div className="text-xs font-medium text-slate-600">Method</div>
+                            <Select className="mt-1" value={filters.method} onChange={(e) => setFilters({ ...filters, method: e.target.value as any })}>
+                                <option value="all">Tất cả</option>
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                            </Select>
+                        </div>
+                        <div>
+                            <div className="text-xs font-medium text-slate-600">IP</div>
+                            <Input className="mt-1" value={filters.ip} onChange={(e) => setFilters({ ...filters, ip: e.target.value })} placeholder="127.0.0.1" />
+                        </div>
+                        <div>
+                            <div className="text-xs font-medium text-slate-600">Received at (from,to)</div>
+                            <Input
+                                className="mt-1"
+                                value={filters.received_at}
+                                onChange={(e) => setFilters({ ...filters, received_at: e.target.value })}
+                                placeholder="2026-03-01,2026-03-31"
+                            />
+                        </div>
                     </div>
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">IP</div>
-                        <Input className="mt-1" value={filters.ip} onChange={(e) => setFilters({ ...filters, ip: e.target.value })} placeholder="127.0.0.1" />
-                    </div>
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Received at (from,to)</div>
-                        <Input
-                            className="mt-1"
-                            value={filters.received_at}
-                            onChange={(e) => setFilters({ ...filters, received_at: e.target.value })}
-                            placeholder="2026-03-01,2026-03-31"
-                        />
-                    </div>
-                </div>
-            </Card>
+                </Card>
+            </div>
 
-            <Card title="Danh sách Logs" bodyClassName="p-0 sm:p-6" className="overflow-hidden">
+            <Card 
+                title="Danh sách Logs" 
+                bodyClassName="p-0 md:p-6" 
+                className="md:shadow-md md:border md:bg-white shadow-none border-none bg-transparent overflow-hidden"
+            >
                 <div className="hidden sm:block overflow-auto">
                     <table className="ui-table">
                         <thead className="ui-thead">
@@ -212,38 +225,58 @@ export default function ChannelLogsPage() {
                     </table>
                 </div>
 
-                {/* Mobile list view */}
-                <div className="sm:hidden divide-y divide-slate-100">
+                {/* Mobile list view: Modern & Clean Style */}
+                <div className="sm:hidden space-y-4 pt-2">
                     {items.map((it) => (
                         <div 
                             key={it.id} 
-                            className="p-4 active:bg-slate-50 flex items-center justify-between gap-4"
+                            className="bg-white rounded-2xl border border-slate-100/50 p-4 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)] active:scale-[0.98] transition-all"
                             onClick={() => openDetail(it.id)}
                         >
-                            <div className="min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-bold text-slate-900 text-sm">#{it.id}</span>
-                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${it.method === 'POST' ? 'bg-indigo-50 text-indigo-600' : 'bg-sky-50 text-sky-600'}`}>
+                            <div className="flex items-start justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div className="h-8 w-8 rounded-lg bg-slate-50 flex items-center justify-center text-xs font-bold text-slate-400 border border-slate-100">
+                                        #{it.id}
+                                    </div>
+                                    <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${it.method === 'POST' ? 'bg-indigo-50 text-indigo-600' : 'bg-sky-50 text-sky-600'}`}>
                                         {it.method}
                                     </span>
                                 </div>
-                                <div className="text-[11px] text-slate-500 font-medium mb-1">{formatDateTime(it.received_at)}</div>
-                                <div className="text-[10px] text-slate-400 font-mono truncate">{shortText(it.body_preview ?? "", 40)}</div>
+                                <div className="text-slate-300">
+                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
+                                </div>
                             </div>
-                            <div className="text-slate-300">
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
+                            
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Thời gian</div>
+                                    <div className="text-xs font-semibold text-slate-700">{formatDateTime(it.received_at)}</div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">Địa chỉ IP</div>
+                                    <div className="text-[11px] font-mono text-slate-500">{it.ip ?? "Unknown"}</div>
+                                </div>
+                                <div className="mt-3 p-3 rounded-xl bg-slate-50/50 border border-slate-100/50">
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Body Preview</div>
+                                    <div className="text-[11px] text-slate-500 font-mono leading-relaxed line-clamp-2">
+                                        {it.body_preview ? shortText(it.body_preview, 100) : "No body content"}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {items.length === 0 ? (
-                    <div className="py-12 text-center text-slate-500 italic text-sm">
-                        Không có dữ liệu log nào được ghi nhận.
+                    <div className="py-12 text-center text-slate-400 bg-white md:bg-transparent rounded-2xl border border-dashed border-slate-200">
+                        <div className="mb-2 flex justify-center text-slate-200">
+                            <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <div className="text-sm font-medium italic">Không có dữ liệu log nào được ghi nhận.</div>
                     </div>
                 ) : null}
 
-                <div className="px-4 pb-4 sm:p-0">
+                <div className="mt-4 md:mt-0">
                     <Pagination
                         meta={meta}
                         onChange={(next) => {
@@ -254,36 +287,12 @@ export default function ChannelLogsPage() {
                 </div>
             </Card>
 
-            <Modal open={detailOpen} title={detail ? `Log #${detail.id}` : "Chi tiết log"} onClose={() => setDetailOpen(false)}>
-                {detailLoading ? <div className="text-sm text-slate-600">Đang tải...</div> : null}
-                {detail ? (
-                    <div className="space-y-3">
-                        <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-                            <Info label="Method" value={detail.method} />
-                            <Info label="IP" value={detail.ip ?? "-"} />
-                            <Info label="Received at" value={detail.received_at ?? "-"} />
-                        </div>
-                        <div>
-                            <div className="text-xs font-medium text-slate-600">Headers</div>
-                            <pre className="mt-1 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs">
-                                {JSON.stringify(detail.headers ?? {}, null, 2)}
-                            </pre>
-                        </div>
-                        <div>
-                            <div className="text-xs font-medium text-slate-600">Query</div>
-                            <pre className="mt-1 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs">
-                                {JSON.stringify(detail.query ?? {}, null, 2)}
-                            </pre>
-                        </div>
-                        <div>
-                            <div className="text-xs font-medium text-slate-600">Body</div>
-                            <pre className="mt-1 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs">
-                                {detail.body ?? ""}
-                            </pre>
-                        </div>
-                    </div>
-                ) : null}
-            </Modal>
+            <LogDetailModal 
+                open={detailOpen} 
+                onClose={() => setDetailOpen(false)} 
+                webhookId={webhookId}
+                requestId={selectedRequestId}
+            />
 
             <Modal
                 open={pruneOpen}
