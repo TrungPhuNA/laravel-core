@@ -38,6 +38,8 @@ export default function AppLayout() {
 
     const [menuOpen, setMenuOpen] = React.useState(false);
     const menuRef = React.useRef<HTMLDivElement | null>(null);
+    const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+    const mobileNavRef = React.useRef<HTMLDivElement | null>(null);
     const [tokenModalOpen, setTokenModalOpen] = React.useState(false);
     const [tokenDraft, setTokenDraft] = React.useState(auth.token);
 
@@ -87,6 +89,28 @@ export default function AppLayout() {
         return () => document.removeEventListener("mousedown", onDocDown);
     }, [menuOpen]);
 
+    React.useEffect(() => {
+        if (!mobileNavOpen) return;
+
+        function onKeyDown(e: KeyboardEvent) {
+            if (e.key === "Escape") setMobileNavOpen(false);
+        }
+
+        function onDocDown(e: MouseEvent) {
+            const el = mobileNavRef.current;
+            if (!el) return;
+            if (e.target instanceof Node && el.contains(e.target)) return;
+            setMobileNavOpen(false);
+        }
+
+        window.addEventListener("keydown", onKeyDown);
+        document.addEventListener("mousedown", onDocDown);
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+            document.removeEventListener("mousedown", onDocDown);
+        };
+    }, [mobileNavOpen]);
+
     async function logout() {
         try {
             await api.post("/auth/logout", {});
@@ -119,14 +143,26 @@ export default function AppLayout() {
     return (
         <div className="min-h-dvh text-slate-900">
             <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur">
-                <div className="mx-auto max-w-7xl px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
-                    <div className="flex items-center gap-4 min-w-0">
-                        <div className="font-semibold tracking-tight shrink-0">
-                            Webhook
-                            <span className="ml-2 text-xs font-normal text-slate-500">Quản lý kênh + logs</span>
+                <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                        <button
+                            type="button"
+                            className="md:hidden ui-btn ui-btn-ghost h-10 w-10 px-0 py-0 grid place-items-center"
+                            aria-label="Open menu"
+                            onClick={() => setMobileNavOpen(true)}
+                        >
+                            ☰
+                        </button>
+
+                        <div className="min-w-0">
+                            <div className="font-semibold tracking-tight leading-5 truncate">
+                                Webhook
+                                <span className="hidden sm:inline ml-2 text-xs font-normal text-slate-500">Quản lý kênh + logs</span>
+                            </div>
+                            <div className="md:hidden text-xs text-slate-600 truncate">Kênh webhook</div>
                         </div>
 
-                        <nav className="flex items-center gap-4 text-sm min-w-0">
+                        <nav className="hidden md:flex items-center gap-4 text-sm min-w-0">
                             <Link className={linkClass(loc.pathname, "/channels")} to="/channels">
                                 Kênh webhook
                             </Link>
@@ -149,7 +185,7 @@ export default function AppLayout() {
                                 <button
                                     type="button"
                                     className={[
-                                        "h-10 inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 text-sm shadow-sm",
+                                        "h-10 inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white px-2 md:px-3 text-sm shadow-sm",
                                         "hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300",
                                         "whitespace-nowrap",
                                     ].join(" ")}
@@ -162,7 +198,7 @@ export default function AppLayout() {
                                             {initialsFrom(me)}
                                         </span>
                                     )}
-                                    <span className="max-w-[180px] truncate font-semibold whitespace-nowrap">
+                                    <span className="hidden md:inline max-w-[180px] truncate font-semibold whitespace-nowrap">
                                         {me.name ?? me.email ?? "Tài khoản"}
                                     </span>
                                     <span className="text-slate-500">▾</span>
@@ -231,6 +267,121 @@ export default function AppLayout() {
                     </div>
                 ) : null}
             </header>
+
+            {mobileNavOpen ? (
+                <div className="fixed inset-0 z-20 md:hidden">
+                    <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-sm" />
+                    <div
+                        ref={mobileNavRef}
+                        className={[
+                            "absolute left-0 top-0 h-full w-[84vw] max-w-[320px] bg-white shadow-2xl border-r border-slate-200",
+                            "flex flex-col",
+                        ].join(" ")}
+                    >
+                        <div className="px-4 py-4 border-b border-slate-100 flex items-center justify-between gap-3">
+                            <div className="min-w-0">
+                                <div className="font-semibold text-slate-900 truncate">Webhook</div>
+                                <div className="text-xs text-slate-600 truncate">Quản lý kênh + logs</div>
+                            </div>
+                            <button
+                                type="button"
+                                className="ui-btn ui-btn-ghost h-9 w-9 px-0 py-0 grid place-items-center"
+                                aria-label="Close menu"
+                                onClick={() => setMobileNavOpen(false)}
+                            >
+                                ×
+                            </button>
+                        </div>
+
+                        {auth.hasToken && me ? (
+                            <div className="px-4 py-3 border-b border-slate-100">
+                                <div className="flex items-center gap-3">
+                                    {me.avatar_url ? (
+                                        <img className="h-10 w-10 rounded-full object-cover" src={me.avatar_url} alt="avatar" />
+                                    ) : (
+                                        <span className="h-10 w-10 rounded-full bg-slate-900 text-white grid place-items-center text-xs font-semibold">
+                                            {initialsFrom(me)}
+                                        </span>
+                                    )}
+                                    <div className="min-w-0">
+                                        <div className="text-sm font-semibold truncate">{me.name ?? "Tài khoản"}</div>
+                                        <div className="text-xs text-slate-600 truncate">{me.email ?? "-"}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : null}
+
+                        <div className="px-2 py-2">
+                            <Link
+                                className={[
+                                    "block rounded-lg px-3 py-2 text-sm",
+                                    linkClass(loc.pathname, "/channels") === "text-slate-900 font-semibold"
+                                        ? "bg-slate-100 text-slate-900 font-semibold"
+                                        : "text-slate-700 hover:bg-slate-50 hover:text-slate-900",
+                                ].join(" ")}
+                                to="/channels"
+                                onClick={() => setMobileNavOpen(false)}
+                            >
+                                Kênh webhook
+                            </Link>
+                        </div>
+
+                        <div className="mt-auto border-t border-slate-100 p-4 space-y-3">
+                            <div>
+                                <div className="text-xs font-medium text-slate-600">Ngôn ngữ</div>
+                                <Select
+                                    className="mt-1 w-full"
+                                    value={auth.locale}
+                                    onChange={(e) => auth.setLocale(e.target.value as "vi" | "en")}
+                                    aria-label="Ngôn ngữ"
+                                >
+                                    <option value="vi">VI</option>
+                                    <option value="en">EN</option>
+                                </Select>
+                            </div>
+
+                            {auth.hasToken && me ? (
+                                <div className="space-y-2">
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-center"
+                                        onClick={() => {
+                                            setMobileNavOpen(false);
+                                            openProfile();
+                                        }}
+                                    >
+                                        Cập nhật thông tin
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        className="w-full justify-center"
+                                        onClick={() => {
+                                            setMobileNavOpen(false);
+                                            openTokenModal();
+                                        }}
+                                    >
+                                        Token hệ thống
+                                    </Button>
+                                    <Button
+                                        variant="danger"
+                                        className="w-full justify-center"
+                                        onClick={() => {
+                                            setMobileNavOpen(false);
+                                            logout();
+                                        }}
+                                    >
+                                        Đăng xuất
+                                    </Button>
+                                </div>
+                            ) : (
+                                <a className="block text-center text-sm font-semibold text-slate-900 hover:underline" href="/auth/login">
+                                    Đăng nhập
+                                </a>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ) : null}
 
             <main className="mx-auto max-w-7xl px-4 py-6">
                 <Outlet />

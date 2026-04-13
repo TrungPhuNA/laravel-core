@@ -11,6 +11,7 @@ export default function Dropdown(props: Props) {
     const [open, setOpen] = React.useState(false);
     const ref = React.useRef<HTMLDivElement | null>(null);
     const btnRef = React.useRef<HTMLButtonElement | null>(null);
+    const menuRef = React.useRef<HTMLDivElement | null>(null);
     const align = props.align ?? "right";
     const close = React.useCallback(() => setOpen(false), []);
     const [pos, setPos] = React.useState<{ top: number; left: number } | null>(null);
@@ -22,6 +23,8 @@ export default function Dropdown(props: Props) {
             const el = ref.current;
             if (!el) return;
             if (e.target instanceof Node && el.contains(e.target)) return;
+            const menu = menuRef.current;
+            if (menu && e.target instanceof Node && menu.contains(e.target)) return;
             setOpen(false);
         }
 
@@ -77,7 +80,8 @@ export default function Dropdown(props: Props) {
 
             {open && pos
                 ? createPortal(
-                      <div
+                  <div
+                          ref={menuRef}
                           className={[
                               "fixed min-w-[200px] rounded-xl border border-slate-200 bg-white shadow-xl overflow-hidden z-[9999]",
                               "backdrop-blur supports-[backdrop-filter]:bg-white/95",

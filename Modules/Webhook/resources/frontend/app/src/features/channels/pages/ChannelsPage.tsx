@@ -17,6 +17,74 @@ import { createChannel, deleteChannel, listChannels, rotateSecret, rotateToken, 
 
 type Err = ApiResponseFail | ApiResponseError | Error | unknown;
 
+type ValidationField = {
+    id: string;
+    field: string;
+    tokens: Array<{ id: string; token: string }>;
+};
+
+const VALIDATION_RULE_OPTIONS: Array<{ value: string; label: string; hint?: string }> = [
+    { value: "required", label: "required" },
+    { value: "nullable", label: "nullable" },
+    { value: "sometimes", label: "sometimes" },
+    { value: "email", label: "email" },
+    { value: "string", label: "string" },
+    { value: "numeric", label: "numeric" },
+    { value: "integer", label: "integer" },
+    { value: "boolean", label: "boolean" },
+    { value: "array", label: "array" },
+    { value: "date", label: "date" },
+    { value: "url", label: "url" },
+    { value: "uuid", label: "uuid" },
+    { value: "ip", label: "ip" },
+    { value: "json", label: "json", hint: "Validate chuỗi JSON hợp lệ" },
+];
+
+function newId() {
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
+
+function parseValidationRulesToFields(rules: unknown): ValidationField[] {
+    if (!rules || typeof rules !== "object") return [];
+    const anyRules = rules as Record<string, unknown>;
+
+    const fields: ValidationField[] = [];
+    for (const [field, ruleVal] of Object.entries(anyRules)) {
+        if (typeof field !== "string" || field.trim() === "") continue;
+        const ruleStr = typeof ruleVal === "string" ? ruleVal : "";
+        const parts = ruleStr
+            .split("|")
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+        fields.push({
+            id: newId(),
+            field,
+            tokens: parts.map((token) => ({ id: newId(), token })),
+        });
+    }
+    return fields;
+}
+
+function buildValidationRulesRecord(fields: ValidationField[]): Record<string, string> | undefined {
+    const out: Record<string, string> = {};
+
+    for (const f of fields) {
+        const key = f.field.trim();
+        if (key === "") continue;
+
+        const tokenStr = f.tokens
+            .map((t) => t.token.trim())
+            .filter(Boolean)
+            .join("|");
+
+        if (tokenStr === "") continue;
+        out[key] = tokenStr;
+    }
+
+    return Object.keys(out).length ? out : undefined;
+}
+
 function normalizeError(err: Err): { title: string; details?: string } {
     if (err && typeof err === "object" && "status" in err) {
         const anyErr = err as ApiResponseFail | ApiResponseError;
@@ -35,6 +103,7 @@ function receiveUrlFor(publicId: string) {
 export default function ChannelsPage() {
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<Err>(null);
+    const [rulesJsonOpen, setRulesJsonOpen] = React.useState(false);
 
     const [items, setItems] = React.useState<WebhookChannel[]>([]);
     const [meta, setMeta] = React.useState<ApiMetaPagination>({
@@ -63,7 +132,9 @@ export default function ChannelsPage() {
         rotate_token: false,
         rotate_secret: false,
         description: "",
-        validation_rules_json: '{\n  "email": "required|email"\n}',
+        validation_fields: [
+            { id: newId(), field: "email", tokens: [{ id: newId(), token: "required" }, { id: newId(), token: "email" }] },
+        ] as ValidationField[],
     });
 
     const [secretOpen, setSecretOpen] = React.useState(false);
@@ -117,8 +188,11 @@ export default function ChannelsPage() {
             rotate_token: false,
             rotate_secret: false,
             description: "",
-            validation_rules_json: '{\n  "email": "required|email"\n}',
+            validation_fields: [
+                { id: newId(), field: "email", tokens: [{ id: newId(), token: "required" }, { id: newId(), token: "email" }] },
+            ],
         });
+        setRulesJsonOpen(false);
         setEditorOpen(true);
     }
 
@@ -133,8 +207,9 @@ export default function ChannelsPage() {
             rotate_token: false,
             rotate_secret: false,
             description: ch.description ?? "",
-            validation_rules_json: ch.validation_rules ? JSON.stringify(ch.validation_rules, null, 2) : "{\n}",
+            validation_fields: ch.validation_rules ? parseValidationRulesToFields(ch.validation_rules) : [],
         });
+        setRulesJsonOpen(false);
         setEditorOpen(true);
     }
 
@@ -160,12 +235,7 @@ export default function ChannelsPage() {
         setLoading(true);
         setError(null);
         try {
-            let rules: any = undefined;
-            try {
-                rules = JSON.parse(editor.validation_rules_json);
-            } catch {
-                rules = undefined;
-            }
+            const rules = buildValidationRulesRecord(editor.validation_fields);
 
             if (editorMode === "create") {
                 const res = await createChannel({
@@ -346,7 +416,147 @@ export default function ChannelsPage() {
             </Card>
 
             <Card title="Danh sách">
-                <div className="overflow-auto">
+                <div className="md:hidden space-y-2">
+                    {items.map((it) => {
+                        const methods = it.allowed_methods?.length ? it.allowed_methods.join(",") : "GET,POST";
+                        const url = receiveUrlFor(it.public_id);
+                        return (
+                            <div key={it.id} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <div className="font-semibold text-slate-900 truncate" title={it.name}>
+                                            {it.name}
+                                        </div>
+                                        <div className="mt-0.5 text-xs text-slate-500 truncate" title={it.description ?? ""}>
+                                            {it.description ?? "-"}
+                                        </div>
+                                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                                            <Badge tone={it.is_active ? "success" : "danger"}>{it.is_active ? "active" : "inactive"}</Badge>
+                                            <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
+                                                {it.auth_type}
+                                            </Badge>
+                                            <span className="text-xs text-slate-600 font-mono">#{it.id}</span>
+                                        </div>
+                                    </div>
+                                    <Dropdown
+                                        align="right"
+                                        trigger={<span className="ui-btn ui-btn-ghost h-9 w-9 px-0 py-0 grid place-items-center">⋯</span>}
+                                    >
+                                        {({ close }) => (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
+                                                    onClick={() => {
+                                                        close();
+                                                        openEdit(it);
+                                                    }}
+                                                >
+                                                    Sửa
+                                                </button>
+                                                <Link
+                                                    className="block px-4 py-2 text-sm hover:bg-slate-50"
+                                                    to={`/channels/${it.id}/logs`}
+                                                    onClick={() => close()}
+                                                >
+                                                    Logs
+                                                </Link>
+                                                {it.auth_type === "token" ? (
+                                                    <button
+                                                        type="button"
+                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
+                                                        onClick={() => {
+                                                            close();
+                                                            doRotateToken(it);
+                                                        }}
+                                                        disabled={loading}
+                                                    >
+                                                        Rotate token
+                                                    </button>
+                                                ) : null}
+                                                {it.auth_type === "hmac" ? (
+                                                    <button
+                                                        type="button"
+                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
+                                                        onClick={() => {
+                                                            close();
+                                                            doRotateSecret(it);
+                                                        }}
+                                                        disabled={loading}
+                                                    >
+                                                        Rotate secret
+                                                    </button>
+                                                ) : null}
+                                                <div className="h-px bg-slate-100" />
+                                                <button
+                                                    type="button"
+                                                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-rose-700"
+                                                    onClick={() => {
+                                                        close();
+                                                        doDelete(it.id);
+                                                    }}
+                                                    disabled={loading}
+                                                >
+                                                    Xoá
+                                                </button>
+                                            </>
+                                        )}
+                                    </Dropdown>
+                                </div>
+
+                                <div className="mt-3 overflow-hidden rounded-lg border border-slate-100 bg-slate-50 divide-y divide-slate-100 text-xs text-slate-700">
+                                    <div className="flex items-center justify-between gap-3 px-3 py-2">
+                                        <div className="text-slate-500 shrink-0">Public ID</div>
+                                        <div className="font-mono truncate" title={it.public_id}>
+                                            {shortText(it.public_id, 28)}
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-3 px-3 py-2">
+                                        <div className="text-slate-500 shrink-0">Methods</div>
+                                        <div className="font-mono">{methods}</div>
+                                    </div>
+                                    <div className="flex items-center justify-between gap-3 px-3 py-2">
+                                        <div className="text-slate-500 shrink-0">Last</div>
+                                        <div className="text-slate-600 truncate">{it.last_received_at ?? "-"}</div>
+                                    </div>
+                                    <div className="px-3 py-2">
+                                        <div className="text-slate-500">Receive URL</div>
+                                        <button
+                                            type="button"
+                                            className="mt-1 w-full rounded-md border border-slate-200 bg-white p-2 text-left font-mono text-[11px] text-slate-700 hover:bg-slate-50"
+                                            title={url}
+                                            onClick={() => openReceiveUrl(url)}
+                                        >
+                                            {shortText(url, 52)}
+                                        </button>
+                                        <div className="mt-2 flex items-center gap-2">
+                                            <Button variant="ghost" className="h-8 px-2 py-1 text-xs" onClick={() => openReceiveUrl(url)}>
+                                                Xem
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                className="h-8 px-2 py-1 text-xs"
+                                                onClick={async () => {
+                                                    const ok = await copyToClipboard(url);
+                                                    toastOnce(ok ? "Đã copy Receive URL" : "Không copy được. Tip: mở Receive URL rồi bấm Cmd/Ctrl+C.");
+                                                }}
+                                            >
+                                                Copy
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                    {items.length === 0 ? (
+                        <div className="py-10 text-center text-slate-500">
+                            Không có dữ liệu.
+                        </div>
+                    ) : null}
+                </div>
+
+                <div className="hidden md:block overflow-auto">
                     <table className="ui-table min-w-[1100px] w-full table-fixed">
                         <thead className="ui-thead">
                             <tr>
@@ -606,17 +816,149 @@ export default function ChannelsPage() {
                     ) : null}
 
                     <div>
-                        <div className="text-xs font-medium text-slate-600">Validation rules (JSON)</div>
-                        <textarea
-                            className={[
-                                "mt-1 w-full rounded-md border border-slate-200 bg-white p-3 font-mono text-xs outline-none shadow-sm",
-                                "focus:border-slate-400 focus:ring-2 focus:ring-slate-200",
-                            ].join(" ")}
-                            rows={10}
-                            value={editor.validation_rules_json}
-                            onChange={(e) => setEditor({ ...editor, validation_rules_json: e.target.value })}
-                        />
-                        <div className="mt-1 text-xs text-slate-500">Để trống hoặc `{}` nếu không muốn validate payload.</div>
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="text-xs font-medium text-slate-600">Validation rules</div>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    className="text-xs text-slate-600 hover:underline"
+                                    onClick={() => setRulesJsonOpen((v) => !v)}
+                                >
+                                    {rulesJsonOpen ? "Ẩn JSON" : "Xem JSON"}
+                                </button>
+                                <Button
+                                    variant="ghost"
+                                    className="h-8 px-2 py-1 text-xs"
+                                    onClick={() =>
+                                        setEditor((cur) => ({
+                                            ...cur,
+                                            validation_fields: [...cur.validation_fields, { id: newId(), field: "", tokens: [] }],
+                                        }))
+                                    }
+                                >
+                                    Thêm field
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="mt-2 space-y-2">
+                            {editor.validation_fields.length === 0 ? (
+                                <div className="rounded-md border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">
+                                    Chưa có rule. Bấm <b>Thêm field</b> để bắt đầu.
+                                </div>
+                            ) : null}
+
+                            {editor.validation_fields.map((f) => (
+                                <div key={f.id} className="rounded-md border border-slate-200 bg-white p-3 shadow-sm">
+                                    <div className="flex items-start gap-2">
+                                        <div className="flex-1">
+                                            <div className="text-[11px] font-medium text-slate-600">Field</div>
+                                            <Input
+                                                className="mt-1"
+                                                value={f.field}
+                                                onChange={(e) =>
+                                                    setEditor((cur) => ({
+                                                        ...cur,
+                                                        validation_fields: cur.validation_fields.map((it) =>
+                                                            it.id === f.id ? { ...it, field: e.target.value } : it
+                                                        ),
+                                                    }))
+                                                }
+                                                placeholder="email"
+                                            />
+                                        </div>
+
+                                        <div className="w-[200px]">
+                                            <div className="text-[11px] font-medium text-slate-600">Thêm rule</div>
+                                            <Select
+                                                className="mt-1"
+                                                defaultValue=""
+                                                onChange={(e) => {
+                                                    const token = e.target.value;
+                                                    (e.target as HTMLSelectElement).value = "";
+                                                    if (!token) return;
+
+                                                    setEditor((cur) => ({
+                                                        ...cur,
+                                                        validation_fields: cur.validation_fields.map((it) => {
+                                                            if (it.id !== f.id) return it;
+                                                            if (it.tokens.some((t) => t.token === token)) return it;
+                                                            return { ...it, tokens: [...it.tokens, { id: newId(), token }] };
+                                                        }),
+                                                    }));
+                                                }}
+                                            >
+                                                <option value="">Chọn rule...</option>
+                                                {VALIDATION_RULE_OPTIONS.map((opt) => (
+                                                    <option key={opt.value} value={opt.value}>
+                                                        {opt.label}
+                                                    </option>
+                                                ))}
+                                            </Select>
+                                        </div>
+
+                                        <Button
+                                            variant="ghost"
+                                            className="mt-5 h-8 px-2 py-1 text-xs text-rose-700"
+                                            onClick={() =>
+                                                setEditor((cur) => ({
+                                                    ...cur,
+                                                    validation_fields: cur.validation_fields.filter((it) => it.id !== f.id),
+                                                }))
+                                            }
+                                        >
+                                            Xoá
+                                        </Button>
+                                    </div>
+
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                        {f.tokens.length === 0 ? (
+                                            <span className="text-xs text-slate-500">Chưa có rule.</span>
+                                        ) : (
+                                            f.tokens.map((t) => (
+                                                <span key={t.id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-700 ring-1 ring-slate-200">
+                                                    <span className="font-mono">{t.token}</span>
+                                                    <button
+                                                        type="button"
+                                                        className="ml-1 rounded px-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
+                                                        onClick={() =>
+                                                            setEditor((cur) => ({
+                                                                ...cur,
+                                                                validation_fields: cur.validation_fields.map((it) =>
+                                                                    it.id === f.id ? { ...it, tokens: it.tokens.filter((x) => x.id !== t.id) } : it
+                                                                ),
+                                                            }))
+                                                        }
+                                                        aria-label={`Remove ${t.token}`}
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </span>
+                                            ))
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-2 text-xs text-slate-500">
+                            Không còn phải nhập JSON thủ công. Nếu muốn bỏ validate payload thì xoá hết fields hoặc xoá hết rules trong mỗi field.
+                        </div>
+
+                        {rulesJsonOpen ? (
+                            <div className="mt-2">
+                                <div className="text-[11px] font-medium text-slate-600">JSON preview</div>
+                                <textarea
+                                    className={[
+                                        "mt-1 w-full rounded-md border border-slate-200 bg-slate-50 p-3 font-mono text-xs outline-none shadow-sm",
+                                        "focus:border-slate-400 focus:ring-2 focus:ring-slate-200",
+                                    ].join(" ")}
+                                    rows={8}
+                                    readOnly
+                                    value={JSON.stringify(buildValidationRulesRecord(editor.validation_fields) ?? {}, null, 2)}
+                                />
+                            </div>
+                        ) : null}
                     </div>
                 </div>
             </Modal>
