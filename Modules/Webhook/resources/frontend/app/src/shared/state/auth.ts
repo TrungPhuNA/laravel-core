@@ -89,10 +89,13 @@ export function useAuth() {
     const snap = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getSnapshot);
 
     return useMemo(() => {
+        const token = snap.token.trim();
+        const isValidToken = token !== "" && token !== "undefined" && token !== "null";
+
         return {
             token: snap.token,
             locale: snap.locale,
-            hasToken: snap.token.trim() !== "",
+            hasToken: isValidToken,
             setToken: (v: string) => store.setToken(v),
             setLocale: (v: Locale) => store.setLocale(v),
             persist: () => store.persist(),
