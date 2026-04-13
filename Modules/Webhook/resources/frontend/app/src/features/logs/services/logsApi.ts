@@ -18,9 +18,14 @@ export async function listLogs(webhookId: number, params: ListLogsParams): Promi
     const qs = buildQuery(params as any);
     const res = await api.get<ApiResponseSuccess<{ items: WebhookRequestLog[] }>>(`/webhooks/${webhookId}/requests${qs}`);
     if (res.data.status !== "success") throw res.data;
+
+    // Backend trả về meta: { pagination: { ... } } hoặc meta phẳng
+    const rawMeta = res.data.meta as any;
+    const pagination = rawMeta?.pagination || rawMeta;
+
     return {
         items: res.data.data.items ?? [],
-        meta: (res.data.meta as ApiMetaPagination) ?? {
+        meta: (pagination as ApiMetaPagination) ?? {
             page: 1,
             per_page: params.per_page ?? 20,
             total: 0,

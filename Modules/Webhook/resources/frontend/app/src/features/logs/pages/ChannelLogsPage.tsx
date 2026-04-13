@@ -8,7 +8,7 @@ import Alert from "@shared/ui/Alert";
 import Modal from "@shared/ui/Modal";
 import Pagination from "@shared/ui/Pagination";
 import type { ApiMetaPagination, ApiResponseError, ApiResponseFail } from "@shared/http/types";
-import { prettyJson, shortText } from "@shared/lib/format";
+import { formatDateTime, prettyJson, shortText } from "@shared/lib/format";
 import type { WebhookRequestLog, WebhookRequestLogDetail } from "../types";
 import { getLog, listLogs, pruneLogs } from "../services/logsApi";
 
@@ -125,18 +125,18 @@ export default function ChannelLogsPage() {
     return (
         <div className="space-y-4">
             <div className="flex items-end justify-between gap-3">
-                <div>
-                    <div className="text-lg font-semibold">Logs webhook #{webhookId}</div>
-                    <div className="text-sm text-slate-600">Xem log request nhận vào (headers/query/body) để debug.</div>
+                <div className="flex-1 min-w-0">
+                    <div className="text-xl font-extrabold tracking-tight text-slate-900 mb-1">Logs webhook #{webhookId}</div>
+                    <div className="text-xs sm:text-sm text-slate-500 font-medium">Theo dõi các request nhận về (headers/query/body) để debug và kiểm tra tích hợp.</div>
                 </div>
-                <div className="flex items-center gap-2">
-                    <Link className="text-sm font-semibold text-slate-900 hover:underline" to="/channels">
+                <div className="flex items-center gap-2 shrink-0">
+                    <Link className="text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors" to="/channels">
                         Quay lại
                     </Link>
-                    <Button variant="ghost" onClick={() => reload()} disabled={loading}>
+                    <Button variant="ghost" className="h-8 text-xs font-bold" onClick={() => reload()} disabled={loading}>
                         Tải lại
                     </Button>
-                    <Button variant="primary" onClick={() => setPruneOpen(true)} disabled={loading}>
+                    <Button variant="primary" className="h-8 text-xs font-bold" onClick={() => setPruneOpen(true)} disabled={loading}>
                         Prune
                     </Button>
                 </div>
@@ -178,50 +178,80 @@ export default function ChannelLogsPage() {
                 </div>
             </Card>
 
-            <Card title="Danh sách">
-                <div className="overflow-auto">
-                    <table className="min-w-full text-sm">
-                        <thead className="text-left text-slate-600">
-                            <tr className="border-b">
-                                <th className="py-2 pr-4">ID</th>
-                                <th className="py-2 pr-4">Method</th>
-                                <th className="py-2 pr-4">IP</th>
-                                <th className="py-2 pr-4">Received at</th>
-                                <th className="py-2 pr-2">Body</th>
+            <Card title="Danh sách Logs" bodyClassName="p-0 sm:p-6" className="overflow-hidden">
+                <div className="hidden sm:block overflow-auto">
+                    <table className="ui-table">
+                        <thead className="ui-thead">
+                            <tr>
+                                <th className="ui-th">ID</th>
+                                <th className="ui-th">Method</th>
+                                <th className="ui-th w-32">IP</th>
+                                <th className="ui-th w-44">Received at</th>
+                                <th className="ui-th">Body Preview</th>
                             </tr>
                         </thead>
                         <tbody>
                             {items.map((it) => (
                                 <tr
                                     key={it.id}
-                                    className="border-b last:border-b-0 hover:bg-slate-50 cursor-pointer"
+                                    className="ui-tr cursor-pointer"
                                     onClick={() => openDetail(it.id)}
                                 >
-                                    <td className="py-2 pr-4 font-medium">{it.id}</td>
-                                    <td className="py-2 pr-4">{it.method}</td>
-                                    <td className="py-2 pr-4 text-slate-600">{it.ip ?? "-"}</td>
-                                    <td className="py-2 pr-4 text-slate-600">{it.received_at ?? "-"}</td>
-                                    <td className="py-2 pr-2 font-mono text-xs text-slate-700">{shortText(it.body_preview ?? "", 140)}</td>
+                                    <td className="ui-td font-bold text-slate-900">#{it.id}</td>
+                                    <td className="ui-td">
+                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${it.method === 'POST' ? 'bg-indigo-50 text-indigo-600' : 'bg-sky-50 text-sky-600'}`}>
+                                            {it.method}
+                                        </span>
+                                    </td>
+                                    <td className="ui-td text-slate-500 font-mono text-[11px]">{it.ip ?? "-"}</td>
+                                    <td className="ui-td text-slate-600 font-medium whitespace-nowrap">{formatDateTime(it.received_at)}</td>
+                                    <td className="ui-td text-slate-400 font-mono text-[11px]">{shortText(it.body_preview ?? "", 80)}</td>
                                 </tr>
                             ))}
-                            {items.length === 0 ? (
-                                <tr>
-                                    <td colSpan={5} className="py-6 text-center text-slate-500">
-                                        Không có dữ liệu.
-                                    </td>
-                                </tr>
-                            ) : null}
                         </tbody>
                     </table>
                 </div>
 
-                <Pagination
-                    meta={meta}
-                    onChange={(next) => {
-                        setMeta((m) => ({ ...m, page: next.page, per_page: next.per_page }));
-                        reload(next);
-                    }}
-                />
+                {/* Mobile list view */}
+                <div className="sm:hidden divide-y divide-slate-100">
+                    {items.map((it) => (
+                        <div 
+                            key={it.id} 
+                            className="p-4 active:bg-slate-50 flex items-center justify-between gap-4"
+                            onClick={() => openDetail(it.id)}
+                        >
+                            <div className="min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                    <span className="font-bold text-slate-900 text-sm">#{it.id}</span>
+                                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase ${it.method === 'POST' ? 'bg-indigo-50 text-indigo-600' : 'bg-sky-50 text-sky-600'}`}>
+                                        {it.method}
+                                    </span>
+                                </div>
+                                <div className="text-[11px] text-slate-500 font-medium mb-1">{formatDateTime(it.received_at)}</div>
+                                <div className="text-[10px] text-slate-400 font-mono truncate">{shortText(it.body_preview ?? "", 40)}</div>
+                            </div>
+                            <div className="text-slate-300">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7"></path></svg>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+                {items.length === 0 ? (
+                    <div className="py-12 text-center text-slate-500 italic text-sm">
+                        Không có dữ liệu log nào được ghi nhận.
+                    </div>
+                ) : null}
+
+                <div className="px-4 pb-4 sm:p-0">
+                    <Pagination
+                        meta={meta}
+                        onChange={(next) => {
+                            setMeta((m) => ({ ...m, page: next.page, per_page: next.per_page }));
+                            reload(next);
+                        }}
+                    />
+                </div>
             </Card>
 
             <Modal open={detailOpen} title={detail ? `Log #${detail.id}` : "Chi tiết log"} onClose={() => setDetailOpen(false)}>
