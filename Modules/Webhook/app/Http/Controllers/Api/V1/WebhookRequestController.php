@@ -93,4 +93,29 @@ final class WebhookRequestController extends Controller
             message: 'Đã xoá log cũ',
         );
     }
+
+    /**
+     * Thống kê log request theo ngày
+     */
+    public function stats(int $id, \Illuminate\Http\Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        // Mac dinh lay 30 ngay qua.
+        $days = (int) $request->query('days', 30);
+        $since = now()->subDays($days)->startOfDay();
+
+        $data = $this->logs->getStatsForUserWebhook((int) $user->id, $id, $since);
+
+        return ApiResponse::success(
+            data: [
+                'stats' => $data,
+                'period_days' => $days,
+                'since' => $since->toISOString(),
+            ],
+            code: 'WEBHOOK_REQUEST_LOG_STATS_SUCCESS',
+            message: 'Lấy thống kê log thành công',
+        );
+    }
 }

@@ -28,6 +28,9 @@ final class WebhookRequest extends Model
         'headers',
         'query',
         'body',
+        'status',
+        'error_type',
+        'error_message',
         'received_at',
     ];
 

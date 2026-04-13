@@ -13,5 +13,7 @@ interface WebhookLogServiceInterface
     public function getForUserWebhook(int $userId, int $webhookId, int $requestId): WebhookRequest;
 
     public function pruneForUserWebhook(int $userId, int $webhookId, \DateTimeInterface $before): int;
+
+    public function getStatsForUserWebhook(int $userId, int $webhookId, \DateTimeInterface $since): array;
 }
 

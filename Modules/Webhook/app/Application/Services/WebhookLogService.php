@@ -37,5 +37,12 @@ final class WebhookLogService implements WebhookLogServiceInterface
 
         return $this->requests->pruneBefore((int) $webhook->id, $before);
     }
+
+    public function getStatsForUserWebhook(int $userId, int $webhookId, \DateTimeInterface $since): array
+    {
+        $webhook = $this->webhooks->findForUserOrFail($webhookId, $userId);
+
+        return $this->requests->getStats((int) $webhook->id, $since);
+    }
 }
 

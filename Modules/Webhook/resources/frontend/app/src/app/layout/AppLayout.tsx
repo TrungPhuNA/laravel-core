@@ -167,18 +167,36 @@ export default function AppLayout() {
                             ☰
                         </button>
 
-                        <div className="min-w-0">
-                            <div className="font-semibold tracking-tight leading-5 truncate">
+                        <Link to="/channels" className="min-w-0 group block hover:opacity-80 transition-opacity">
+                            <div className="font-semibold tracking-tight leading-5 truncate group-hover:text-sky-600 transition-colors">
                                 Webhook
                                 <span className="hidden sm:inline ml-2 text-xs font-normal text-slate-500">Quản lý kênh + logs</span>
                             </div>
                             <div className="md:hidden text-xs text-slate-600 truncate">Kênh webhook</div>
-                        </div>
+                        </Link>
 
                         <nav className="hidden md:flex items-center gap-4 text-sm min-w-0">
                             <Link className={linkClass(loc.pathname, "/channels")} to="/channels">
                                 Kênh webhook
                             </Link>
+                            
+                            {/* Dynamic menu based on current channel ID */}
+                            {(() => {
+                                const match = loc.pathname.match(/\/channels\/(\d+)/);
+                                if (!match) return null;
+                                const cid = match[1];
+                                return (
+                                    <>
+                                        <div className="w-px h-4 bg-slate-200 mx-1"></div>
+                                        <Link className={linkClass(loc.pathname, `/channels/${cid}/logs`)} to={`/channels/${cid}/logs`}>
+                                            Logs
+                                        </Link>
+                                        <Link className={linkClass(loc.pathname, `/channels/${cid}/stats`)} to={`/channels/${cid}/stats`}>
+                                            Thống kê
+                                        </Link>
+                                    </>
+                                );
+                            })()}
                         </nav>
                     </div>
 
@@ -340,19 +358,6 @@ export default function AppLayout() {
                         </div>
 
                         <div className="mt-auto border-t border-slate-100 p-4 space-y-3">
-                            <div>
-                                <div className="text-xs font-medium text-slate-600">Ngôn ngữ</div>
-                                <Select
-                                    className="mt-1 w-full"
-                                    value={auth.locale}
-                                    onChange={(e) => auth.setLocale(e.target.value as "vi" | "en")}
-                                    aria-label="Ngôn ngữ"
-                                >
-                                    <option value="vi">VI</option>
-                                    <option value="en">EN</option>
-                                </Select>
-                            </div>
-
                             {auth.hasToken && me ? (
                                 <div className="space-y-2">
                                     <Button

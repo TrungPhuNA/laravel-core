@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AppLayout from "./layout/AppLayout";
 import ChannelsPage from "../features/channels/pages/ChannelsPage";
 import ChannelLogsPage from "../features/logs/pages/ChannelLogsPage";
+import ChannelStatsPage from "../features/logs/pages/ChannelStatsPage";
 
 export default function App() {
     return (
@@ -11,6 +12,7 @@ export default function App() {
                 <Route index element={<Navigate to="/channels" replace />} />
                 <Route path="/channels" element={<ChannelsPage />} />
                 <Route path="/channels/:id/logs" element={<ChannelLogsPage />} />
+                <Route path="/channels/:id/stats" element={<ChannelStatsPage />} />
                 <Route path="*" element={<div className="text-sm text-slate-600">Không tìm thấy trang.</div>} />
             </Route>
         </Routes>

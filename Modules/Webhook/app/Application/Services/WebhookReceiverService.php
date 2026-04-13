@@ -25,42 +25,55 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
     {
         $webhook = $this->webhooks->findByPublicIdOrFail($publicId);
 
-        if (!$webhook->is_active) {
-            throw new ApiException(
-                errorCode: ErrorCode::FORBIDDEN->value,
-                message: 'Webhook đang bị tắt',
-                status: 403,
-            );
+        try {
+            if (!$webhook->is_active) {
+                throw new ApiException(
+                    errorCode: ErrorCode::FORBIDDEN->value,
+                    message: 'Webhook đang bị tắt',
+                    status: 403,
+                );
+            }
+
+            $method = strtoupper((string)$request->method());
+            $allowed = $this->normalizeAllowedMethods($webhook);
+
+            if (!in_array($method, $allowed, true)) {
+                throw new ApiException(
+                    errorCode: ErrorCode::METHOD_NOT_ALLOWED->value,
+                    message: 'Webhook không hỗ trợ method này',
+                    status: 405,
+                    details: ['method' => $method, 'allowed' => $allowed],
+                );
+            }
+
+            $this->checkAuth($webhook, $request);
+
+            // Payload validate: hop nhat query + body (Laravel: $request->all()).
+            // Neu auth dung query param token=... -> remove de khong can validate.
+            $payload = Arr::except($request->all(), ['token']);
+
+            $validated = $payload;
+            $rules = $webhook->validation_rules;
+            if (is_array($rules) && $rules !== []) {
+                $validated = Validator::make($payload, $rules)->validate();
+            }
+
+            // Success log
+            $this->logRequest($webhook, $request, 'success');
+            $webhook->forceFill(['last_received_at' => now()])->save();
+
+            return ['webhook' => $webhook, 'validated' => $validated];
+
+        } catch (ApiException $e) {
+            $this->logRequest($webhook, $request, 'failed', $e->getErrorCode(), $e->getMessage());
+            throw $e;
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->logRequest($webhook, $request, 'failed', 'validation_failed', $e->getMessage());
+            throw $e;
+        } catch (\Throwable $e) {
+            $this->logRequest($webhook, $request, 'failed', 'system_error', $e->getMessage());
+            throw $e;
         }
-
-        $method = strtoupper((string) $request->method());
-        $allowed = $this->normalizeAllowedMethods($webhook);
-
-        if (!in_array($method, $allowed, true)) {
-            throw new ApiException(
-                errorCode: ErrorCode::METHOD_NOT_ALLOWED->value,
-                message: 'Webhook không hỗ trợ method này',
-                status: 405,
-                details: ['method' => $method, 'allowed' => $allowed],
-            );
-        }
-
-        $this->checkAuth($webhook, $request);
-
-        // Payload validate: hop nhat query + body (Laravel: $request->all()).
-        // Neu auth dung query param token=... -> remove de khong can validate.
-        $payload = Arr::except($request->all(), ['token']);
-
-        $validated = $payload;
-        $rules = $webhook->validation_rules;
-        if (is_array($rules) && $rules !== []) {
-            $validated = Validator::make($payload, $rules)->validate();
-        }
-
-        $this->logRequest($webhook, $request);
-        $webhook->forceFill(['last_received_at' => now()])->save();
-
-        return ['webhook' => $webhook, 'validated' => $validated];
     }
 
     /**
@@ -194,8 +207,13 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
         return trim($value);
     }
 
-    private function logRequest(Webhook $webhook, Request $request): void
-    {
+    private function logRequest(
+        Webhook $webhook,
+        Request $request,
+        string $status = 'success',
+        ?string $errorType = null,
+        ?string $errorMessage = null
+    ): void {
         $headers = $request->headers->all();
 
         // Mask thong tin nhay cam.
@@ -203,11 +221,14 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
 
         WebhookRequest::query()->create([
             'webhook_id' => $webhook->id,
-            'method' => strtoupper((string) $request->method()),
-            'ip' => (string) ($request->ip() ?? ''),
+            'method' => strtoupper((string)$request->method()),
+            'ip' => (string)($request->ip() ?? ''),
             'headers' => $headers,
             'query' => $request->query(),
             'body' => $request->getContent(),
+            'status' => $status,
+            'error_type' => $errorType,
+            'error_message' => $errorMessage,
             'received_at' => now(),
         ]);
     }

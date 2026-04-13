@@ -44,5 +44,20 @@ final class EloquentWebhookRequestRepository implements WebhookRequestRepository
             ->where('received_at', '<', $before)
             ->delete();
     }
+
+    public function getStats(int $webhookId, \DateTimeInterface $since): array
+    {
+        $stats = WebhookRequest::query()
+            ->where('webhook_id', $webhookId)
+            ->where('received_at', '>=', $since)
+            ->selectRaw('DATE(received_at) as date')
+            ->selectRaw("COUNT(CASE WHEN status = 'success' THEN 1 END) as success_count")
+            ->selectRaw("COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed_count")
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        return $stats->toArray();
+    }
 }
 

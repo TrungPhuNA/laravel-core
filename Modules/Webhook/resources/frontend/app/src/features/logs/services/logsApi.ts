@@ -48,3 +48,15 @@ export async function pruneLogs(webhookId: number, input: { days?: number; befor
     return res.data.data;
 }
 
+export type WebhookStats = {
+    date: string;
+    success_count: number;
+    failed_count: number;
+}
+
+export async function getStats(webhookId: number, days: number = 30): Promise<WebhookStats[]> {
+    const res = await api.get<ApiResponseSuccess<{ stats: WebhookStats[] }>>(`/webhooks/${webhookId}/stats?days=${days}`);
+    if (res.data.status !== "success") throw res.data;
+    return res.data.data.stats;
+}
+

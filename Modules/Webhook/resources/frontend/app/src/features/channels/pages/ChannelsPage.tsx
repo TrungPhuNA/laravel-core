@@ -34,6 +34,9 @@ const IconTerminal = () => (
 const IconFilter = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
 );
+const IconChart = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+);
 const IconInfo = () => (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
 );
@@ -548,6 +551,13 @@ export default function ChannelsPage() {
                                                         >
                                                             <IconTerminal /> Logs
                                                         </Link>
+                                                        <Link
+                                                            className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-medium"
+                                                            to={`/channels/${it.id}/stats`}
+                                                            onClick={() => close()}
+                                                        >
+                                                            <IconChart /> Thống kê
+                                                        </Link>
                                                         <div className="h-px bg-slate-100 my-1" />
                                                         <button
                                                             type="button"
@@ -672,6 +682,13 @@ export default function ChannelsPage() {
                                                                     onClick={() => close()}
                                                                 >
                                                                     <IconTerminal /> Xem Logs
+                                                                </Link>
+                                                                <Link
+                                                                    className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold text-emerald-600"
+                                                                    to={`/channels/${it.id}/stats`}
+                                                                    onClick={() => close()}
+                                                                >
+                                                                    <IconChart /> Xem Thống kê
                                                                 </Link>
                                                                 {it.auth_type === "token" && (
                                                                     <button

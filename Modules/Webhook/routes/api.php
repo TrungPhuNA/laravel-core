@@ -26,6 +26,7 @@ Route::prefix('v1/webhooks')->group(function () {
 
         // Logs: list/show/prune theo webhook.
         Route::get('{id}/requests', [WebhookRequestController::class, 'index'])->whereNumber('id');
+        Route::get('{id}/stats', [WebhookRequestController::class, 'stats'])->whereNumber('id');
         Route::get('{id}/requests/{requestId}', [WebhookRequestController::class, 'show'])->whereNumber('id')->whereNumber('requestId');
         Route::post('{id}/requests/prune', [WebhookRequestController::class, 'prune'])->whereNumber('id');
     });

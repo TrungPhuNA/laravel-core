@@ -16,5 +16,11 @@ interface WebhookRequestRepositoryInterface
      * Xoa log theo dieu kien.
      */
     public function pruneBefore(int $webhookId, \DateTimeInterface $before): int;
+
+    /**
+     * Lay thong ke theo ngay.
+     * Trả về mảng các object: {date, success_count, failed_count}
+     */
+    public function getStats(int $webhookId, \DateTimeInterface $since): array;
 }
 
