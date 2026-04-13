@@ -1,8 +1,13 @@
 import React from "react";
 
-export default function Card(props: { title?: string; children: React.ReactNode; actions?: React.ReactNode }) {
+export default function Card(props: {
+  title?: string;
+  children: React.ReactNode;
+  actions?: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <div className="ui-card">
+    <div className={["ui-card", props.className].filter(Boolean).join(" ")}>
       {props.title ? (
         <div className="ui-card-header">
           <div className="ui-card-title">{props.title}</div>
@@ -13,3 +18,4 @@ export default function Card(props: { title?: string; children: React.ReactNode;
     </div>
   );
 }
+

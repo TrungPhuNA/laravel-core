@@ -15,6 +15,30 @@ import { copyToClipboard } from "@shared/lib/clipboard";
 import type { WebhookChannel } from "../types";
 import { createChannel, deleteChannel, listChannels, rotateSecret, rotateToken, updateChannel } from "../services/webhooksApi";
 
+// --- Icons ---
+const IconPlus = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+);
+const IconRefresh = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+);
+const IconCopy = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+);
+const IconExternal = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+);
+const IconTerminal = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+);
+const IconFilter = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+);
+const IconInfo = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+);
+
+
 type Err = ApiResponseFail | ApiResponseError | Error | unknown;
 
 type ValidationField = {
@@ -146,6 +170,8 @@ export default function ChannelsPage() {
     const [urlOpen, setUrlOpen] = React.useState(false);
     const [urlValue, setUrlValue] = React.useState("");
     const [toast, setToast] = React.useState<string>("");
+    const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
+    const [guideOpen, setGuideOpen] = React.useState(false);
 
     async function reload(next?: Partial<{ page: number; per_page: number }>) {
         const page = next?.page ?? meta.page;
@@ -342,448 +368,411 @@ export default function ChannelsPage() {
     const errView = error ? normalizeError(error) : null;
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-end justify-between gap-3">
+        <div className="space-y-6 pb-12">
+            {/* Header section */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <div className="text-lg font-semibold">Kênh webhook</div>
-                    <div className="text-sm text-slate-600">Tạo nhiều kênh webhook cho riêng bạn, có logs và auth tuỳ chọn.</div>
+                    <h1 className="text-2xl font-black tracking-tight text-slate-900 flex items-center gap-3">
+                        Kênh Webhook
+                    </h1>
+                    <p className="mt-1 text-sm font-medium text-slate-500">
+                        Quản lý các điểm tiếp nhận dữ liệu từ bên thứ 3 (postbacks) với bảo mật cao.
+                    </p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" onClick={() => reload()} disabled={loading}>
+                    <button
+                        className={`ui-btn ui-btn-ghost gap-2 border border-slate-200 lg:hidden ${guideOpen ? 'bg-sky-50 border-sky-200 text-sky-700' : 'bg-white'}`}
+                        onClick={() => setGuideOpen(!guideOpen)}
+                    >
+                        <IconInfo />
+                        <span className="hidden sm:inline">Hướng dẫn</span>
+                    </button>
+                    <button
+                        className={`ui-btn ui-btn-ghost gap-2 border border-slate-200 lg:hidden ${mobileFiltersOpen ? 'bg-slate-100 border-slate-300' : 'bg-white'}`}
+                        onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                    >
+                        <IconFilter />
+                        Lọc
+                    </button>
+                    <button
+                        className="ui-btn ui-btn-ghost gap-2 border border-slate-200 bg-white hidden md:flex"
+                        onClick={() => reload()}
+                        disabled={loading}
+                    >
+                        <IconRefresh />
                         Tải lại
-                    </Button>
-                    <Button variant="primary" onClick={openCreate} disabled={loading}>
-                        Tạo kênh
-                    </Button>
+                    </button>
+                    <button
+                        className="ui-btn ui-btn-primary gap-2"
+                        onClick={openCreate}
+                        disabled={loading}
+                    >
+                        <IconPlus />
+                        <span className="hidden sm:inline">Tạo kênh mới</span>
+                        <span className="sm:hidden">Tạo</span>
+                    </button>
                 </div>
             </div>
 
             {errView ? <Alert tone="danger" title={errView.title} details={errView.details} /> : null}
             {toast ? <Alert tone="success" title={toast} /> : null}
 
-            <Card title="Hướng dẫn nhanh">
-                <div className="text-sm text-slate-700 space-y-2">
-                    <div>
-                        Link nhận postback (receiver) của mỗi kênh nằm ở cột <b>Receive URL</b>.
-                        Dạng chung:
-                        <code className="ml-2 rounded bg-slate-100 px-1 py-0.5 font-mono">
-                            /api/v1/webhooks/receive/&lt;public_id&gt;
-                        </code>
+            {/* Quick guide section */}
+            <Card className={`border-none bg-sky-50 shadow-none ${guideOpen ? 'block' : 'hidden lg:block'}`}>
+                <div className="flex gap-4">
+                    <div className="shrink-0 text-sky-600 mt-0.5">
+                        <IconInfo />
                     </div>
-                    <div>
-                        Auth:
-                        <span className="ml-2 font-semibold">token</span> (đơn giản) hoặc{" "}
-                        <span className="font-semibold">hmac</span> (an toàn hơn). Token/secret chỉ trả 1 lần khi tạo hoặc rotate,
-                        nhớ lưu lại.
-                    </div>
-                    <div className="text-xs text-slate-500">
-                        Tip: bấm vào Receive URL hoặc nút Copy để lấy full URL.
-                    </div>
-                </div>
-            </Card>
-
-            <Card
-                title="Bộ lọc"
-                actions={
-                    <Button variant="primary" onClick={() => reload({ page: 1 })} disabled={loading}>
-                        Áp dụng
-                    </Button>
-                }
-            >
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Tên (LIKE)</div>
-                        <Input className="mt-1" value={filters.name} onChange={(e) => setFilters({ ...filters, name: e.target.value })} placeholder="payment" />
-                    </div>
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Auth</div>
-                        <Select className="mt-1" value={filters.auth_type} onChange={(e) => setFilters({ ...filters, auth_type: e.target.value as any })}>
-                            <option value="all">Tất cả</option>
-                            <option value="none">none</option>
-                            <option value="token">token</option>
-                            <option value="hmac">hmac</option>
-                        </Select>
-                    </div>
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Trạng thái</div>
-                        <Select className="mt-1" value={filters.is_active} onChange={(e) => setFilters({ ...filters, is_active: e.target.value as any })}>
-                            <option value="all">Tất cả</option>
-                            <option value="1">Đang bật</option>
-                            <option value="0">Đang tắt</option>
-                        </Select>
-                    </div>
-                </div>
-            </Card>
-
-            <Card title="Danh sách">
-                <div className="md:hidden space-y-2">
-                    {items.map((it) => {
-                        const methods = it.allowed_methods?.length ? it.allowed_methods.join(",") : "GET,POST";
-                        const url = receiveUrlFor(it.public_id);
-                        return (
-                            <div key={it.id} className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="min-w-0">
-                                        <div className="font-semibold text-slate-900 truncate" title={it.name}>
-                                            {it.name}
-                                        </div>
-                                        <div className="mt-0.5 text-xs text-slate-500 truncate" title={it.description ?? ""}>
-                                            {it.description ?? "-"}
-                                        </div>
-                                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                                            <Badge tone={it.is_active ? "success" : "danger"}>{it.is_active ? "active" : "inactive"}</Badge>
-                                            <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
-                                                {it.auth_type}
-                                            </Badge>
-                                            <span className="text-xs text-slate-600 font-mono">#{it.id}</span>
-                                        </div>
-                                    </div>
-                                    <Dropdown
-                                        align="right"
-                                        trigger={<span className="ui-btn ui-btn-ghost h-9 w-9 px-0 py-0 grid place-items-center">⋯</span>}
-                                    >
-                                        {({ close }) => (
-                                            <>
-                                                <button
-                                                    type="button"
-                                                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                                                    onClick={() => {
-                                                        close();
-                                                        openEdit(it);
-                                                    }}
-                                                >
-                                                    Sửa
-                                                </button>
-                                                <Link
-                                                    className="block px-4 py-2 text-sm hover:bg-slate-50"
-                                                    to={`/channels/${it.id}/logs`}
-                                                    onClick={() => close()}
-                                                >
-                                                    Logs
-                                                </Link>
-                                                {it.auth_type === "token" ? (
-                                                    <button
-                                                        type="button"
-                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                                                        onClick={() => {
-                                                            close();
-                                                            doRotateToken(it);
-                                                        }}
-                                                        disabled={loading}
-                                                    >
-                                                        Rotate token
-                                                    </button>
-                                                ) : null}
-                                                {it.auth_type === "hmac" ? (
-                                                    <button
-                                                        type="button"
-                                                        className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                                                        onClick={() => {
-                                                            close();
-                                                            doRotateSecret(it);
-                                                        }}
-                                                        disabled={loading}
-                                                    >
-                                                        Rotate secret
-                                                    </button>
-                                                ) : null}
-                                                <div className="h-px bg-slate-100" />
-                                                <button
-                                                    type="button"
-                                                    className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-rose-700"
-                                                    onClick={() => {
-                                                        close();
-                                                        doDelete(it.id);
-                                                    }}
-                                                    disabled={loading}
-                                                >
-                                                    Xoá
-                                                </button>
-                                            </>
-                                        )}
-                                    </Dropdown>
-                                </div>
-
-                                <div className="mt-3 overflow-hidden rounded-lg border border-slate-100 bg-slate-50 divide-y divide-slate-100 text-xs text-slate-700">
-                                    <div className="flex items-center justify-between gap-3 px-3 py-2">
-                                        <div className="text-slate-500 shrink-0">Public ID</div>
-                                        <div className="font-mono truncate" title={it.public_id}>
-                                            {shortText(it.public_id, 28)}
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center justify-between gap-3 px-3 py-2">
-                                        <div className="text-slate-500 shrink-0">Methods</div>
-                                        <div className="font-mono">{methods}</div>
-                                    </div>
-                                    <div className="flex items-center justify-between gap-3 px-3 py-2">
-                                        <div className="text-slate-500 shrink-0">Last</div>
-                                        <div className="text-slate-600 truncate">{it.last_received_at ?? "-"}</div>
-                                    </div>
-                                    <div className="px-3 py-2">
-                                        <div className="text-slate-500">Receive URL</div>
-                                        <button
-                                            type="button"
-                                            className="mt-1 w-full rounded-md border border-slate-200 bg-white p-2 text-left font-mono text-[11px] text-slate-700 hover:bg-slate-50"
-                                            title={url}
-                                            onClick={() => openReceiveUrl(url)}
-                                        >
-                                            {shortText(url, 52)}
-                                        </button>
-                                        <div className="mt-2 flex items-center gap-2">
-                                            <Button variant="ghost" className="h-8 px-2 py-1 text-xs" onClick={() => openReceiveUrl(url)}>
-                                                Xem
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                className="h-8 px-2 py-1 text-xs"
-                                                onClick={async () => {
-                                                    const ok = await copyToClipboard(url);
-                                                    toastOnce(ok ? "Đã copy Receive URL" : "Không copy được. Tip: mở Receive URL rồi bấm Cmd/Ctrl+C.");
-                                                }}
-                                            >
-                                                Copy
-                                            </Button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
-                    {items.length === 0 ? (
-                        <div className="py-10 text-center text-slate-500">
-                            Không có dữ liệu.
+                    <div className="text-sm text-sky-900 leading-relaxed font-medium">
+                        <p>
+                            Mỗi kênh sẽ nhận dữ liệu (POST/GET) thông qua <span className="font-bold underline decoration-sky-300">Receive URL</span> tương ứng.
+                            Bạn có thể cấu hình <span className="text-sky-700">Token</span> hoặc <span className="text-sky-700">HMAC</span> để xác thực người gọi.
+                        </p>
+                        <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-sky-700/80">
+                            <span className="flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                                Token: header X-Webhook-Token
+                            </span>
+                            <span className="flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-sky-400" />
+                                HMAC: header X-Webhook-Signature
+                            </span>
                         </div>
-                    ) : null}
+                    </div>
+                </div>
+            </Card>
+
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                {/* Filters sidebar/top */}
+                <div className={`${mobileFiltersOpen ? "block" : "hidden"} lg:block lg:col-span-1 space-y-6`}>
+                    <Card title="Bộ lọc" className="shadow-sm">
+                        <div className="space-y-4">
+                            <div>
+                                <label className="ui-label">Tìm theo tên</label>
+                                <Input
+                                    value={filters.name}
+                                    onChange={(e) => setFilters({ ...filters, name: e.target.value })}
+                                    placeholder="Ví dụ: Payment, SMS..."
+                                />
+                            </div>
+                            <div>
+                                <label className="ui-label">Kiểu Auth</label>
+                                <Select
+                                    value={filters.auth_type}
+                                    onChange={(e) => setFilters({ ...filters, auth_type: e.target.value as any })}
+                                >
+                                    <option value="all">Tất cả</option>
+                                    <option value="none">none</option>
+                                    <option value="token">token</option>
+                                    <option value="hmac">hmac</option>
+                                </Select>
+                            </div>
+                            <div>
+                                <label className="ui-label">Trạng thái</label>
+                                <Select
+                                    value={filters.is_active}
+                                    onChange={(e) => setFilters({ ...filters, is_active: e.target.value as any })}
+                                >
+                                    <option value="all">Tất cả</option>
+                                    <option value="1">Đang bật</option>
+                                    <option value="0">Đang tắt</option>
+                                </Select>
+                            </div>
+                            <Button
+                                className="w-full gap-2"
+                                variant="primary"
+                                onClick={() => reload({ page: 1 })}
+                                disabled={loading}
+                            >
+                                <IconFilter />
+                                Áp dụng bộ lọc
+                            </Button>
+                        </div>
+                    </Card>
                 </div>
 
-                <div className="hidden md:block overflow-auto">
-                    <table className="ui-table min-w-[1100px] w-full table-fixed">
-                        <thead className="ui-thead">
-                            <tr>
-                                <th className="ui-th w-[64px]">ID</th>
-                                <th className="ui-th w-[260px]">Kênh</th>
-                                <th className="ui-th w-[180px]">Public ID</th>
-                                <th className="ui-th w-[110px]">Auth</th>
-                                <th className="ui-th w-[110px]">Methods</th>
-                                <th className="ui-th w-[360px]">Receive URL</th>
-                                <th className="ui-th w-[220px]">Last</th>
-                                <th className="ui-th w-[86px] text-right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                {/* Main list section */}
+                <div className="lg:col-span-3 space-y-6 min-w-0">
+                    <Card className="shadow-md overflow-hidden" title="Danh sách các kênh">
+                        <div className="md:hidden space-y-4">
                             {items.map((it) => {
-                                const methods = it.allowed_methods?.length ? it.allowed_methods.join(",") : "GET,POST";
                                 const url = receiveUrlFor(it.public_id);
                                 return (
-                                    <tr key={it.id} className="ui-tr align-top">
-                                        <td className="ui-td font-medium text-slate-900 whitespace-nowrap">{it.id}</td>
-                                        <td className="ui-td">
-                                            <div className="font-semibold text-slate-900 leading-5 truncate" title={it.name}>
-                                                {it.name}
+                                    <div key={it.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                        <div className="flex items-start justify-between">
+                                            <div className="min-w-0">
+                                                <div className="font-bold text-slate-900 truncate pr-2 capitalize">
+                                                    {it.name}
+                                                </div>
+                                                <div className="mt-1 flex flex-wrap items-center gap-2">
+                                                    <Badge tone={it.is_active ? "success" : "danger"}>
+                                                        {it.is_active ? "Active" : "Disabled"}
+                                                    </Badge>
+                                                    <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
+                                                        {it.auth_type}
+                                                    </Badge>
+                                                    <span className="text-[11px] font-bold text-slate-400 font-mono">#{it.id}</span>
+                                                </div>
                                             </div>
-                                            <div
-                                                className="text-xs text-slate-500 leading-4 truncate"
-                                                title={it.description ?? ""}
-                                            >
-                                                {it.description ?? "-"}
-                                            </div>
-                                        </td>
-                                        <td className="ui-td font-mono text-xs text-slate-700 whitespace-nowrap">
-                                            <span className="truncate block" title={it.public_id}>
-                                                {shortText(it.public_id, 18)}
-                                            </span>
-                                        </td>
-                                        <td className="ui-td">
-                                            <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
-                                                {it.auth_type}
-                                            </Badge>
-                                        </td>
-                                        <td className="ui-td text-slate-700 whitespace-nowrap">{methods}</td>
-                                        <td className="ui-td">
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    type="button"
-                                                    className="font-mono text-xs text-slate-700 hover:underline truncate text-left cursor-pointer"
-                                                    title={url}
-                                                    onClick={() => openReceiveUrl(url)}
-                                                >
-                                                    {url}
-                                                </button>
-                                                <Button
-                                                    variant="ghost"
-                                                    className="h-8 px-2 py-1 text-xs"
-                                                    onClick={async () => {
-                                                        const ok = await copyToClipboard(url);
-                                                        toastOnce(
-                                                            ok
-                                                                ? "Đã copy Receive URL"
-                                                                : "Không copy được. Tip: mở Receive URL rồi bấm Cmd/Ctrl+C."
-                                                        );
-                                                    }}
-                                                >
-                                                    Copy
-                                                </Button>
-                                            </div>
-                                        </td>
-                                        <td className="ui-td text-slate-600 whitespace-nowrap">{it.last_received_at ?? "-"}</td>
-                                        <td className="ui-td text-right whitespace-nowrap">
                                             <Dropdown
                                                 align="right"
                                                 trigger={
-                                                    <span className="ui-btn ui-btn-ghost h-9 w-9 px-0 py-0 grid place-items-center">
-                                                        ⋯
-                                                    </span>
+                                                    <button className="h-8 w-8 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-colors">
+                                                        <span className="text-xl leading-none -mt-2">...</span>
+                                                    </button>
                                                 }
                                             >
                                                 {({ close }) => (
-                                                    <>
+                                                    <div className="py-1 min-w-[140px]">
                                                         <button
                                                             type="button"
-                                                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                                                            onClick={() => {
-                                                                close();
-                                                                openEdit(it);
-                                                            }}
+                                                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 font-medium"
+                                                            onClick={() => { close(); openEdit(it); }}
                                                         >
-                                                            Sửa
+                                                            Chỉnh sửa
                                                         </button>
                                                         <Link
-                                                            className="block px-4 py-2 text-sm hover:bg-slate-50"
+                                                            className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-medium"
                                                             to={`/channels/${it.id}/logs`}
                                                             onClick={() => close()}
                                                         >
-                                                            Logs
+                                                            <IconTerminal /> Logs
                                                         </Link>
-                                                        {it.auth_type === "token" ? (
-                                                            <button
-                                                                type="button"
-                                                                className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                                                                onClick={() => {
-                                                                    close();
-                                                                    doRotateToken(it);
-                                                                }}
-                                                                disabled={loading}
-                                                            >
-                                                                Rotate token
-                                                            </button>
-                                                        ) : null}
-                                                        {it.auth_type === "hmac" ? (
-                                                            <button
-                                                                type="button"
-                                                                className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50"
-                                                                onClick={() => {
-                                                                    close();
-                                                                    doRotateSecret(it);
-                                                                }}
-                                                                disabled={loading}
-                                                            >
-                                                                Rotate secret
-                                                            </button>
-                                                        ) : null}
-                                                        <div className="h-px bg-slate-100" />
+                                                        <div className="h-px bg-slate-100 my-1" />
                                                         <button
                                                             type="button"
-                                                            className="w-full text-left px-4 py-2 text-sm hover:bg-slate-50 text-rose-700"
-                                                            onClick={() => {
-                                                                close();
-                                                                doDelete(it.id);
-                                                            }}
+                                                            className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 text-rose-600 font-bold"
+                                                            onClick={() => { close(); doDelete(it.id); }}
                                                             disabled={loading}
                                                         >
-                                                            Xoá
+                                                            Xoá kênh
                                                         </button>
-                                                    </>
+                                                    </div>
                                                 )}
                                             </Dropdown>
-                                        </td>
-                                    </tr>
+                                        </div>
+
+                                        <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-3">
+                                            <div>
+                                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Receive URL</div>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="flex-1 font-mono text-[11px] text-slate-600 truncate bg-white p-2 rounded-lg border border-slate-100">
+                                                        {url}
+                                                    </div>
+                                                    <button
+                                                        onClick={async () => {
+                                                            const ok = await copyToClipboard(url);
+                                                            toastOnce(ok ? "Đã sao chép URL" : "Lỗi sao chép");
+                                                        }}
+                                                        className="p-2 text-slate-500 hover:text-sky-600 transition-colors"
+                                                    >
+                                                        <IconCopy />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 );
                             })}
-                            {items.length === 0 ? (
-                                <tr>
-                                    <td colSpan={8} className="py-10 text-center text-slate-500 border-b-0">
-                                        Không có dữ liệu.
-                                    </td>
-                                </tr>
-                            ) : null}
-                        </tbody>
-                    </table>
+                             {items.length === 0 && <div className="py-12 text-center text-slate-400 font-medium">Chưa có kênh nào được tạo.</div>}
+                        </div>
+
+                        <div className="hidden md:block overflow-x-auto">
+                            <table className="ui-table w-full table-fixed">
+                                <thead className="ui-thead">
+                                    <tr>
+                                        <th className="ui-th w-16">ID</th>
+                                        <th className="ui-th w-1/4">Kênh & Mô tả</th>
+                                        <th className="ui-th w-28">Auth</th>
+                                        <th className="ui-th w-1/3">Receive URL</th>
+                                        <th className="ui-th w-40">Hoạt động cuối</th>
+                                        <th className="ui-th w-16 text-right"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {items.map((it) => {
+                                        const url = receiveUrlFor(it.public_id);
+                                        return (
+                                            <tr key={it.id} className="ui-tr group">
+                                                <td className="ui-td font-mono font-bold text-slate-400">#{it.id}</td>
+                                                <td className="ui-td overflow-hidden">
+                                                    <div className="font-bold text-slate-900 truncate" title={it.name}>{it.name}</div>
+                                                    <div className="text-xs text-slate-500 mt-0.5 truncate" title={it.description ?? ""}>
+                                                        {it.description || "Không có mô tả"}
+                                                    </div>
+                                                </td>
+                                                <td className="ui-td">
+                                                    <div className="flex flex-col gap-1.5 items-start">
+                                                        <Badge tone={it.is_active ? "success" : "danger"}>
+                                                            {it.is_active ? "Active" : "Disabled"}
+                                                        </Badge>
+                                                        <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
+                                                            {it.auth_type}
+                                                        </Badge>
+                                                    </div>
+                                                </td>
+                                                <td className="ui-td">
+                                                    <div className="flex items-center gap-2 group/url overflow-hidden">
+                                                        <div
+                                                            className="flex-1 font-mono text-[10px] text-slate-500 bg-slate-50 px-2 py-1.5 rounded-lg border border-slate-100 truncate cursor-pointer hover:border-sky-300 hover:text-sky-600 transition-all"
+                                                            title={url}
+                                                            onClick={() => openReceiveUrl(url)}
+                                                        >
+                                                            {url}
+                                                        </div>
+                                                        <button
+                                                            className="p-1.5 text-slate-400 hover:text-sky-600 transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+                                                            onClick={async () => {
+                                                                const ok = await copyToClipboard(url);
+                                                                toastOnce(ok ? "Copied URL!" : "Failed to copy");
+                                                            }}
+                                                            title="Copy URL"
+                                                        >
+                                                            <IconCopy />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td className="ui-td text-xs font-medium text-slate-500 whitespace-nowrap">
+                                                    {it.last_received_at || "—"}
+                                                </td>
+                                                <td className="ui-td text-right">
+                                                    <Dropdown
+                                                        align="right"
+                                                        trigger={
+                                                            <button className="ui-btn ui-btn-ghost h-8 w-8 p-0 flex items-center justify-center border border-transparent hover:border-slate-200 bg-transparent text-slate-400 hover:text-slate-900 transition-all">
+                                                                <span className="text-xl leading-none -mt-2">...</span>
+                                                            </button>
+                                                        }
+                                                    >
+                                                        {({ close }) => (
+                                                            <div className="py-1 min-w-[160px]">
+                                                                <button
+                                                                    type="button"
+                                                                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold"
+                                                                    onClick={() => { close(); openEdit(it); }}
+                                                                >
+                                                                    Thiết lập
+                                                                </button>
+                                                                <Link
+                                                                    className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold text-sky-600"
+                                                                    to={`/channels/${it.id}/logs`}
+                                                                    onClick={() => close()}
+                                                                >
+                                                                    <IconTerminal /> Xem Logs
+                                                                </Link>
+                                                                {it.auth_type === "token" && (
+                                                                    <button
+                                                                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50"
+                                                                        onClick={() => { close(); doRotateToken(it); }}
+                                                                    >
+                                                                        Làm mới token
+                                                                    </button>
+                                                                )}
+                                                                {it.auth_type === "hmac" && (
+                                                                    <button
+                                                                        className="w-full text-left px-4 py-2.5 text-sm hover:bg-slate-50"
+                                                                        onClick={() => { close(); doRotateSecret(it); }}
+                                                                    >
+                                                                        Làm mới secret
+                                                                    </button>
+                                                                )}
+                                                                <div className="h-px bg-slate-100 my-1" />
+                                                                <button
+                                                                    type="button"
+                                                                    className="w-full text-left px-4 py-2.5 text-sm hover:bg-rose-50 text-rose-600 font-black"
+                                                                    onClick={() => { close(); doDelete(it.id); }}
+                                                                    disabled={loading}
+                                                                >
+                                                                    Xoá kênh
+                                                                </button>
+                                                            </div>
+                                                        )}
+                                                    </Dropdown>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                    {items.length === 0 && (
+                                        <tr>
+                                            <td colSpan={6} className="py-20 text-center text-slate-400 font-medium">
+                                                Không có dữ liệu kênh webhook.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="mt-6">
+                            <Pagination
+                                meta={meta}
+                                onChange={(next) => {
+                                    setMeta((m) => ({ ...m, page: next.page, per_page: next.per_page }));
+                                    reload(next);
+                                }}
+                            />
+                        </div>
+                    </Card>
                 </div>
+            </div>
 
-                <Pagination
-                    meta={meta}
-                    onChange={(next) => {
-                        setMeta((m) => ({ ...m, page: next.page, per_page: next.per_page }));
-                        reload(next);
-                    }}
-                />
-            </Card>
-
+            {/* Modals remain mostly same logic but with refined UI using shared components */}
             <Modal
                 open={editorOpen}
-                title={editorMode === "create" ? "Tạo kênh webhook" : `Cập nhật kênh #${editor.id}`}
+                title={editorMode === "create" ? "Tạo kênh Webhook" : `Thiết lập kênh #${editor.id}`}
+                className="max-w-2xl"
                 onClose={() => setEditorOpen(false)}
                 footer={
-                    <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" onClick={() => setEditorOpen(false)}>
-                            Huỷ
-                        </Button>
-                        <Button variant="primary" onClick={submitEditor} disabled={loading}>
-                            Lưu
+                    <div className="flex items-center justify-end gap-3 px-6 py-4 bg-slate-50/50 backdrop-blur">
+                        <Button variant="ghost" onClick={() => setEditorOpen(false)}>Huỷ bỏ</Button>
+                        <Button variant="primary" onClick={submitEditor} disabled={loading} className="min-w-[100px]">
+                            {loading ? "Đang lưu..." : "Lưu cấu hình"}
                         </Button>
                     </div>
                 }
             >
-                <div className="space-y-3">
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div className="space-y-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
-                            <div className="text-xs font-medium text-slate-600">Tên</div>
-                            <Input className="mt-1" value={editor.name} onChange={(e) => setEditor({ ...editor, name: e.target.value })} placeholder="Payment callback" />
+                            <label className="ui-label">Tên kênh gợi nhớ</label>
+                            <Input
+                                value={editor.name}
+                                onChange={(e) => setEditor({ ...editor, name: e.target.value })}
+                                placeholder="Ví dụ: Callback thanh toán Visa"
+                            />
                         </div>
                         <div>
-                            <div className="text-xs font-medium text-slate-600">Auth</div>
-                            <Select className="mt-1" value={editor.auth_type} onChange={(e) => setEditor({ ...editor, auth_type: e.target.value as any })}>
-                                <option value="none">none</option>
-                                <option value="token">token</option>
-                                <option value="hmac">hmac</option>
+                            <label className="ui-label">Phương thức xác thực</label>
+                            <Select
+                                value={editor.auth_type}
+                                onChange={(e) => setEditor({ ...editor, auth_type: e.target.value as any })}
+                            >
+                                <option value="none">none (Không bảo vệ)</option>
+                                <option value="token">token (Header X-Webhook-Token)</option>
+                                <option value="hmac">hmac (HMAC SHA-256)</option>
                             </Select>
-                            <div className="mt-2 text-xs text-slate-600">
-                                {editor.auth_type === "none" ? (
-                                    <span>Không yêu cầu auth. Bên thứ 3 gọi receiver trực tiếp.</span>
-                                ) : editor.auth_type === "token" ? (
-                                    <span>
-                                        Token sẽ được trả về 1 lần khi tạo/rotate. Bên thứ 3 gửi{" "}
-                                        <code className="rounded bg-slate-100 px-1 py-0.5">X-Webhook-Token</code> hoặc query{" "}
-                                        <code className="rounded bg-slate-100 px-1 py-0.5">?token=</code>.
-                                    </span>
-                                ) : (
-                                    <span>
-                                        Secret HMAC sẽ được trả về 1 lần khi tạo/rotate. Bên thứ 3 ký HMAC SHA-256 với canonical string
-                                        và gửi{" "}
-                                        <code className="rounded bg-slate-100 px-1 py-0.5">X-Webhook-Timestamp</code> +{" "}
-                                        <code className="rounded bg-slate-100 px-1 py-0.5">X-Webhook-Signature</code>.
-                                    </span>
-                                )}
+                            <div className="mt-2 text-[11px] text-slate-500 italic bg-amber-50 p-2 rounded-lg border border-amber-100">
+                                {editor.auth_type === "none" ? "Cẩn thận: Bất kỳ ai biết URL đều có thể gửi dữ liệu." :
+                                 editor.auth_type === "token" ? "Sử dụng token tĩnh gửi kèm trong Header." :
+                                 "Bảo mật nhất: Dùng secret key để ký và kiểm tra chữ ký."}
                             </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                         <div>
-                            <div className="text-xs font-medium text-slate-600">Trạng thái</div>
+                            <label className="ui-label">Trạng thái kênh</label>
                             <Select
-                                className="mt-1"
                                 value={editor.is_active ? "1" : "0"}
                                 onChange={(e) => setEditor({ ...editor, is_active: e.target.value === "1" })}
                             >
-                                <option value="1">Bật</option>
-                                <option value="0">Tắt</option>
+                                <option value="1">Đang bật (Active)</option>
+                                <option value="0">Tạm tắt (Disabled)</option>
                             </Select>
                         </div>
                         <div>
-                            <div className="text-xs font-medium text-slate-600">Methods</div>
+                            <label className="ui-label">Method cho phép</label>
                             <Select
-                                className="mt-1"
                                 value={editor.allowed_methods.join(",")}
                                 onChange={(e) => {
                                     const v = e.target.value;
@@ -791,251 +780,266 @@ export default function ChannelsPage() {
                                 }}
                             >
                                 <option value="GET,POST">GET + POST</option>
-                                <option value="GET">GET</option>
-                                <option value="POST">POST</option>
+                                <option value="GET">Chỉ GET</option>
+                                <option value="POST">Chỉ POST (Khuyên dùng)</option>
                             </Select>
                         </div>
-                        <div>
-                            <div className="text-xs font-medium text-slate-600">Mô tả</div>
-                            <Input className="mt-1" value={editor.description} onChange={(e) => setEditor({ ...editor, description: e.target.value })} placeholder="Nhận callback..." />
+                        <div className="md:col-span-1">
+                             {/* Optional for space */}
                         </div>
                     </div>
 
-                    {editorMode === "edit" && editor.auth_type === "token" ? (
-                        <label className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={editor.rotate_token} onChange={(e) => setEditor({ ...editor, rotate_token: e.target.checked })} />
-                            Rotate token (tạo token mới)
-                        </label>
-                    ) : null}
-
-                    {editorMode === "edit" && editor.auth_type === "hmac" ? (
-                        <label className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={editor.rotate_secret} onChange={(e) => setEditor({ ...editor, rotate_secret: e.target.checked })} />
-                            Rotate secret (tạo secret mới)
-                        </label>
-                    ) : null}
+                    <div>
+                        <label className="ui-label">Mô tả chi tiết</label>
+                        <Input
+                            value={editor.description}
+                            onChange={(e) => setEditor({ ...editor, description: e.target.value })}
+                            placeholder="Nhận thông tin thanh toán từ PayOS hoặc ZaloPay..."
+                        />
+                    </div>
 
                     <div>
-                        <div className="flex items-center justify-between gap-3">
-                            <div className="text-xs font-medium text-slate-600">Validation rules</div>
-                            <div className="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    className="text-xs text-slate-600 hover:underline"
-                                    onClick={() => setRulesJsonOpen((v) => !v)}
-                                >
-                                    {rulesJsonOpen ? "Ẩn JSON" : "Xem JSON"}
-                                </button>
-                                <Button
-                                    variant="ghost"
-                                    className="h-8 px-2 py-1 text-xs"
-                                    onClick={() =>
-                                        setEditor((cur) => ({
-                                            ...cur,
-                                            validation_fields: [...cur.validation_fields, { id: newId(), field: "", tokens: [] }],
-                                        }))
-                                    }
-                                >
-                                    Thêm field
-                                </Button>
-                            </div>
-                        </div>
-
-                        <div className="mt-2 space-y-2">
-                            {editor.validation_fields.length === 0 ? (
-                                <div className="rounded-md border border-dashed border-slate-200 bg-white p-3 text-xs text-slate-500">
-                                    Chưa có rule. Bấm <b>Thêm field</b> để bắt đầu.
-                                </div>
-                            ) : null}
-
-                            {editor.validation_fields.map((f) => (
-                                <div key={f.id} className="rounded-md border border-slate-200 bg-white p-3 shadow-sm">
-                                    <div className="flex items-start gap-2">
-                                        <div className="flex-1">
-                                            <div className="text-[11px] font-medium text-slate-600">Field</div>
-                                            <Input
-                                                className="mt-1"
-                                                value={f.field}
-                                                onChange={(e) =>
-                                                    setEditor((cur) => ({
-                                                        ...cur,
-                                                        validation_fields: cur.validation_fields.map((it) =>
-                                                            it.id === f.id ? { ...it, field: e.target.value } : it
-                                                        ),
-                                                    }))
-                                                }
-                                                placeholder="email"
-                                            />
-                                        </div>
-
-                                        <div className="w-[200px]">
-                                            <div className="text-[11px] font-medium text-slate-600">Thêm rule</div>
-                                            <Select
-                                                className="mt-1"
-                                                defaultValue=""
-                                                onChange={(e) => {
-                                                    const token = e.target.value;
-                                                    (e.target as HTMLSelectElement).value = "";
-                                                    if (!token) return;
-
-                                                    setEditor((cur) => ({
-                                                        ...cur,
-                                                        validation_fields: cur.validation_fields.map((it) => {
-                                                            if (it.id !== f.id) return it;
-                                                            if (it.tokens.some((t) => t.token === token)) return it;
-                                                            return { ...it, tokens: [...it.tokens, { id: newId(), token }] };
-                                                        }),
-                                                    }));
-                                                }}
-                                            >
-                                                <option value="">Chọn rule...</option>
-                                                {VALIDATION_RULE_OPTIONS.map((opt) => (
-                                                    <option key={opt.value} value={opt.value}>
-                                                        {opt.label}
-                                                    </option>
-                                                ))}
-                                            </Select>
-                                        </div>
-
-                                        <Button
-                                            variant="ghost"
-                                            className="mt-5 h-8 px-2 py-1 text-xs text-rose-700"
-                                            onClick={() =>
-                                                setEditor((cur) => ({
-                                                    ...cur,
-                                                    validation_fields: cur.validation_fields.filter((it) => it.id !== f.id),
-                                                }))
-                                            }
-                                        >
-                                            Xoá
-                                        </Button>
-                                    </div>
-
-                                    <div className="mt-2 flex flex-wrap gap-2">
-                                        {f.tokens.length === 0 ? (
-                                            <span className="text-xs text-slate-500">Chưa có rule.</span>
-                                        ) : (
-                                            f.tokens.map((t) => (
-                                                <span key={t.id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-1 text-xs text-slate-700 ring-1 ring-slate-200">
-                                                    <span className="font-mono">{t.token}</span>
-                                                    <button
-                                                        type="button"
-                                                        className="ml-1 rounded px-1 text-slate-500 hover:bg-slate-200 hover:text-slate-700"
-                                                        onClick={() =>
-                                                            setEditor((cur) => ({
-                                                                ...cur,
-                                                                validation_fields: cur.validation_fields.map((it) =>
-                                                                    it.id === f.id ? { ...it, tokens: it.tokens.filter((x) => x.id !== t.id) } : it
-                                                                ),
-                                                            }))
-                                                        }
-                                                        aria-label={`Remove ${t.token}`}
-                                                    >
-                                                        ×
-                                                    </button>
-                                                </span>
-                                            ))
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-
-                        <div className="mt-2 text-xs text-slate-500">
-                            Không còn phải nhập JSON thủ công. Nếu muốn bỏ validate payload thì xoá hết fields hoặc xoá hết rules trong mỗi field.
+                        <div className="flex items-center justify-between mb-2">
+                             <label className="ui-label !mb-0">Validation Rules (Rules cho body JSON)</label>
+                             <button
+                                type="button"
+                                className="text-xs font-bold text-sky-600 hover:text-sky-700 underline"
+                                onClick={() => setRulesJsonOpen(!rulesJsonOpen)}
+                             >
+                                {rulesJsonOpen ? "Dùng Mode UI" : "Sửa JSON trực tiếp"}
+                             </button>
                         </div>
 
                         {rulesJsonOpen ? (
-                            <div className="mt-2">
-                                <div className="text-[11px] font-medium text-slate-600">JSON preview</div>
-                                <textarea
-                                    className={[
-                                        "mt-1 w-full rounded-md border border-slate-200 bg-slate-50 p-3 font-mono text-xs outline-none shadow-sm",
-                                        "focus:border-slate-400 focus:ring-2 focus:ring-slate-200",
-                                    ].join(" ")}
-                                    rows={8}
-                                    readOnly
-                                    value={JSON.stringify(buildValidationRulesRecord(editor.validation_fields) ?? {}, null, 2)}
-                                />
+                             <textarea
+                                className="ui-input h-32 font-mono text-xs py-2"
+                                value={prettyJson(buildValidationRulesRecord(editor.validation_fields))}
+                                readOnly
+                             />
+                        ) : (
+                            <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
+                                <table className="w-full text-xs">
+                                    <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                                        <tr>
+                                            <th className="px-4 py-2 text-left w-1/3">Field Name</th>
+                                            <th className="px-4 py-2 text-left">Rules (Laravel Style)</th>
+                                            <th className="px-4 py-2 w-10"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {editor.validation_fields.map((f, fIdx) => (
+                                            <tr key={f.id}>
+                                                <td className="p-2">
+                                                    <input
+                                                        className="w-full h-8 px-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                                        value={f.field}
+                                                        onChange={(e) => {
+                                                            const newFields = [...editor.validation_fields];
+                                                            newFields[fIdx].field = e.target.value;
+                                                            setEditor({ ...editor, validation_fields: newFields });
+                                                        }}
+                                                        placeholder="order_id"
+                                                    />
+                                                </td>
+                                                <td className="p-2">
+                                                    <div className="flex flex-wrap gap-1.5 items-center">
+                                                        {f.tokens.map((t, tIdx) => (
+                                                            <div key={t.id} className="flex items-center bg-white border border-slate-200 rounded-md py-0.5 px-1.5 group/token">
+                                                                <select
+                                                                    className="bg-transparent font-medium focus:outline-none cursor-pointer"
+                                                                    value={t.token}
+                                                                    onChange={(e) => {
+                                                                        const newFields = [...editor.validation_fields];
+                                                                        newFields[fIdx].tokens[tIdx].token = e.target.value;
+                                                                        setEditor({ ...editor, validation_fields: newFields });
+                                                                    }}
+                                                                >
+                                                                    {VALIDATION_RULE_OPTIONS.map(opt => (
+                                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                    ))}
+                                                                    {!VALIDATION_RULE_OPTIONS.find(o => o.value === t.token) && (
+                                                                        <option value={t.token}>{t.token}</option>
+                                                                    )}
+                                                                </select>
+                                                                <button
+                                                                    type="button"
+                                                                    className="ml-1 text-slate-400 hover:text-rose-500"
+                                                                    onClick={() => {
+                                                                        const newFields = [...editor.validation_fields];
+                                                                        newFields[fIdx].tokens.splice(tIdx, 1);
+                                                                        setEditor({ ...editor, validation_fields: newFields });
+                                                                    }}
+                                                                >
+                                                                    &times;
+                                                                </button>
+                                                            </div>
+                                                        ))}
+                                                        <button
+                                                            type="button"
+                                                            className="h-6 w-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-sky-600 hover:border-sky-300"
+                                                            onClick={() => {
+                                                                const newFields = [...editor.validation_fields];
+                                                                newFields[fIdx].tokens.push({ id: newId(), token: "required" });
+                                                                setEditor({ ...editor, validation_fields: newFields });
+                                                            }}
+                                                        >
+                                                            +
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td className="p-2 text-center">
+                                                    <button
+                                                        type="button"
+                                                        className="text-slate-300 hover:text-rose-500 transition-colors"
+                                                        onClick={() => {
+                                                            const newFields = [...editor.validation_fields];
+                                                            newFields.splice(fIdx, 1);
+                                                            setEditor({ ...editor, validation_fields: newFields });
+                                                        }}
+                                                    >
+                                                        &times;
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                <button
+                                    type="button"
+                                    className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-500 transition-colors"
+                                    onClick={() => {
+                                        setEditor({
+                                            ...editor,
+                                            validation_fields: [...editor.validation_fields, { id: newId(), field: "", tokens: [{ id: newId(), token: "required" }] }]
+                                        });
+                                    }}
+                                >
+                                    + THÊM TRƯỜNG DỮ LIỆU
+                                </button>
                             </div>
-                        ) : null}
+                        )}
+                        <p className="ui-help">Định nghĩa các validation rule cho body JSON của request. Dữ liệu sẽ được lọc trước khi đưa vào module xử lý.</p>
                     </div>
+
+                    {editorMode === "edit" && (
+                        <div className="p-4 rounded-xl border border-amber-200 bg-amber-50 space-y-3">
+                            <div className="text-sm font-bold text-amber-800 flex items-center gap-2">
+                                <IconInfo /> Zone Nguy Hiểm
+                            </div>
+                            <div className="flex flex-wrap gap-4">
+                                {editor.auth_type === "token" && (
+                                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                                        <input
+                                            type="checkbox"
+                                            className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                                            checked={editor.rotate_token}
+                                            onChange={(e) => setEditor({ ...editor, rotate_token: e.target.checked })}
+                                        />
+                                        <span className="text-xs font-bold text-slate-700">Tạo lại Auth Token mới</span>
+                                    </label>
+                                )}
+                                {editor.auth_type === "hmac" && (
+                                    <label className="flex items-center gap-2 cursor-pointer select-none">
+                                        <input
+                                            type="checkbox"
+                                            className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                                            checked={editor.rotate_secret}
+                                            onChange={(e) => setEditor({ ...editor, rotate_secret: e.target.checked })}
+                                        />
+                                        <span className="text-xs font-bold text-slate-700">Tạo lại HMAC Secret mới</span>
+                                    </label>
+                                )}
+                            </div>
+                            <p className="text-[10px] text-amber-700 font-medium leading-relaxed">
+                                Lưu ý: Khi tạo mới token/secret, giá trị cũ sẽ mất hiệu lực ngay lập tức. Hãy cập nhật ở phía bên gọi (Sender) sau khi lưu.
+                            </p>
+                        </div>
+                    )}
                 </div>
             </Modal>
 
+            {/* Secret Result Modal */}
             <Modal
                 open={secretOpen}
                 title={secretTitle}
                 onClose={() => setSecretOpen(false)}
-                footer={
-                    <div className="flex items-center justify-between gap-2">
-                        <div className="text-xs text-slate-600">
-                            Receive URL: <span className="font-mono">{receiveUrl}</span>
-                        </div>
-                        <Button variant="ghost" onClick={() => setSecretOpen(false)}>
-                            Đóng
-                        </Button>
-                    </div>
-                }
             >
-                <Alert
-                    tone="warning"
-                    title="Lưu lại ngay"
-                    details="Token/secret chỉ hiển thị 1 lần. Mất token/secret thì phải rotate để tạo cái mới."
-                />
-                {receiveHelp ? (
-                    <div className="mt-2 text-xs text-slate-700">
-                        <b>Cách dùng:</b> {receiveHelp}
+                <div className="space-y-4">
+                    <Alert tone="warning" title="Lưu ý quan trọng" details="Giá trị này chỉ hiển thị duy nhất một lần này. Vui lòng sao lưu và cất giữ cẩn thận." />
+                    
+                    <div className="space-y-3">
+                        <div>
+                            <label className="ui-label">Giá trị Key/Secret</label>
+                            <div className="flex items-center gap-2">
+                                <div className="flex-1 font-mono text-sm bg-slate-900 text-sky-400 p-3 rounded-xl break-all">
+                                    {secretValue}
+                                </div>
+                                <button
+                                    onClick={async () => {
+                                        const ok = await copyToClipboard(secretValue);
+                                        toastOnce(ok ? "Copied!" : "Error");
+                                    }}
+                                    className="ui-btn ui-btn-ghost h-12 w-12 border border-slate-200"
+                                >
+                                    <IconCopy />
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="ui-label">Receive URL</label>
+                            <div className="flex items-center gap-2">
+                                <div className="flex-1 font-mono text-xs bg-slate-100 p-3 rounded-xl text-slate-600 truncate">
+                                    {receiveUrl}
+                                </div>
+                                <button
+                                    onClick={async () => {
+                                        const ok = await copyToClipboard(receiveUrl);
+                                        toastOnce(ok ? "Copied!" : "Error");
+                                    }}
+                                    className="ui-btn ui-btn-ghost h-10 w-10 border border-slate-200"
+                                >
+                                    <IconCopy />
+                                </button>
+                            </div>
+                        </div>
+
+                        {receiveHelp && (
+                            <div className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 italic">
+                                {receiveHelp}
+                            </div>
+                        )}
                     </div>
-                ) : null}
-                <pre className="mt-3 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs">{secretValue}</pre>
-                <div className="mt-2 flex items-center gap-2">
-                    <Button
-                        variant="primary"
-                        className="h-8 px-2 py-1 text-xs"
-                        onClick={async () => {
-                            const ok = await copyToClipboard(secretValue);
-                            toastOnce(ok ? "Đã copy" : "Không copy được. Tip: chọn text rồi Cmd/Ctrl+C.");
-                        }}
-                    >
-                        Copy
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        className="h-8 px-2 py-1 text-xs"
-                        onClick={() => openReceiveUrl(receiveUrl)}
-                    >
-                        Xem Receive URL
-                    </Button>
+
+                    <div className="pt-2">
+                        <Button className="w-full" variant="primary" onClick={() => setSecretOpen(false)}>Tôi đã lưu, đóng cửa sổ</Button>
+                    </div>
                 </div>
             </Modal>
 
-            <Modal
-                open={urlOpen}
-                title="Receive URL"
-                onClose={() => setUrlOpen(false)}
-                footer={
-                    <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" onClick={() => setUrlOpen(false)}>
-                            Đóng
-                        </Button>
+            {/* Simple View URL Modal */}
+            <Modal open={urlOpen} title="Địa chỉ Receive URL" onClose={() => setUrlOpen(false)}>
+                <div className="space-y-4">
+                    <p className="text-sm text-slate-600">Đây là địa chỉ duy nhất để bên thứ 3 gửi dữ liệu tới hệ thống cho kênh này.</p>
+                    <div className="p-4 bg-slate-100 rounded-xl font-mono text-xs break-all border border-slate-200 select-all">
+                        {urlValue}
+                    </div>
+                    <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={() => setUrlOpen(false)}>Đóng</Button>
                         <Button
                             variant="primary"
                             onClick={async () => {
                                 const ok = await copyToClipboard(urlValue);
-                                toastOnce(ok ? "Đã copy Receive URL" : "Không copy được. Tip: chọn text rồi Cmd/Ctrl+C.");
+                                toastOnce(ok ? "Đã copy!" : "Lỗi");
+                                setUrlOpen(false);
                             }}
                         >
-                            Copy URL
+                            Sao chép URL
                         </Button>
                     </div>
-                }
-            >
-                <div className="text-sm text-slate-700">
-                    Đây là link bên thứ 3 sẽ gọi để gửi postback.
                 </div>
-                <pre className="mt-3 overflow-auto rounded-lg border border-slate-200 bg-slate-50 p-3 text-xs font-mono">{urlValue}</pre>
             </Modal>
         </div>
     );
 }
+
