@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Card from "@shared/ui/Card";
 import Input from "@shared/ui/Input";
 import Button from "@shared/ui/Button";
@@ -58,53 +59,104 @@ export default function RegisterPage() {
     const errView = error ? normalizeError(error) : null;
 
     return (
-        <Card title="Đăng ký">
-            {errView ? <Alert tone="danger" title={errView.title} details={errView.details} /> : null}
+        <div className="w-full">
+            <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(8,112,184,0.08)] border border-slate-100 p-8 md:p-10 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 h-32 w-32 bg-sky-50 rounded-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700"></div>
+                
+                <div className="relative z-10">
+                    <div className="mb-8 text-center lg:text-left">
+                        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Tạo tài khoản</h2>
+                        <p className="text-sm text-slate-500 font-medium leading-relaxed">Tham gia cùng chúng tôi để trải nghiệm hệ thống quản lý dữ liệu tốt nhất.</p>
+                    </div>
 
-            <form className="mt-3 space-y-3" onSubmit={submit}>
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Họ tên</div>
-                        <Input className="mt-1" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nguyễn Văn A" />
-                    </div>
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Số điện thoại</div>
-                        <Input className="mt-1" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0986xxxxxx" />
-                    </div>
+                    {errView ? (
+                        <div className="mb-6">
+                            <Alert tone="danger" title={errView.title} details={errView.details} />
+                        </div>
+                    ) : null}
+
+                    <form className="space-y-5" onSubmit={submit}>
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Họ tên</label>
+                                <div className="relative group/input">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-sky-500 transition-colors">
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                    </div>
+                                    <Input className="pl-11 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm font-medium" value={name} onChange={(e) => setName(e.target.value)} placeholder="Nguyễn Văn A" />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Số điện thoại</label>
+                                <div className="relative group/input">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-sky-500 transition-colors">
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.948V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    </div>
+                                    <Input className="pl-11 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm font-medium" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="0986xxxxxx" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Email</label>
+                            <div className="relative group/input">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-sky-500 transition-colors">
+                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.206"></path></svg>
+                                </div>
+                                <Input className="pl-11 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm font-medium" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Mật khẩu</label>
+                                <div className="relative group/input">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-sky-500 transition-colors">
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                    </div>
+                                    <Input
+                                        className="pl-11 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-widest mb-2 ml-1">Nhập lại</label>
+                                <div className="relative group/input">
+                                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within/input:text-sky-500 transition-colors">
+                                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                                    </div>
+                                    <Input
+                                        className="pl-11 h-11 bg-slate-50 border-slate-200 focus:bg-white transition-all text-sm"
+                                        type="password"
+                                        value={passwordConfirmation}
+                                        onChange={(e) => setPasswordConfirmation(e.target.value)}
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="pt-4">
+                            <Button className="w-full h-11 text-sm font-bold shadow-lg shadow-sky-600/20 bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-700 hover:to-indigo-700 border-none transform active:scale-[0.98] transition-all" type="submit" disabled={loading}>
+                                {loading ? "Đang xử lý..." : "Tạo tài khoản ngay"}
+                            </Button>
+                        </div>
+                    </form>
                 </div>
+            </div>
 
-                <div>
-                    <div className="text-xs font-medium text-slate-600">Email</div>
-                    <Input className="mt-1" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" />
-                </div>
-
-                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Mật khẩu</div>
-                        <Input
-                            className="mt-1"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                        />
-                    </div>
-                    <div>
-                        <div className="text-xs font-medium text-slate-600">Nhập lại mật khẩu</div>
-                        <Input
-                            className="mt-1"
-                            type="password"
-                            value={passwordConfirmation}
-                            onChange={(e) => setPasswordConfirmation(e.target.value)}
-                            placeholder="••••••••"
-                        />
-                    </div>
-                </div>
-
-                <Button className="w-full" type="submit" variant="primary" disabled={loading}>
-                    Tạo tài khoản
-                </Button>
-            </form>
-        </Card>
+            <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300">
+                <p className="text-sm text-slate-500 font-medium">
+                    Bạn đã có tài khoản?{" "}
+                    <Link to="/login" className="text-sky-600 font-bold hover:text-sky-700 hover:underline underline-offset-4 transition-all">
+                        Đăng nhập tại đây
+                    </Link>
+                </p>
+            </div>
+        </div>
     );
 }
