@@ -5,6 +5,8 @@ export default function Card(props: {
   children: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
+  bodyClassName?: string;
+  noBody?: boolean;
 }) {
   return (
     <div className={["ui-card", props.className].filter(Boolean).join(" ")}>
@@ -14,7 +16,13 @@ export default function Card(props: {
           {props.actions ? <div className="flex items-center gap-2">{props.actions}</div> : null}
         </div>
       ) : null}
-      <div className="ui-card-body">{props.children}</div>
+      {props.noBody ? (
+        props.children
+      ) : (
+        <div className={["ui-card-body", props.bodyClassName].filter(Boolean).join(" ")}>
+          {props.children}
+        </div>
+      )}
     </div>
   );
 }

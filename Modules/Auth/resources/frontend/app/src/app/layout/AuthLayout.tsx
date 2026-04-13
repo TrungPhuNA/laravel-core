@@ -16,6 +16,13 @@ export default function AuthLayout() {
     const nav = useNavigate();
     const auth = useAuth();
 
+    React.useEffect(() => {
+        if (auth.hasToken) {
+            // Nếu đã login rồi thì không cho ở lại trang login/register nữa
+            nav("/webhook");
+        }
+    }, [auth.hasToken, nav]);
+
     async function logout() {
         try {
             await api.post("/auth/logout", {});
@@ -37,12 +44,16 @@ export default function AuthLayout() {
                     </div>
 
                     <nav className="flex items-center gap-4 text-sm">
-                        <Link className={linkClass(loc.pathname, "/login")} to="/login">
-                            Đăng nhập
-                        </Link>
-                        <Link className={linkClass(loc.pathname, "/register")} to="/register">
-                            Đăng ký
-                        </Link>
+                        {!auth.hasToken && (
+                            <>
+                                <Link className={linkClass(loc.pathname, "/login")} to="/login">
+                                    Đăng nhập
+                                </Link>
+                                <Link className={linkClass(loc.pathname, "/register")} to="/register">
+                                    Đăng ký
+                                </Link>
+                            </>
+                        )}
                         {auth.hasToken ? (
                             <Link className={linkClass(loc.pathname, "/profile")} to="/profile">
                                 Hồ sơ

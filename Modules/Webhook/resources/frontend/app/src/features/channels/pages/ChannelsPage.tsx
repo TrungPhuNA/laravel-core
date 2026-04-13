@@ -10,7 +10,7 @@ import Modal from "@shared/ui/Modal";
 import Pagination from "@shared/ui/Pagination";
 import Dropdown from "@shared/ui/Dropdown";
 import type { ApiMetaPagination, ApiResponseError, ApiResponseFail } from "@shared/http/types";
-import { prettyJson, shortText } from "@shared/lib/format";
+import { formatDateTime, prettyJson, shortText } from "@shared/lib/format";
 import { copyToClipboard } from "@shared/lib/clipboard";
 import type { WebhookChannel } from "../types";
 import { createChannel, deleteChannel, listChannels, rotateSecret, rotateToken, updateChannel } from "../services/webhooksApi";
@@ -128,6 +128,8 @@ export default function ChannelsPage() {
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<Err>(null);
     const [rulesJsonOpen, setRulesJsonOpen] = React.useState(false);
+    const [jsonRaw, setJsonRaw] = React.useState("");
+    const [jsonError, setJsonError] = React.useState<string | null>(null);
 
     const [items, setItems] = React.useState<WebhookChannel[]>([]);
     const [meta, setMeta] = React.useState<ApiMetaPagination>({
@@ -219,6 +221,8 @@ export default function ChannelsPage() {
             ],
         });
         setRulesJsonOpen(false);
+        setJsonRaw(prettyJson({ email: "required|email" }));
+        setJsonError(null);
         setEditorOpen(true);
     }
 
@@ -236,6 +240,8 @@ export default function ChannelsPage() {
             validation_fields: ch.validation_rules ? parseValidationRulesToFields(ch.validation_rules) : [],
         });
         setRulesJsonOpen(false);
+        setJsonRaw(prettyJson(ch.validation_rules || {}));
+        setJsonError(null);
         setEditorOpen(true);
     }
 
@@ -368,7 +374,7 @@ export default function ChannelsPage() {
     const errView = error ? normalizeError(error) : null;
 
     return (
-        <div className="space-y-6 pb-12">
+        <div className="space-y-4 md:space-y-6 pb-12">
             {/* Header section */}
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
@@ -444,8 +450,8 @@ export default function ChannelsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
                 {/* Filters sidebar/top */}
-                <div className={`${mobileFiltersOpen ? "block" : "hidden"} lg:block lg:col-span-1 space-y-6`}>
-                    <Card title="Bộ lọc" className="shadow-sm">
+                <div className={`${mobileFiltersOpen ? "block" : "hidden"} lg:block lg:col-span-1 space-y-4 md:space-y-6`}>
+                    <Card title="Bộ lọc" className="shadow-sm" bodyClassName="p-4 md:p-6">
                         <div className="space-y-4">
                             <div>
                                 <label className="ui-label">Tìm theo tên</label>
@@ -492,13 +498,17 @@ export default function ChannelsPage() {
                 </div>
 
                 {/* Main list section */}
-                <div className="lg:col-span-3 space-y-6 min-w-0">
-                    <Card className="shadow-md overflow-hidden" title="Danh sách các kênh">
+                <div className="lg:col-span-3 space-y-4 md:space-y-6 min-w-0">
+                    <Card 
+                        className="md:shadow-md md:border md:bg-white shadow-none border-none bg-transparent overflow-hidden" 
+                        title="Danh sách các kênh" 
+                        bodyClassName="p-0 md:p-6"
+                    >
                         <div className="md:hidden space-y-4">
                             {items.map((it) => {
                                 const url = receiveUrlFor(it.public_id);
                                 return (
-                                    <div key={it.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                                    <div key={it.id} className="rounded-2xl border border-slate-100/50 bg-white p-4 shadow-[0_2px_12px_-3px_rgba(0,0,0,0.04)]">
                                         <div className="flex items-start justify-between">
                                             <div className="min-w-0">
                                                 <div className="font-bold text-slate-900 truncate pr-2 capitalize">
@@ -552,11 +562,14 @@ export default function ChannelsPage() {
                                             </Dropdown>
                                         </div>
 
-                                        <div className="mt-4 p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-3">
+                                        <div className="mt-4 p-4 rounded-xl bg-slate-50/50 space-y-3">
                                             <div>
-                                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Receive URL</div>
+                                                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                                    <span className="h-1 w-1 rounded-full bg-slate-300"></span>
+                                                    Receive URL
+                                                </div>
                                                 <div className="flex items-center gap-2">
-                                                    <div className="flex-1 font-mono text-[11px] text-slate-600 truncate bg-white p-2 rounded-lg border border-slate-100">
+                                                    <div className="flex-1 font-mono text-[11px] text-slate-500 truncate bg-white px-3 py-2.5 rounded-lg border border-slate-100/60 shadow-sm">
                                                         {url}
                                                     </div>
                                                     <button
@@ -633,7 +646,7 @@ export default function ChannelsPage() {
                                                     </div>
                                                 </td>
                                                 <td className="ui-td text-xs font-medium text-slate-500 whitespace-nowrap">
-                                                    {it.last_received_at || "—"}
+                                                    {formatDateTime(it.last_received_at)}
                                                 </td>
                                                 <td className="ui-td text-right">
                                                     <Dropdown
@@ -804,18 +817,47 @@ export default function ChannelsPage() {
                              <button
                                 type="button"
                                 className="text-xs font-bold text-sky-600 hover:text-sky-700 underline"
-                                onClick={() => setRulesJsonOpen(!rulesJsonOpen)}
+                                onClick={() => {
+                                    if (!rulesJsonOpen) {
+                                        // Khi chuyển sang JSON mode, lấy data từ fields hiện tại
+                                        setJsonRaw(prettyJson(buildValidationRulesRecord(editor.validation_fields) || {}));
+                                        setJsonError(null);
+                                    }
+                                    setRulesJsonOpen(!rulesJsonOpen);
+                                }}
                              >
                                 {rulesJsonOpen ? "Dùng Mode UI" : "Sửa JSON trực tiếp"}
                              </button>
                         </div>
 
                         {rulesJsonOpen ? (
-                             <textarea
-                                className="ui-input h-32 font-mono text-xs py-2"
-                                value={prettyJson(buildValidationRulesRecord(editor.validation_fields))}
-                                readOnly
-                             />
+                             <div className="space-y-2">
+                                <textarea
+                                    className={`ui-input h-48 font-mono text-xs py-2 ${jsonError ? 'border-rose-500 ring-rose-50' : ''}`}
+                                    value={jsonRaw}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setJsonRaw(val);
+                                        try {
+                                            const parsed = JSON.parse(val);
+                                            setJsonError(null);
+                                            // Parse thành fields để đồng bộ
+                                            setEditor(prev => ({
+                                                ...prev,
+                                                validation_fields: parseValidationRulesToFields(parsed)
+                                            }));
+                                        } catch (err: any) {
+                                            setJsonError(err.message);
+                                        }
+                                    }}
+                                    placeholder='{ "field_name": "required|string" }'
+                                />
+                                {jsonError && (
+                                    <div className="text-[10px] font-bold text-rose-500 bg-rose-50 p-2 rounded-lg border border-rose-100">
+                                        JSON không hợp lệ: {jsonError}
+                                    </div>
+                                )}
+                             </div>
                         ) : (
                             <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
                                 <table className="w-full text-xs">

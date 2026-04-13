@@ -42,6 +42,15 @@ export default function AppLayout() {
     const mobileNavRef = React.useRef<HTMLDivElement | null>(null);
     const [tokenModalOpen, setTokenModalOpen] = React.useState(false);
     const [tokenDraft, setTokenDraft] = React.useState(auth.token);
+    const [authChecked, setAuthChecked] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!auth.hasToken) {
+            window.location.href = "/auth/login";
+        } else {
+            setAuthChecked(true);
+        }
+    }, [auth.hasToken]);
 
     React.useEffect(() => {
         setTokenDraft(auth.token);
@@ -140,10 +149,14 @@ export default function AppLayout() {
         setTokenModalOpen(false);
     }
 
+    if (!auth.hasToken) {
+        return null;
+    }
+
     return (
         <div className="min-h-dvh text-slate-900">
             <header className="sticky top-0 z-10 border-b bg-white/80 backdrop-blur">
-                <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
+                <div className="mx-auto max-w-[1600px] px-4 py-3 flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
                         <button
                             type="button"
@@ -383,7 +396,7 @@ export default function AppLayout() {
                 </div>
             ) : null}
 
-            <main className="mx-auto max-w-7xl px-4 py-6">
+            <main className="mx-auto max-w-[1600px] px-4 py-6">
                 <Outlet />
             </main>
 
