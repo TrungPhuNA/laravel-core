@@ -12,6 +12,7 @@
 ## Api
 
 - `docs/api/AUTH.md`
+- `docs/api/CHEAT_SHEETS.md`
 - `docs/api/QUEUE.md`
 - `docs/api/RBAC.md`
 - `docs/api/SETTINGS.md`

@@ -1,0 +1,11 @@
+{
+    "name": "CheatSheet",
+    "alias": "cheatsheet",
+    "description": "Cheat sheets cá nhân (có thể public sau)",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\CheatSheet\\Providers\\CheatSheetServiceProvider"
+    ],
+    "files": []
+}

@@ -3,5 +3,6 @@
     "Setting": true,
     "User": true,
     "Webhook": true,
-    "Ecommerce": true
+    "Ecommerce": true,
+    "CheatSheet": true
 }

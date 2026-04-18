@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "@shared/styles/ui.css";
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background-color: #0b1220;
+  background-image:
+    radial-gradient(900px 520px at 10% 0%, rgba(2, 132, 199, 0.28), transparent 60%),
+    radial-gradient(900px 520px at 90% 20%, rgba(99, 102, 241, 0.22), transparent 55%),
+    radial-gradient(900px 520px at 50% 100%, rgba(16, 185, 129, 0.10), transparent 60%);
+}
+
+/* Public theme tweaks */
+:root {
+  color-scheme: dark;
+}
+

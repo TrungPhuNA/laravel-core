@@ -11,6 +11,31 @@ Muc tieu: ghi ro cach test thu cong (curl/Postman) va expected outputs.
 - Doc: `docs/api/RBAC.md`
 - Admin UI (SPA): `/admin/settings` (dán Sanctum token vào header trên cùng)
 
+## Cheat sheets
+
+- Doc: `docs/api/CHEAT_SHEETS.md`
+- Admin UI (SPA): `/admin/cheat-sheets` (yêu cầu có `core_api_token`, nếu chưa có sẽ redirect `/auth/login`)
+- Public UI (SPA): `/cheat-sheets`
+
+Seeder demo data:
+```bash
+php artisan db:seed --class="Modules\\CheatSheet\\Database\\Seeders\\CheatSheetDatabaseSeeder"
+```
+
+Quick flow:
+- Register/Login lấy token.
+- Create:
+  - `POST /api/v1/cheat-sheets` với `title`, `body`, `tags`.
+- List + search:
+  - `GET /api/v1/cheat-sheets?filters[q]=laravel&page=1&per_page=20`
+  - `GET /api/v1/cheat-sheets?filters[tag]=php`
+- Update:
+  - `PUT /api/v1/cheat-sheets/{id}` với `tags` mới (hoặc `[]` để xoá hết tag).
+- Tags autocomplete:
+  - `GET /api/v1/cheat-sheets/tags?q=la&limit=20`
+- Delete:
+  - `DELETE /api/v1/cheat-sheets/{id}`
+
 ## Commands
 
 ```bash
