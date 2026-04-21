@@ -14,6 +14,7 @@ use Modules\Webhook\Application\Contracts\WebhookReceiverServiceInterface;
 use Modules\Webhook\Domain\Models\Webhook;
 use Modules\Webhook\Domain\Models\WebhookRequest;
 use Modules\Webhook\Infrastructure\Contracts\WebhookRepositoryInterface;
+use Modules\Webhook\Jobs\DispatchWebhookDestinationsJob;
 
 final class WebhookReceiverService implements WebhookReceiverServiceInterface
 {
@@ -59,8 +60,15 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             }
 
             // Success log
-            $this->logRequest($webhook, $request, 'success');
+            $requestLog = $this->logRequest($webhook, $request, 'success');
             $webhook->forceFill(['last_received_at' => now()])->save();
+
+            // Fan-out (async by queue driver). This is best-effort and must not break receiver.
+            try {
+                DispatchWebhookDestinationsJob::dispatch((int) $webhook->id, (int) $requestLog->id, $validated);
+            } catch (\Throwable) {
+                // ignore
+            }
 
             return ['webhook' => $webhook, 'validated' => $validated];
 
@@ -213,13 +221,14 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
         string $status = 'success',
         ?string $errorType = null,
         ?string $errorMessage = null
-    ): void {
+    ): WebhookRequest {
         $headers = $request->headers->all();
 
         // Mask thong tin nhay cam.
         unset($headers['authorization'], $headers['x-webhook-token'], $headers['cookie']);
 
-        WebhookRequest::query()->create([
+        /** @var WebhookRequest $item */
+        $item = WebhookRequest::query()->create([
             'webhook_id' => $webhook->id,
             'method' => strtoupper((string)$request->method()),
             'ip' => (string)($request->ip() ?? ''),
@@ -231,5 +240,7 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             'error_message' => $errorMessage,
             'received_at' => now(),
         ]);
+
+        return $item;
     }
 }

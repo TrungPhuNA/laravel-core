@@ -193,6 +193,12 @@ export default function AppLayout() {
                                         <Link className={linkClass(loc.pathname, `/channels/${cid}/stats`)} to={`/channels/${cid}/stats`}>
                                             Thống kê
                                         </Link>
+                                        <Link className={linkClass(loc.pathname, `/channels/${cid}/destinations`)} to={`/channels/${cid}/destinations`}>
+                                            Forward
+                                        </Link>
+                                        <Link className={linkClass(loc.pathname, `/channels/${cid}/dispatches`)} to={`/channels/${cid}/dispatches`}>
+                                            Dispatch
+                                        </Link>
                                     </>
                                 );
                             })()}

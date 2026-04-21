@@ -553,6 +553,20 @@ export default function ChannelsPage() {
                                                         </Link>
                                                         <Link
                                                             className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-medium"
+                                                            to={`/channels/${it.id}/destinations`}
+                                                            onClick={() => close()}
+                                                        >
+                                                            Điểm nhận (Forward)
+                                                        </Link>
+                                                        <Link
+                                                            className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-medium"
+                                                            to={`/channels/${it.id}/dispatches`}
+                                                            onClick={() => close()}
+                                                        >
+                                                            Log bắn (Dispatch)
+                                                        </Link>
+                                                        <Link
+                                                            className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-medium"
                                                             to={`/channels/${it.id}/stats`}
                                                             onClick={() => close()}
                                                         >
@@ -682,6 +696,20 @@ export default function ChannelsPage() {
                                                                     onClick={() => close()}
                                                                 >
                                                                     <IconTerminal /> Xem Logs
+                                                                </Link>
+                                                                <Link
+                                                                    className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold"
+                                                                    to={`/channels/${it.id}/destinations`}
+                                                                    onClick={() => close()}
+                                                                >
+                                                                    Điểm nhận (Forward)
+                                                                </Link>
+                                                                <Link
+                                                                    className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold"
+                                                                    to={`/channels/${it.id}/dispatches`}
+                                                                    onClick={() => close()}
+                                                                >
+                                                                    Log bắn (Dispatch)
                                                                 </Link>
                                                                 <Link
                                                                     className="flex items-center gap-2 px-4 py-2.5 text-sm hover:bg-slate-50 font-semibold text-emerald-600"
@@ -1101,4 +1129,3 @@ export default function ChannelsPage() {
         </div>
     );
 }
-

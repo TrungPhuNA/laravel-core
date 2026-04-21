@@ -7,11 +7,21 @@ use Illuminate\Support\ServiceProvider;
 use Modules\Webhook\Application\Contracts\WebhookReceiverServiceInterface;
 use Modules\Webhook\Application\Contracts\WebhookServiceInterface;
 use Modules\Webhook\Application\Contracts\WebhookLogServiceInterface;
+use Modules\Webhook\Application\Contracts\WebhookDestinationServiceInterface;
+use Modules\Webhook\Application\Contracts\WebhookDispatchLogServiceInterface;
+use Modules\Webhook\Application\Contracts\WebhookForwarderServiceInterface;
+use Modules\Webhook\Application\Services\WebhookDestinationService;
+use Modules\Webhook\Application\Services\WebhookDispatchLogService;
+use Modules\Webhook\Application\Services\WebhookForwarderService;
 use Modules\Webhook\Application\Services\WebhookReceiverService;
 use Modules\Webhook\Application\Services\WebhookService;
 use Modules\Webhook\Application\Services\WebhookLogService;
+use Modules\Webhook\Infrastructure\Contracts\WebhookDestinationRepositoryInterface;
+use Modules\Webhook\Infrastructure\Contracts\WebhookDispatchLogRepositoryInterface;
 use Modules\Webhook\Infrastructure\Contracts\WebhookRepositoryInterface;
 use Modules\Webhook\Infrastructure\Contracts\WebhookRequestRepositoryInterface;
+use Modules\Webhook\Infrastructure\Repositories\EloquentWebhookDestinationRepository;
+use Modules\Webhook\Infrastructure\Repositories\EloquentWebhookDispatchLogRepository;
 use Modules\Webhook\Infrastructure\Repositories\EloquentWebhookRepository;
 use Modules\Webhook\Infrastructure\Repositories\EloquentWebhookRequestRepository;
 use Nwidart\Modules\Traits\PathNamespace;
@@ -49,9 +59,15 @@ class WebhookServiceProvider extends ServiceProvider
         // Dang ky cac interface -> implementation tai day (Service, Repository, Client...).
         $this->app->bind(WebhookRepositoryInterface::class, EloquentWebhookRepository::class);
         $this->app->bind(WebhookRequestRepositoryInterface::class, EloquentWebhookRequestRepository::class);
+        $this->app->bind(WebhookDestinationRepositoryInterface::class, EloquentWebhookDestinationRepository::class);
+        $this->app->bind(WebhookDispatchLogRepositoryInterface::class, EloquentWebhookDispatchLogRepository::class);
+
         $this->app->bind(WebhookServiceInterface::class, WebhookService::class);
         $this->app->bind(WebhookReceiverServiceInterface::class, WebhookReceiverService::class);
         $this->app->bind(WebhookLogServiceInterface::class, WebhookLogService::class);
+        $this->app->bind(WebhookDestinationServiceInterface::class, WebhookDestinationService::class);
+        $this->app->bind(WebhookDispatchLogServiceInterface::class, WebhookDispatchLogService::class);
+        $this->app->bind(WebhookForwarderServiceInterface::class, WebhookForwarderService::class);
 
     }
 
