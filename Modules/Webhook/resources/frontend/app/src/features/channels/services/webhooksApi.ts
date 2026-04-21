@@ -80,4 +80,9 @@ export async function rotateSecret(id: number): Promise<{ webhook: WebhookChanne
     if (res.data.status !== "success") throw res.data;
     return res.data.data;
 }
+export async function getChannel(id: number): Promise<{ webhook: WebhookChannel; receive_url: string }> {
+    const res = await api.get<ApiResponseSuccess<{ webhook: WebhookChannel; receive_url: string }>>(`/webhooks/${id}`);
+    if (res.data.status !== "success") throw res.data;
+    return res.data.data;
+}
 

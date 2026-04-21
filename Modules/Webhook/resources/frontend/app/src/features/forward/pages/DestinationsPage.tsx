@@ -12,6 +12,8 @@ import type { ApiMetaPagination, ApiResponseError, ApiResponseFail } from "@shar
 import { prettyJson, formatDateTime, shortText } from "@shared/lib/format";
 import type { WebhookDestination, WebhookFieldMapping } from "../types";
 import { createDestination, deleteDestination, listDestinations, updateDestination } from "../services/forwardApi";
+import { getChannel } from "../../channels/services/webhooksApi";
+import type { WebhookChannel } from "../../channels/types";
 
 type Err = ApiResponseFail | ApiResponseError | Error | unknown;
 
@@ -38,6 +40,7 @@ export default function DestinationsPage() {
 
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState<Err>(null);
+    const [channel, setChannel] = React.useState<WebhookChannel | null>(null);
 
     const [items, setItems] = React.useState<WebhookDestination[]>([]);
     const [meta, setMeta] = React.useState<ApiMetaPagination>({
@@ -62,7 +65,9 @@ export default function DestinationsPage() {
         timeout_seconds: 10,
         headers_raw: "{}",
         headers_error: null as string | null,
-        mappings: [{ id: newId(), from: "username", to: "u_username" }] as MappingRow[],
+        mappings: [{ id: newId(), from: "", to: "" }] as MappingRow[],
+        mapping_mode: "ui" as "ui" | "json",
+        mappings_raw: "[]",
     });
 
     async function reload(next?: Partial<{ page: number; per_page: number }>) {
@@ -83,12 +88,27 @@ export default function DestinationsPage() {
         }
     }
 
+    async function fetchChannel() {
+        if (!webhookId) return;
+        try {
+            const res = await getChannel(webhookId);
+            setChannel(res.webhook);
+        } catch (e) {
+            console.error("Failed to fetch channel:", e);
+        }
+    }
+
     React.useEffect(() => {
         reload({ page: 1 });
+        fetchChannel();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [webhookId]);
 
     function openCreate() {
+        const defaultMappings = sourceFields.length > 0 
+            ? sourceFields.map(f => ({ id: newId(), from: f, to: f }))
+            : [{ id: newId(), from: "", to: "" }];
+
         setEditorMode("create");
         setEditor({
             id: 0,
@@ -101,7 +121,9 @@ export default function DestinationsPage() {
             timeout_seconds: 10,
             headers_raw: "{}",
             headers_error: null,
-            mappings: [{ id: newId(), from: "username", to: "u_username" }],
+            mappings: defaultMappings,
+            mapping_mode: "ui",
+            mappings_raw: JSON.stringify(defaultMappings.map(m => ({ from: m.from, to: m.to })), null, 2),
         });
         setEditorOpen(true);
     }
@@ -119,9 +141,33 @@ export default function DestinationsPage() {
             timeout_seconds: Number(it.timeout_seconds ?? 10),
             headers_raw: prettyJson(it.headers ?? {}),
             headers_error: null,
-            mappings: (it.field_mappings ?? []).map((m) => ({ id: newId(), from: m.from, to: m.to })),
+            mappings: (it.field_mappings ?? []).map((m: any) => ({ id: newId(), from: m.from, to: m.to })),
+            mapping_mode: "ui",
+            mappings_raw: JSON.stringify(it.field_mappings ?? [], null, 2),
         });
         setEditorOpen(true);
+    }
+
+    function toggleMappingMode() {
+        const nextMode = editor.mapping_mode === "ui" ? "json" : "ui";
+        if (nextMode === "json") {
+            // Chuyển từ UI sang JSON
+            const mps = editor.mappings
+                .filter((m) => m.from.trim() || m.to.trim())
+                .map((m) => ({ from: m.from.trim(), to: m.to.trim() }));
+            setEditor((s) => ({ ...s, mapping_mode: "json", mappings_raw: JSON.stringify(mps, null, 2) }));
+        } else {
+            // Chuyển từ JSON sang UI
+            try {
+                const parsed = JSON.parse(editor.mappings_raw);
+                if (!Array.isArray(parsed)) throw new Error("Mappings phải là một mảng []");
+                const mps = parsed.map((m: any) => ({ id: newId(), from: String(m.from ?? ""), to: String(m.to ?? "") }));
+                if (mps.length === 0) mps.push({ id: newId(), from: "", to: "" });
+                setEditor((s) => ({ ...s, mapping_mode: "ui", mappings: mps }));
+            } catch (e: any) {
+                alert("JSON không hợp lệ, không thể quay lại dạng danh sách: " + e.message);
+            }
+        }
     }
 
     function parseHeaders(): Record<string, unknown> | null {
@@ -145,37 +191,44 @@ export default function DestinationsPage() {
         const headers = parseHeaders();
         if (editor.headers_error) return;
 
-        const mappings = editor.mappings
-            .map((m) => ({ from: (m.from ?? "").trim(), to: (m.to ?? "").trim() }))
-            .filter((m) => m.from && m.to);
+        let finalMappings: Array<{ from: string; to: string }> = [];
+
+        if (editor.mapping_mode === "ui") {
+            finalMappings = editor.mappings
+                .map((m) => ({ from: (m.from ?? "").trim(), to: (m.to ?? "").trim() }))
+                .filter((m) => m.from && m.to);
+        } else {
+            try {
+                const parsed = JSON.parse(editor.mappings_raw);
+                if (!Array.isArray(parsed)) throw new Error("Mappings phải là một mảng []");
+                finalMappings = parsed
+                    .map((m: any) => ({ from: String(m.from ?? "").trim(), to: String(m.to ?? "").trim() }))
+                    .filter((m) => m.from && m.to);
+            } catch (e: any) {
+                alert("JSON Mapping không hợp lệ: " + e.message);
+                return;
+            }
+        }
 
         setLoading(true);
         setError(null);
         try {
+            const payload = {
+                name: editor.name.trim(),
+                url: editor.url.trim(),
+                http_method: editor.http_method,
+                is_active: editor.is_active,
+                headers,
+                send_mode: editor.send_mode,
+                field_mappings: finalMappings.length ? finalMappings : null,
+                drop_mapped_sources: editor.drop_mapped_sources,
+                timeout_seconds: Number(editor.timeout_seconds ?? 10),
+            };
+
             if (editorMode === "create") {
-                await createDestination(webhookId, {
-                    name: editor.name.trim(),
-                    url: editor.url.trim(),
-                    http_method: editor.http_method,
-                    is_active: editor.is_active,
-                    headers,
-                    send_mode: editor.send_mode,
-                    field_mappings: mappings.length ? mappings : null,
-                    drop_mapped_sources: editor.drop_mapped_sources,
-                    timeout_seconds: Number(editor.timeout_seconds ?? 10),
-                });
+                await createDestination(webhookId, payload);
             } else {
-                await updateDestination(webhookId, editor.id, {
-                    name: editor.name.trim(),
-                    url: editor.url.trim(),
-                    http_method: editor.http_method,
-                    is_active: editor.is_active,
-                    headers,
-                    send_mode: editor.send_mode,
-                    field_mappings: mappings.length ? mappings : null,
-                    drop_mapped_sources: editor.drop_mapped_sources,
-                    timeout_seconds: Number(editor.timeout_seconds ?? 10),
-                });
+                await updateDestination(webhookId, editor.id, payload);
             }
 
             setEditorOpen(false);
@@ -205,6 +258,11 @@ export default function DestinationsPage() {
     }
 
     const err = error ? normalizeError(error) : null;
+
+    const sourceFields = React.useMemo(() => {
+        if (!channel?.validation_rules) return [];
+        return Object.keys(channel.validation_rules);
+    }, [channel]);
 
     return (
         <div className="space-y-6 pb-10">
@@ -363,32 +421,69 @@ export default function DestinationsPage() {
                     <div>
                         <div className="flex items-center justify-between mb-2">
                             <div className="text-xs font-bold text-slate-500">Field mappings (from → to)</div>
-                            <Button
-                                variant="ghost"
-                                onClick={() => setEditor((s) => ({ ...s, mappings: [...s.mappings, { id: newId(), from: "", to: "" }] }))}
-                                disabled={loading}
-                            >
-                                + Thêm mapping
-                            </Button>
-                        </div>
-                        <div className="space-y-2">
-                            {editor.mappings.map((m) => (
-                                <div key={m.id} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-center">
-                                    <Input value={m.from} onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => x.id === m.id ? { ...x, from: e.target.value } : x) }))} placeholder="username" />
-                                    <Input value={m.to} onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => x.id === m.id ? { ...x, to: e.target.value } : x) }))} placeholder="u_username" />
+                            <div className="flex gap-2">
+                                <Button variant="ghost" size="sm" onClick={toggleMappingMode} disabled={loading}>
+                                    {editor.mapping_mode === "ui" ? "Sửa JSON" : "Dạng danh sách"}
+                                </Button>
+                                {editor.mapping_mode === "ui" && (
                                     <Button
                                         variant="ghost"
-                                        className="text-rose-600"
-                                        onClick={() => setEditor((s) => ({ ...s, mappings: s.mappings.filter((x) => x.id !== m.id) }))}
-                                        disabled={loading || editor.mappings.length <= 1}
+                                        size="sm"
+                                        onClick={() => setEditor((s) => ({ ...s, mappings: [...s.mappings, { id: newId(), from: "", to: "" }] }))}
+                                        disabled={loading}
                                     >
-                                        Xoá
+                                        + Thêm mapping
                                     </Button>
-                                </div>
-                            ))}
+                                )}
+                            </div>
                         </div>
+
+                        {editor.mapping_mode === "ui" ? (
+                            <div className="space-y-2">
+                                {editor.mappings.map((m) => (
+                                    <div key={m.id} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-center">
+                                        <Input
+                                            value={m.from}
+                                            list="webhook-source-fields"
+                                            onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => (x.id === m.id ? { ...x, from: e.target.value } : x)) }))}
+                                            placeholder="Tên field gốc (từ channel)"
+                                        />
+                                        <Input
+                                            value={m.to}
+                                            onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => (x.id === m.id ? { ...x, to: e.target.value } : x)) }))}
+                                            placeholder="Tên field mới (bắn đi)"
+                                        />
+                                        <Button
+                                            variant="ghost"
+                                            className="text-rose-600"
+                                            onClick={() => setEditor((s) => ({ ...s, mappings: s.mappings.filter((x) => x.id !== m.id) }))}
+                                            disabled={loading || editor.mappings.length <= 1}
+                                        >
+                                            Xoá
+                                        </Button>
+                                    </div>
+                                ))}
+
+                                <datalist id="webhook-source-fields">
+                                    {sourceFields.map((f) => (
+                                        <option key={f} value={f} />
+                                    ))}
+                                </datalist>
+                            </div>
+                        ) : (
+                            <div>
+                                <textarea
+                                    className="ui-input w-full font-mono text-xs min-h-[150px]"
+                                    value={editor.mappings_raw}
+                                    onChange={(e) => setEditor((s) => ({ ...s, mappings_raw: e.target.value }))}
+                                    placeholder='[{"from": "...", "to": "..."}]'
+                                />
+                            </div>
+                        )}
+
                         <div className="mt-2 text-xs text-slate-500">
                             Ví dụ: nhận <span className="font-mono">username</span> → bắn sang <span className="font-mono">u_username</span>.
+                            {sourceFields.length > 0 && ` Gợi ý từ channel: ${sourceFields.join(", ")}.`}
                         </div>
                     </div>
 
