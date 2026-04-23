@@ -10,6 +10,7 @@ export type WebhookDestination = {
     url: string;
     http_method: string;
     is_active: boolean;
+    type: string;
     headers?: Record<string, unknown> | null;
     send_mode: "merge" | "mapped_only";
     field_mappings?: WebhookFieldMapping[] | null;

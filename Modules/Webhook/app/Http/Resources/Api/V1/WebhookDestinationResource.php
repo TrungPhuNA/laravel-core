@@ -20,6 +20,7 @@ final class WebhookDestinationResource extends JsonResource
             'url' => $item->url,
             'http_method' => $item->http_method,
             'is_active' => (bool) $item->is_active,
+            'type' => $item->type,
             'headers' => $item->headers,
             'send_mode' => $item->send_mode,
             'field_mappings' => $item->field_mappings,

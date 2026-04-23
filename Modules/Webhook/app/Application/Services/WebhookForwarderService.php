@@ -80,6 +80,32 @@ final class WebhookForwarderService implements WebhookForwarderServiceInterface
      */
     private function buildPayload(array $payload, WebhookDestination $dest): array
     {
+        return match ($dest->type) {
+            'use_mapped' => $payload,
+            'woocommerce_at_forward' => $this->mapWooCommerceAtForward($payload),
+            default => $this->applyGenericMappings($payload, $dest),
+        };
+    }
+
+    /**
+     * Ví dụ: Xử lý body đặc thù cho type woocommerce_at_forward
+     */
+    private function mapWooCommerceAtForward(array $payload): array
+    {
+        // Giả sử partner yêu cầu wrap trong key 'data' và thêm 'timestamp'
+        return [
+            'data' => $payload,
+            'forwarded_at' => now()->toDateTimeString(),
+            'source' => 'webhook_core',
+        ];
+    }
+
+    /**
+     * @param array<string, mixed> $payload
+     * @return array<string, mixed>
+     */
+    private function applyGenericMappings(array $payload, WebhookDestination $dest): array
+    {
         $mappings = is_array($dest->field_mappings) ? $dest->field_mappings : [];
         $mapped = [];
 

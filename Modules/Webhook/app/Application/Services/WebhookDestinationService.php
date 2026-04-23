@@ -39,6 +39,7 @@ final class WebhookDestinationService implements WebhookDestinationServiceInterf
             'field_mappings' => $data['field_mappings'] ?? null,
             'drop_mapped_sources' => (bool) ($data['drop_mapped_sources'] ?? false),
             'timeout_seconds' => (int) ($data['timeout_seconds'] ?? 10),
+            'type' => (string) ($data['type'] ?? 'default'),
         ]);
 
         return $dest;
@@ -66,6 +67,7 @@ final class WebhookDestinationService implements WebhookDestinationServiceInterf
             'field_mappings' => array_key_exists('field_mappings', $data) ? ($data['field_mappings'] ?? null) : $dest->field_mappings,
             'drop_mapped_sources' => array_key_exists('drop_mapped_sources', $data) ? (bool) $data['drop_mapped_sources'] : $dest->drop_mapped_sources,
             'timeout_seconds' => array_key_exists('timeout_seconds', $data) ? (int) $data['timeout_seconds'] : $dest->timeout_seconds,
+            'type' => array_key_exists('type', $data) ? (string) $data['type'] : $dest->type,
         ])->save();
 
         return $dest;

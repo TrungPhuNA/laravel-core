@@ -13,6 +13,7 @@ final class WebhookDestinationUpdateRequest extends ApiFormRequest
             'url' => ['sometimes', 'string', 'max:2048', 'url'],
             'http_method' => ['sometimes', 'string', 'in:GET,POST,PUT,PATCH,DELETE'],
             'is_active' => ['sometimes', 'boolean'],
+            'type' => ['sometimes', 'string', 'max:50'],
             'headers' => ['sometimes', 'nullable', 'array'],
             'headers.*' => ['nullable'],
             'send_mode' => ['sometimes', 'string', 'in:merge,mapped_only'],

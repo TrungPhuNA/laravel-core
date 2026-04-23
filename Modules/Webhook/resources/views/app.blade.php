@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Webhook</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
 
     <script>
         // Cấu hình cho SPA Webhook (không phụ thuộc env build).

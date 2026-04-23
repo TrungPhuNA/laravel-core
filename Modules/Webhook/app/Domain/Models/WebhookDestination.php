@@ -28,6 +28,7 @@ final class WebhookDestination extends Model
         'url',
         'http_method',
         'is_active',
+        'type',
         'headers',
         'send_mode',
         'field_mappings',

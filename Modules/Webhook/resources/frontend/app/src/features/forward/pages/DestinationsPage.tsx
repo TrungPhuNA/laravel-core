@@ -68,6 +68,7 @@ export default function DestinationsPage() {
         mappings: [{ id: newId(), from: "", to: "" }] as MappingRow[],
         mapping_mode: "ui" as "ui" | "json",
         mappings_raw: "[]",
+        type: "default",
     });
 
     async function reload(next?: Partial<{ page: number; per_page: number }>) {
@@ -124,6 +125,7 @@ export default function DestinationsPage() {
             mappings: defaultMappings,
             mapping_mode: "ui",
             mappings_raw: JSON.stringify(defaultMappings.map(m => ({ from: m.from, to: m.to })), null, 2),
+            type: "default",
         });
         setEditorOpen(true);
     }
@@ -144,6 +146,7 @@ export default function DestinationsPage() {
             mappings: (it.field_mappings ?? []).map((m: any) => ({ id: newId(), from: m.from, to: m.to })),
             mapping_mode: "ui",
             mappings_raw: JSON.stringify(it.field_mappings ?? [], null, 2),
+            type: it.type ?? "default",
         });
         setEditorOpen(true);
     }
@@ -223,6 +226,7 @@ export default function DestinationsPage() {
                 field_mappings: finalMappings.length ? finalMappings : null,
                 drop_mapped_sources: editor.drop_mapped_sources,
                 timeout_seconds: Number(editor.timeout_seconds ?? 10),
+                type: editor.type,
             };
 
             if (editorMode === "create") {
@@ -367,6 +371,36 @@ export default function DestinationsPage() {
                             <div className="text-xs font-bold text-slate-500 mb-1">URL</div>
                             <Input value={editor.url} onChange={(e) => setEditor((s) => ({ ...s, url: e.target.value }))} placeholder="https://example.com/webhook" />
                         </div>
+                        <div className="md:col-span-2">
+                            <div className="text-xs font-bold text-slate-500 mb-1">Loại xử lý (Type)</div>
+                            <div className="flex gap-2">
+                                <Select 
+                                    className="flex-1"
+                                    value={["default", "use_mapped"].includes(editor.type) ? editor.type : "other"} 
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val === "other") {
+                                            setEditor((s) => ({ ...s, type: "" }));
+                                        } else {
+                                            setEditor((s) => ({ ...s, type: val }));
+                                        }
+                                    }}
+                                >
+                                    <option value="default">Mặc định (Mapping thông thường)</option>
+                                    <option value="use_mapped">Sử dụng Dữ liệu đã Map (Mapped Payload)</option>
+                                    <option value="other">Khác (Nhập tùy chỉnh)</option>
+                                </Select>
+                                {!["default", "use_mapped"].includes(editor.type) && (
+                                    <Input 
+                                        className="flex-1"
+                                        value={editor.type} 
+                                        onChange={(e) => setEditor((s) => ({ ...s, type: e.target.value }))} 
+                                        placeholder="Nhập mã type (vd: zalo_oa)" 
+                                    />
+                                )}
+                            </div>
+                            <p className="mt-1 text-[10px] text-slate-400 font-medium">Sử dụng 'Type' để kích hoạt logic xử lý Body riêng biệt trong code.</p>
+                        </div>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-4">
@@ -374,17 +408,21 @@ export default function DestinationsPage() {
                             <input type="checkbox" checked={editor.is_active} onChange={(e) => setEditor((s) => ({ ...s, is_active: e.target.checked }))} />
                             Active
                         </label>
-                        <label className="flex items-center gap-2 text-sm">
-                            <input type="checkbox" checked={editor.drop_mapped_sources} onChange={(e) => setEditor((s) => ({ ...s, drop_mapped_sources: e.target.checked }))} />
-                            Drop key gốc sau khi map
-                        </label>
-                        <div className="flex items-center gap-2">
-                            <div className="text-xs font-bold text-slate-500">Send mode</div>
-                            <Select value={editor.send_mode} onChange={(e) => setEditor((s) => ({ ...s, send_mode: e.target.value as any }))}>
-                                <option value="merge">merge</option>
-                                <option value="mapped_only">mapped_only</option>
-                            </Select>
-                        </div>
+                        {editor.type === "default" && (
+                            <>
+                                <label className="flex items-center gap-2 text-sm">
+                                    <input type="checkbox" checked={editor.drop_mapped_sources} onChange={(e) => setEditor((s) => ({ ...s, drop_mapped_sources: e.target.checked }))} />
+                                    Drop key gốc sau khi map
+                                </label>
+                                <div className="flex items-center gap-2">
+                                    <div className="text-xs font-bold text-slate-500">Send mode</div>
+                                    <Select value={editor.send_mode} onChange={(e) => setEditor((s) => ({ ...s, send_mode: e.target.value as any }))}>
+                                        <option value="merge">merge</option>
+                                        <option value="mapped_only">mapped_only</option>
+                                    </Select>
+                                </div>
+                            </>
+                        )}
                         <div className="flex items-center gap-2">
                             <div className="text-xs font-bold text-slate-500">Timeout (s)</div>
                             <Input
@@ -418,74 +456,88 @@ export default function DestinationsPage() {
                         {editor.headers_error && <div className="mt-1 text-xs text-rose-600">{shortText(editor.headers_error, 200)}</div>}
                     </div>
 
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <div className="text-xs font-bold text-slate-500">Field mappings (from → to)</div>
-                            <div className="flex gap-2">
-                                <Button variant="ghost" size="sm" onClick={toggleMappingMode} disabled={loading}>
-                                    {editor.mapping_mode === "ui" ? "Sửa JSON" : "Dạng danh sách"}
-                                </Button>
-                                {editor.mapping_mode === "ui" && (
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setEditor((s) => ({ ...s, mappings: [...s.mappings, { id: newId(), from: "", to: "" }] }))}
-                                        disabled={loading}
-                                    >
-                                        + Thêm mapping
+                    {editor.type === "default" ? (
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <div className="text-xs font-bold text-slate-500">Field mappings (from → to)</div>
+                                <div className="flex gap-2">
+                                    <Button variant="ghost" size="sm" onClick={toggleMappingMode} disabled={loading}>
+                                        {editor.mapping_mode === "ui" ? "Sửa JSON" : "Dạng danh sách"}
                                     </Button>
-                                )}
-                            </div>
-                        </div>
-
-                        {editor.mapping_mode === "ui" ? (
-                            <div className="space-y-2">
-                                {editor.mappings.map((m) => (
-                                    <div key={m.id} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-center">
-                                        <Input
-                                            value={m.from}
-                                            list="webhook-source-fields"
-                                            onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => (x.id === m.id ? { ...x, from: e.target.value } : x)) }))}
-                                            placeholder="Tên field gốc (từ channel)"
-                                        />
-                                        <Input
-                                            value={m.to}
-                                            onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => (x.id === m.id ? { ...x, to: e.target.value } : x)) }))}
-                                            placeholder="Tên field mới (bắn đi)"
-                                        />
+                                    {editor.mapping_mode === "ui" && (
                                         <Button
                                             variant="ghost"
-                                            className="text-rose-600"
-                                            onClick={() => setEditor((s) => ({ ...s, mappings: s.mappings.filter((x) => x.id !== m.id) }))}
-                                            disabled={loading || editor.mappings.length <= 1}
+                                            size="sm"
+                                            onClick={() => setEditor((s) => ({ ...s, mappings: [...s.mappings, { id: newId(), from: "", to: "" }] }))}
+                                            disabled={loading}
                                         >
-                                            Xoá
+                                            + Thêm mapping
                                         </Button>
-                                    </div>
-                                ))}
+                                    )}
+                                </div>
+                            </div>
 
-                                <datalist id="webhook-source-fields">
-                                    {sourceFields.map((f) => (
-                                        <option key={f} value={f} />
+                            {editor.mapping_mode === "ui" ? (
+                                <div className="space-y-2">
+                                    {editor.mappings.map((m) => (
+                                        <div key={m.id} className="grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-2 items-center">
+                                            <Input
+                                                value={m.from}
+                                                list="webhook-source-fields"
+                                                onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => (x.id === m.id ? { ...x, from: e.target.value } : x)) }))}
+                                                placeholder="Tên field gốc (từ channel)"
+                                            />
+                                            <Input
+                                                value={m.to}
+                                                onChange={(e) => setEditor((s) => ({ ...s, mappings: s.mappings.map((x) => (x.id === m.id ? { ...x, to: e.target.value } : x)) }))}
+                                                placeholder="Tên field mới (bắn đi)"
+                                            />
+                                            <Button
+                                                variant="ghost"
+                                                className="text-rose-600"
+                                                onClick={() => setEditor((s) => ({ ...s, mappings: s.mappings.filter((x) => x.id !== m.id) }))}
+                                                disabled={loading || editor.mappings.length <= 1}
+                                            >
+                                                Xoá
+                                            </Button>
+                                        </div>
                                     ))}
-                                </datalist>
-                            </div>
-                        ) : (
-                            <div>
-                                <textarea
-                                    className="ui-input w-full font-mono text-xs min-h-[150px]"
-                                    value={editor.mappings_raw}
-                                    onChange={(e) => setEditor((s) => ({ ...s, mappings_raw: e.target.value }))}
-                                    placeholder='[{"from": "...", "to": "..."}]'
-                                />
-                            </div>
-                        )}
 
-                        <div className="mt-2 text-xs text-slate-500">
-                            Ví dụ: nhận <span className="font-mono">username</span> → bắn sang <span className="font-mono">u_username</span>.
-                            {sourceFields.length > 0 && ` Gợi ý từ channel: ${sourceFields.join(", ")}.`}
+                                    <datalist id="webhook-source-fields">
+                                        {sourceFields.map((f) => (
+                                            <option key={f} value={f} />
+                                        ))}
+                                    </datalist>
+                                </div>
+                            ) : (
+                                <div>
+                                    <textarea
+                                        className="ui-input w-full font-mono text-xs min-h-[150px]"
+                                        value={editor.mappings_raw}
+                                        onChange={(e) => setEditor((s) => ({ ...s, mappings_raw: e.target.value }))}
+                                        placeholder='[{"from": "...", "to": "..."}]'
+                                    />
+                                </div>
+                            )}
+
+                            <div className="mt-2 text-xs text-slate-500">
+                                Ví dụ: nhận <span className="font-mono">username</span> → bắn sang <span className="font-mono">u_username</span>.
+                                {sourceFields.length > 0 && ` Gợi ý từ channel: ${sourceFields.join(", ")}.`}
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 border-dashed">
+                            <div className="flex items-center gap-2 text-sky-600 mb-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span className="text-xs font-bold uppercase tracking-wider">Thông tin xử lý</span>
+                            </div>
+                            <p className="text-xs text-slate-500 leading-relaxed">
+                                {editor.type === "use_mapped" 
+                                    ? "Hệ thống sẽ sử dụng toàn bộ dữ liệu đã được Map từ khâu tiếp nhận (Mapped Payload) để bắn sang điểm nhận này. Cấu hình mapping thủ công đã bị ẩn."
+                                    : `Dữ liệu sẽ được xử lý thông qua logic code riêng cho type '${editor.type}'. Cấu hình mapping thủ công đã bị ẩn.`}
+                            </p>
+                        </div>
+                    )}
 
                     <div className="flex justify-end gap-2 pt-2">
                         <Button variant="ghost" onClick={() => setEditorOpen(false)} disabled={loading}>Huỷ</Button>
