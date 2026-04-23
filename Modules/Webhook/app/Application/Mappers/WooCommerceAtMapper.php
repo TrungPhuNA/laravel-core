@@ -27,11 +27,12 @@ final class WooCommerceAtMapper
         }
 
         return [
-            'request_name' => 'Đơn hàng WooCommerce #' . Arr::get($payload, 'id'),
+            'request_name' => 'Đơn hàng WooCommerce #' . Arr::get($payload, 'id').  ' - ' .Arr::get($billing, 'company'),
             'order_id' => (string) Arr::get($payload, 'id'),
-            'contact_name' => $contactName,
+            'contact_name' => Arr::get($billing,'last_name'),
             'contact_email' => Arr::get($billing, 'email'),
             'contact_phone' => Arr::get($billing, 'phone'),
+            'company_name' => Arr::get($billing, 'company'),
             'total_amount' => (float) Arr::get($payload, 'total', 0),
             'campaign_source' => $getMeta('_wc_order_attribution_utm_source'),
             'campaign_medium' => $getMeta('_wc_order_attribution_utm_medium'),

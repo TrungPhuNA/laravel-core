@@ -31,3 +31,20 @@ export async function fetchUsers(params: UsersParams): Promise<{ items: UserItem
   };
 }
 
+export async function createUser(data: Partial<UserItem> & { password?: string }): Promise<{ user: UserItem }> {
+  const res = await api.post<ApiResponseSuccess<{ user: UserItem }>>("/users", data);
+  if (res.data.status !== "success") throw res.data;
+  return res.data.data;
+}
+
+export async function updateUser(id: number, data: Partial<UserItem>): Promise<{ user: UserItem }> {
+  const res = await api.put<ApiResponseSuccess<{ user: UserItem }>>(`/users/${id}`, data);
+  if (res.data.status !== "success") throw res.data;
+  return res.data.data;
+}
+
+export async function deleteUser(id: number): Promise<void> {
+  const res = await api.delete<ApiResponseSuccess<void>>(`/users/${id}`);
+  if (res.data.status !== "success") throw res.data;
+}
+

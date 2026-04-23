@@ -109,7 +109,7 @@ function buildValidationRulesRecord(fields: ValidationField[]): Record<string, s
         out[key] = tokenStr;
     }
 
-    return Object.keys(out).length ? out : undefined;
+    return out;
 }
 
 function normalizeError(err: Err): { title: string; details?: string } {
