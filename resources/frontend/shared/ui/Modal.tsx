@@ -6,6 +6,7 @@ export default function Modal(props: {
   children: React.ReactNode;
   onClose: () => void;
   footer?: React.ReactNode;
+  className?: string;
 }) {
   useEffect(() => {
     if (!props.open) return;
@@ -24,8 +25,8 @@ export default function Modal(props: {
     <div className="fixed inset-0 z-50">
       <div className="absolute inset-0 bg-black/30" onClick={props.onClose} />
       <div className="absolute inset-0 flex items-center justify-center p-4">
-        <div className="w-full max-w-3xl rounded-xl border border-slate-200 bg-white shadow-xl">
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        <div className={`w-full flex flex-col rounded-xl border border-slate-200 bg-white shadow-xl ${props.className || "max-w-3xl"}`}>
+          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3 shrink-0">
             <div className="text-sm font-semibold">{props.title}</div>
             <button className="text-sm text-slate-600 hover:text-slate-900" onClick={props.onClose}>
               Đóng

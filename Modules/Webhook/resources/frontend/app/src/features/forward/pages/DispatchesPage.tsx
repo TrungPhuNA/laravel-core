@@ -106,30 +106,42 @@ export default function DispatchesPage() {
     });
 
     const [filters, setFilters] = React.useState({
+        id: "",
+        webhook_request_id: "",
         status: "all" as "all" | "pending" | "success" | "failed",
         destination_id: "",
+        response_status: "",
+        created_at: "",
     });
+
+    const [filterModalOpen, setFilterModalOpen] = React.useState(false);
+    const hasActiveFilters = filters.id || filters.webhook_request_id || filters.destination_id || filters.response_status || filters.created_at || filters.status !== "all";
 
     const [detailOpen, setDetailOpen] = React.useState(false);
     const [detailLoading, setDetailLoading] = React.useState(false);
     const [detail, setDetail] = React.useState<WebhookDispatchLogDetail | null>(null);
     const [viewMode, setViewMode] = React.useState<"table" | "json">("table");
 
-    async function reload(next?: Partial<{ page: number; per_page: number }>) {
+    async function reload(next?: Partial<{ page: number; per_page: number; overrideFilters: typeof filters }>) {
         if (!webhookId) return;
         const page = next?.page ?? meta.page;
         const per_page = next?.per_page ?? meta.per_page;
+        const activeFilters = next?.overrideFilters ?? filters;
 
         setLoading(true);
         setError(null);
         try {
-            const destinationId = Number(filters.destination_id || 0);
+            const destinationId = Number(activeFilters.destination_id || 0);
             const res = await listDispatches(webhookId, {
                 page,
                 per_page,
                 filters: {
-                    status: filters.status === "all" ? undefined : (filters.status as any),
+                    id: activeFilters.id || undefined,
+                    webhook_request_id: activeFilters.webhook_request_id || undefined,
+                    status: activeFilters.status === "all" ? undefined : (activeFilters.status as any),
                     destination_id: destinationId ? destinationId : undefined,
+                    response_status: activeFilters.response_status || undefined,
+                    created_at: activeFilters.created_at || undefined,
                 } as any,
             });
             setItems(res.items);
@@ -170,6 +182,20 @@ export default function DispatchesPage() {
         return "warning";
     }
 
+    function removeFilter(key: keyof typeof filters) {
+        const next = { ...filters };
+        if (key === "status") next[key] = "all" as any;
+        else next[key] = "";
+        setFilters(next);
+        setMeta((m) => ({ ...m, page: 1 }));
+        reload({ page: 1, overrideFilters: next });
+    }
+
+    const activeFilterTags = Object.entries(filters).filter(([k, v]) => {
+        if (k === "status") return v !== "all";
+        return !!v;
+    });
+
     return (
         <div className="space-y-6 pb-10">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -187,38 +213,46 @@ export default function DispatchesPage() {
                 </div>
             </div>
 
+            {activeFilterTags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 bg-white px-4 py-3 rounded-2xl shadow-sm border border-slate-100">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mr-1">Đang lọc:</span>
+                    {activeFilterTags.map(([k, v]) => (
+                        <div key={k} className="flex items-center gap-1.5 bg-sky-50 text-sky-700 px-2.5 py-1 rounded-lg text-xs font-medium border border-sky-100/50">
+                            <span>{k}: <span className="font-bold">{v}</span></span>
+                            <button 
+                                onClick={() => removeFilter(k as keyof typeof filters)}
+                                className="w-4 h-4 flex items-center justify-center hover:bg-sky-200/50 rounded-full transition-colors text-sky-500 hover:text-sky-800"
+                            >
+                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    ))}
+                    <button 
+                        onClick={() => {
+                            const next = { id: "", webhook_request_id: "", status: "all" as any, destination_id: "", response_status: "", created_at: "" };
+                            setFilters(next);
+                            setMeta((m) => ({ ...m, page: 1 }));
+                            reload({ page: 1, overrideFilters: next });
+                        }}
+                        className="text-[11px] font-bold text-rose-500 hover:text-rose-600 transition-colors ml-2"
+                    >
+                        Xoá tất cả
+                    </button>
+                </div>
+            )}
+
             {err && <Alert tone="danger" title={err.title} details={err.details} />}
 
-            <Card title="Bộ lọc" className="rounded-3xl overflow-hidden border-slate-100 shadow-sm">
-                <div className="p-5 grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                        <div className="text-xs font-bold text-slate-500 mb-1">Status</div>
-                        <Select value={filters.status} onChange={(e) => setFilters((s) => ({ ...s, status: e.target.value as any }))}>
-                            <option value="all">Tất cả</option>
-                            <option value="pending">pending</option>
-                            <option value="success">success</option>
-                            <option value="failed">failed</option>
-                        </Select>
-                    </div>
-                    <div>
-                        <div className="text-xs font-bold text-slate-500 mb-1">Destination ID</div>
-                        <Input value={filters.destination_id} onChange={(e) => setFilters((s) => ({ ...s, destination_id: e.target.value }))} placeholder="vd: 12" />
-                    </div>
-                    <div className="flex items-end gap-2">
-                        <Button
-                            onClick={() => {
-                                setMeta((m) => ({ ...m, page: 1 }));
-                                reload({ page: 1 });
-                            }}
-                            disabled={loading}
-                        >
-                            Áp dụng
-                        </Button>
-                    </div>
-                </div>
-            </Card>
-
-            <Card title={`Danh sách (${meta.total ?? items.length})`} className="rounded-3xl overflow-hidden border-slate-100 shadow-sm">
+            <Card 
+                title={`Danh sách (${meta.total ?? items.length})`} 
+                className="rounded-3xl overflow-hidden border-slate-100 shadow-sm"
+                actions={
+                    <Button variant="primary" className="h-8 text-xs font-bold" onClick={() => setFilterModalOpen(true)}>
+                        <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        Bộ lọc {hasActiveFilters ? "(Đang lọc)" : ""}
+                    </Button>
+                }
+            >
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-sm">
                         <thead className="bg-slate-50 text-slate-500">
@@ -383,6 +417,63 @@ export default function DispatchesPage() {
                         </div>
                     </div>
                 )}
+            </Modal>
+
+            <Modal 
+                open={filterModalOpen} 
+                onClose={() => setFilterModalOpen(false)} 
+                title="Lọc dữ liệu Dispatch"
+                footer={
+                    <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={() => {
+                            setFilters({ id: "", webhook_request_id: "", status: "all", destination_id: "", response_status: "", created_at: "" });
+                            setMeta((m) => ({ ...m, page: 1 }));
+                            setFilterModalOpen(false);
+                            setTimeout(() => reload({ page: 1 }), 0);
+                        }} disabled={loading}>
+                            Bỏ lọc
+                        </Button>
+                        <Button variant="primary" onClick={() => {
+                            setMeta((m) => ({ ...m, page: 1 }));
+                            setFilterModalOpen(false);
+                            reload({ page: 1 });
+                        }} disabled={loading}>
+                            Áp dụng
+                        </Button>
+                    </div>
+                }
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">Dispatch ID</div>
+                        <Input value={filters.id} onChange={(e) => setFilters({ ...filters, id: e.target.value })} placeholder="vd: 12" />
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">Request ID (Nguồn)</div>
+                        <Input value={filters.webhook_request_id} onChange={(e) => setFilters({ ...filters, webhook_request_id: e.target.value })} placeholder="vd: 20" />
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">Status</div>
+                        <Select value={filters.status} onChange={(e) => setFilters((s) => ({ ...s, status: e.target.value as any }))}>
+                            <option value="all">Tất cả</option>
+                            <option value="pending">Pending</option>
+                            <option value="success">Success</option>
+                            <option value="failed">Failed</option>
+                        </Select>
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">Destination ID</div>
+                        <Input value={filters.destination_id} onChange={(e) => setFilters((s) => ({ ...s, destination_id: e.target.value }))} placeholder="vd: 12" />
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">HTTP Response Status</div>
+                        <Input value={filters.response_status} onChange={(e) => setFilters((s) => ({ ...s, response_status: e.target.value }))} placeholder="vd: 200" />
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">Created at (from,to)</div>
+                        <Input value={filters.created_at} onChange={(e) => setFilters((s) => ({ ...s, created_at: e.target.value }))} placeholder="2026-03-01,2026-03-31" />
+                    </div>
+                </div>
             </Modal>
         </div>
     );

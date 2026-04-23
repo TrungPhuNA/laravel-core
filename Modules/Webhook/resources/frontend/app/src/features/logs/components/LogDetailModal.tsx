@@ -43,7 +43,7 @@ export default function LogDetailModal({ open, onClose, webhookId, requestId }: 
             open={open}
             onClose={onClose}
             title={detail ? `Chi tiết Log #${detail.id}` : "Đang tải..."}
-            className="max-w-4xl"
+            className="max-w-7xl"
             footer={
                 <div className="flex items-center justify-between w-full">
                     <div className="flex gap-2">
@@ -108,28 +108,56 @@ export default function LogDetailModal({ open, onClose, webhookId, requestId }: 
                     </div>
 
                     {/* Main Body Content */}
-                    <div>
-                        <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
-                                Dữ liệu Request Body
-                            </h3>
-                            {viewMode === "fancy" && (
-                                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                    Dữ liệu Cấu trúc
-                                </span>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                                    Request Body (Gốc)
+                                </h3>
+                            </div>
+
+                            {viewMode === "raw" ? (
+                                <pre className="p-4 bg-slate-900 text-sky-400 rounded-2xl font-mono text-xs overflow-auto max-h-[500px] border border-slate-800 shadow-inner">
+                                    {detail.body}
+                                </pre>
+                            ) : (
+                                <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+                                    <RecursiveDataRenderer data={tryParse(detail.body)} />
+                                </div>
                             )}
                         </div>
 
-                        {viewMode === "raw" ? (
-                            <pre className="p-4 bg-slate-900 text-sky-400 rounded-2xl font-mono text-xs overflow-auto max-h-[500px] border border-slate-800 shadow-inner">
-                                {detail.body}
-                            </pre>
-                        ) : (
-                            <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
-                                <RecursiveDataRenderer data={tryParse(detail.body)} />
+                        <div>
+                            <div className="flex items-center justify-between mb-3">
+                                <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    Mapped Payload (Đã xử lý)
+                                </h3>
+                                {viewMode === "fancy" && (
+                                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md uppercase tracking-wider">
+                                        Dữ liệu Cấu trúc
+                                    </span>
+                                )}
                             </div>
-                        )}
+
+                            {detail.mapped_payload ? (
+                                viewMode === "raw" ? (
+                                    <pre className="p-4 bg-slate-900 text-emerald-400 rounded-2xl font-mono text-xs overflow-auto max-h-[500px] border border-slate-800 shadow-inner">
+                                        {JSON.stringify(detail.mapped_payload, null, 2)}
+                                    </pre>
+                                ) : (
+                                    <div className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+                                        <RecursiveDataRenderer data={detail.mapped_payload} />
+                                    </div>
+                                )
+                            ) : (
+                                <div className="p-6 bg-slate-50 border border-slate-100 rounded-2xl text-center text-slate-400 text-sm italic flex flex-col items-center justify-center min-h-[120px]">
+                                    <svg className="w-8 h-8 mb-2 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                                    Không có dữ liệu mapped
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}

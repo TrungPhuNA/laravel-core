@@ -23,6 +23,7 @@ final class WebhookRequestResource extends JsonResource
             'error_message' => $item->error_message,
             'received_at' => $item->received_at?->toISOString(),
             'body_preview' => $this->truncate((string) $item->body, 500),
+            'mapped_payload_preview' => $item->mapped_payload ? $this->truncate(json_encode($item->mapped_payload, JSON_UNESCAPED_UNICODE), 500) : null,
             'created_at' => $item->created_at?->toISOString(),
         ];
     }

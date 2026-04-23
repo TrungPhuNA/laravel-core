@@ -44,12 +44,16 @@ export default function ChannelLogsPage() {
     });
 
     const [filters, setFilters] = React.useState({
+        id: "",
+        status: "all" as "all" | "success" | "failed",
         method: "all" as "all" | "GET" | "POST",
         ip: "",
         received_at: "",
     });
 
-    const [mobileFiltersOpen, setMobileFiltersOpen] = React.useState(false);
+    const [filterModalOpen, setFilterModalOpen] = React.useState(false);
+
+    const hasActiveFilters = filters.id || filters.ip || filters.received_at || filters.method !== "all" || filters.status !== "all";
 
     const [detailOpen, setDetailOpen] = React.useState(false);
     const [selectedRequestId, setSelectedRequestId] = React.useState<number | null>(null);
@@ -58,9 +62,10 @@ export default function ChannelLogsPage() {
     const [pruneDays, setPruneDays] = React.useState("30");
     const [pruneResult, setPruneResult] = React.useState<string>("");
 
-    async function reload(next?: Partial<{ page: number; per_page: number }>) {
+    async function reload(next?: Partial<{ page: number; per_page: number; overrideFilters: typeof filters }>) {
         const page = next?.page ?? meta.page;
         const per_page = next?.per_page ?? meta.per_page;
+        const activeFilters = next?.overrideFilters ?? filters;
 
         setLoading(true);
         setError(null);
@@ -69,15 +74,15 @@ export default function ChannelLogsPage() {
                 page,
                 per_page,
                 filters: {
-                    method: filters.method === "all" ? undefined : (filters.method as any),
-                    ip: filters.ip,
-                    received_at: filters.received_at,
-                },
+                    id: activeFilters.id || undefined,
+                    status: activeFilters.status === "all" ? undefined : (activeFilters.status as any),
+                    method: activeFilters.method === "all" ? undefined : (activeFilters.method as any),
+                    ip: activeFilters.ip || undefined,
+                    received_at: activeFilters.received_at || undefined,
+                } as any,
             });
             setItems(res.items);
             setMeta(res.meta);
-            // Tự động đóng lọc trên mobile sau khi áp dụng
-            setMobileFiltersOpen(false);
         } catch (e) {
             setError(e);
         } finally {
@@ -116,6 +121,20 @@ export default function ChannelLogsPage() {
 
     const errView = error ? normalizeError(error) : null;
 
+    function removeFilter(key: keyof typeof filters) {
+        const next = { ...filters };
+        if (key === "status" || key === "method") next[key] = "all" as any;
+        else next[key] = "";
+        setFilters(next);
+        setMeta((m) => ({ ...m, page: 1 }));
+        reload({ page: 1, overrideFilters: next });
+    }
+
+    const activeFilterTags = Object.entries(filters).filter(([k, v]) => {
+        if (k === "status" || k === "method") return v !== "all";
+        return !!v;
+    });
+
     return (
         <div className="space-y-4">
             <div className="flex items-end justify-between gap-3">
@@ -127,13 +146,6 @@ export default function ChannelLogsPage() {
                     <Link className="hidden sm:block text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors" to="/channels">
                         Quay lại
                     </Link>
-                    <Button 
-                        variant="ghost" 
-                        className={`md:hidden h-8 w-8 !p-0 ${mobileFiltersOpen ? 'bg-slate-100 text-sky-600' : ''}`} 
-                        onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
-                    </Button>
                     <Button variant="ghost" className="h-8 text-xs font-bold" onClick={() => reload()} disabled={loading}>
                         Tải lại
                     </Button>
@@ -143,54 +155,47 @@ export default function ChannelLogsPage() {
                 </div>
             </div>
 
+            {activeFilterTags.length > 0 && (
+                <div className="flex flex-wrap items-center gap-2 bg-white px-4 py-3 rounded-2xl shadow-sm border border-slate-100">
+                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mr-1">Đang lọc:</span>
+                    {activeFilterTags.map(([k, v]) => (
+                        <div key={k} className="flex items-center gap-1.5 bg-sky-50 text-sky-700 px-2.5 py-1 rounded-lg text-xs font-medium border border-sky-100/50">
+                            <span>{k}: <span className="font-bold">{v}</span></span>
+                            <button 
+                                onClick={() => removeFilter(k as keyof typeof filters)}
+                                className="w-4 h-4 flex items-center justify-center hover:bg-sky-200/50 rounded-full transition-colors text-sky-500 hover:text-sky-800"
+                            >
+                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            </button>
+                        </div>
+                    ))}
+                    <button 
+                        onClick={() => {
+                            const next = { id: "", status: "all" as any, method: "all" as any, ip: "", received_at: "" };
+                            setFilters(next);
+                            setMeta((m) => ({ ...m, page: 1 }));
+                            reload({ page: 1, overrideFilters: next });
+                        }}
+                        className="text-[11px] font-bold text-rose-500 hover:text-rose-600 transition-colors ml-2"
+                    >
+                        Xoá tất cả
+                    </button>
+                </div>
+            )}
+
             {errView ? <Alert tone="danger" title={errView.title} details={errView.details} /> : null}
             {pruneResult ? <Alert tone="success" title="Prune thành công" details={pruneResult} /> : null}
-
-            <div className={`${mobileFiltersOpen ? 'block' : 'hidden'} md:block`}>
-                <Card
-                    title="Bộ lọc"
-                    bodyClassName="p-4 md:p-6"
-                    actions={
-                        <div className="flex items-center gap-2">
-                            <Button variant="ghost" className="md:hidden h-8 text-xs font-bold" onClick={() => setMobileFiltersOpen(false)}>
-                                Đóng
-                            </Button>
-                            <Button variant="primary" className="h-8 text-xs font-bold" onClick={() => reload({ page: 1 })} disabled={loading}>
-                                Áp dụng
-                            </Button>
-                        </div>
-                    }
-                >
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <div>
-                            <div className="text-xs font-medium text-slate-600">Method</div>
-                            <Select className="mt-1" value={filters.method} onChange={(e) => setFilters({ ...filters, method: e.target.value as any })}>
-                                <option value="all">Tất cả</option>
-                                <option value="GET">GET</option>
-                                <option value="POST">POST</option>
-                            </Select>
-                        </div>
-                        <div>
-                            <div className="text-xs font-medium text-slate-600">IP</div>
-                            <Input className="mt-1" value={filters.ip} onChange={(e) => setFilters({ ...filters, ip: e.target.value })} placeholder="127.0.0.1" />
-                        </div>
-                        <div>
-                            <div className="text-xs font-medium text-slate-600">Received at (from,to)</div>
-                            <Input
-                                className="mt-1"
-                                value={filters.received_at}
-                                onChange={(e) => setFilters({ ...filters, received_at: e.target.value })}
-                                placeholder="2026-03-01,2026-03-31"
-                            />
-                        </div>
-                    </div>
-                </Card>
-            </div>
 
             <Card 
                 title="Danh sách Logs" 
                 bodyClassName="p-0 md:p-6" 
                 className="md:shadow-md md:border md:bg-white shadow-none border-none bg-transparent overflow-hidden"
+                actions={
+                    <Button variant="primary" className="h-8 text-xs font-bold" onClick={() => setFilterModalOpen(true)}>
+                        <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+                        Bộ lọc {hasActiveFilters ? "(Đang lọc)" : ""}
+                    </Button>
+                }
             >
                 <div className="hidden sm:block overflow-auto">
                     <table className="ui-table">
@@ -202,13 +207,14 @@ export default function ChannelLogsPage() {
                                 <th className="ui-th w-32">IP</th>
                                 <th className="ui-th w-44">Received at</th>
                                 <th className="ui-th">Body Preview</th>
+                                <th className="ui-th">Mapped Preview</th>
                             </tr>
                         </thead>
                         <tbody>
                             {items.map((it) => (
                                 <tr
                                     key={it.id}
-                                    className="ui-tr cursor-pointer"
+                                    className="ui-tr cursor-pointer hover:bg-slate-50/80 transition-colors"
                                     onClick={() => openDetail(it.id)}
                                 >
                                     <td className="ui-td font-bold text-slate-900">#{it.id}</td>
@@ -225,6 +231,7 @@ export default function ChannelLogsPage() {
                                     <td className="ui-td text-slate-500 font-mono text-[11px]">{it.ip ?? "-"}</td>
                                     <td className="ui-td text-slate-600 font-medium whitespace-nowrap">{formatDateTime(it.received_at)}</td>
                                     <td className="ui-td text-slate-400 font-mono text-[11px]">{shortText(it.body_preview ?? "", 80)}</td>
+                                    <td className="ui-td text-slate-400 font-mono text-[11px]">{it.mapped_payload_preview ? shortText(it.mapped_payload_preview, 80) : <span className="italic opacity-50">-</span>}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -267,10 +274,18 @@ export default function ChannelLogsPage() {
                                 </div>
                                 <div className="mt-3 p-3 rounded-xl bg-slate-50/50 border border-slate-100/50">
                                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Body Preview</div>
-                                    <div className="text-[11px] text-slate-500 font-mono leading-relaxed line-clamp-2">
+                                    <div className="text-[11px] text-slate-500 font-mono leading-relaxed line-clamp-2 break-all">
                                         {it.body_preview ? shortText(it.body_preview, 100) : "No body content"}
                                     </div>
                                 </div>
+                                {it.mapped_payload_preview && (
+                                    <div className="mt-2 p-3 rounded-xl bg-emerald-50/30 border border-emerald-100/50">
+                                        <div className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Mapped Preview</div>
+                                        <div className="text-[11px] text-emerald-600/80 font-mono leading-relaxed line-clamp-2 break-all">
+                                            {shortText(it.mapped_payload_preview, 100)}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -303,11 +318,68 @@ export default function ChannelLogsPage() {
                 requestId={selectedRequestId}
             />
 
-            <Modal
-                open={pruneOpen}
-                title="Prune logs"
-                onClose={() => setPruneOpen(false)}
+            <Modal 
+                open={filterModalOpen} 
+                onClose={() => setFilterModalOpen(false)} 
+                title="Lọc dữ liệu"
                 footer={
+                    <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={() => {
+                            setFilters({ id: "", status: "all", method: "all", ip: "", received_at: "" });
+                            setMeta((m) => ({ ...m, page: 1 }));
+                            setFilterModalOpen(false);
+                            // Set timeout to ensure state is updated before reload
+                            setTimeout(() => reload({ page: 1 }), 0);
+                        }} disabled={loading}>
+                            Bỏ lọc
+                        </Button>
+                        <Button variant="primary" onClick={() => {
+                            setMeta((m) => ({ ...m, page: 1 }));
+                            setFilterModalOpen(false);
+                            reload({ page: 1 });
+                        }} disabled={loading}>
+                            Áp dụng
+                        </Button>
+                    </div>
+                }
+            >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">ID (Request ID)</div>
+                        <Input value={filters.id} onChange={(e) => setFilters({ ...filters, id: e.target.value })} placeholder="vd: 20" />
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">Status</div>
+                        <Select value={filters.status} onChange={(e) => setFilters({ ...filters, status: e.target.value as any })}>
+                            <option value="all">Tất cả</option>
+                            <option value="success">Success</option>
+                            <option value="failed">Failed</option>
+                        </Select>
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">Method</div>
+                        <Select value={filters.method} onChange={(e) => setFilters({ ...filters, method: e.target.value as any })}>
+                            <option value="all">Tất cả</option>
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                        </Select>
+                    </div>
+                    <div>
+                        <div className="text-xs font-medium text-slate-600 mb-1">IP</div>
+                        <Input value={filters.ip} onChange={(e) => setFilters({ ...filters, ip: e.target.value })} placeholder="127.0.0.1" />
+                    </div>
+                    <div className="md:col-span-2">
+                        <div className="text-xs font-medium text-slate-600 mb-1">Received at (from,to)</div>
+                        <Input
+                            value={filters.received_at}
+                            onChange={(e) => setFilters({ ...filters, received_at: e.target.value })}
+                            placeholder="2026-03-01,2026-03-31"
+                        />
+                    </div>
+                </div>
+            </Modal>
+
+            <Modal open={pruneOpen} onClose={() => setPruneOpen(false)} title="Dọn dẹp logs cũ (Prune)" footer={
                     <div className="flex items-center justify-end gap-2">
                         <Button variant="ghost" onClick={() => setPruneOpen(false)}>
                             Huỷ

@@ -12,7 +12,9 @@ final class WebhookRequestQueryConfig
     public static function allowedFilters(): array
     {
         return [
+            'id' => ApiQueryApplier::FILTER_EXACT,
             'method' => ApiQueryApplier::FILTER_EXACT,
+            'status' => ApiQueryApplier::FILTER_EXACT,
             'ip' => ApiQueryApplier::FILTER_EXACT,
             'received_at' => ApiQueryApplier::FILTER_RANGE,
         ];
