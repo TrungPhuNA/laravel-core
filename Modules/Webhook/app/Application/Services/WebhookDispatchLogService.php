@@ -29,5 +29,12 @@ final class WebhookDispatchLogService implements WebhookDispatchLogServiceInterf
 
         return $this->dispatchLogs->findForWebhookOrFail((int) $webhook->id, $dispatchLogId);
     }
+
+    public function getStatsForUserWebhook(int $userId, int $webhookId, \DateTimeInterface $since): array
+    {
+        $webhook = $this->webhooks->findForUserOrFail($webhookId, $userId);
+
+        return $this->dispatchLogs->getStats((int) $webhook->id, $since);
+    }
 }
 

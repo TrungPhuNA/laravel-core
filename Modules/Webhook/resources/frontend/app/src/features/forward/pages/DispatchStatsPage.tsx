@@ -1,20 +1,20 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
 import { 
-    LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-    AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar
+    ResponsiveContainer,
+    AreaChart, Area, PieChart, Pie, Cell, CartesianGrid, XAxis, YAxis, Tooltip, Legend
 } from "recharts";
 import Card from "@shared/ui/Card";
 import Button from "@shared/ui/Button";
 import Alert from "@shared/ui/Alert";
-import { getStats, WebhookStats } from "../services/logsApi";
+import { getDispatchStats } from "../services/forwardApi";
 
-export default function ChannelStatsPage() {
+export default function DispatchStatsPage() {
     const params = useParams();
     const webhookId = Number(params.id ?? 0);
     
     const [loading, setLoading] = React.useState(true);
-    const [data, setData] = React.useState<WebhookStats[]>([]);
+    const [data, setData] = React.useState<any[]>([]);
     const [days, setDays] = React.useState(30);
     const [error, setError] = React.useState<any>(null);
 
@@ -27,8 +27,8 @@ export default function ChannelStatsPage() {
     const loadStats = async () => {
         setLoading(true);
         try {
-            const res = await getStats(webhookId, days);
-            setData(res);
+            const stats = await getDispatchStats(webhookId, days);
+            setData(stats);
             setError(null);
         } catch (e) {
             setError(e);
@@ -62,8 +62,8 @@ export default function ChannelStatsPage() {
                         <span>/</span>
                         <span>Kênh #{webhookId}</span>
                     </div>
-                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Thống kê hoạt động</h1>
-                    <p className="text-sm text-slate-500 mt-1">Phân tích tần suất và tỉ lệ thành công của các request nhận về.</p>
+                    <h1 className="text-2xl font-black text-slate-900 tracking-tight">Thống kê gửi Webhook</h1>
+                    <p className="text-sm text-slate-500 mt-1">Phân tích tần suất và tỉ lệ thành công của các request bắn đi các điểm nhận.</p>
                 </div>
                 
                 <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-2xl border border-slate-100">
@@ -88,22 +88,22 @@ export default function ChannelStatsPage() {
             {/* Overview Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard 
-                    label="Tổng Yêu cầu" 
+                    label="Tổng Lượt gửi" 
                     value={totals.total.toLocaleString()} 
                     icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>}
                     color="sky"
                 />
                 <StatCard 
-                    label="Thành công" 
+                    label="Gửi Thành công" 
                     value={totals.success.toLocaleString()} 
                     subValue={`${successRate}% thành công`}
                     icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
                     color="emerald"
                 />
                 <StatCard 
-                    label="Thất bại" 
+                    label="Gửi Thất bại" 
                     value={totals.failed.toLocaleString()} 
-                    subValue="Cần kiểm tra lại nhật ký lỗi"
+                    subValue="Cần kiểm tra nhật ký gửi lỗi"
                     icon={<svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>}
                     color="rose"
                 />
@@ -112,7 +112,7 @@ export default function ChannelStatsPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Main chart */}
                 <Card 
-                    title="Biến động theo thời gian" 
+                    title="Biến động gửi theo thời gian" 
                     className="lg:col-span-2 rounded-3xl overflow-hidden border-slate-100 shadow-sm"
                     bodyClassName="h-[400px] p-6"
                 >
@@ -173,7 +173,7 @@ export default function ChannelStatsPage() {
 
                 {/* Pie Chart */}
                 <Card 
-                    title="Tỉ trọng trạng thái" 
+                    title="Tỉ trọng trạng thái gửi" 
                     className="rounded-3xl border-slate-100 shadow-sm"
                     bodyClassName="h-[400px] p-6 flex flex-col items-center justify-center"
                 >
@@ -211,9 +211,9 @@ export default function ChannelStatsPage() {
             </div>
             
             <div className="flex justify-center">
-                <Link to={`/webhook/channels/${webhookId}/logs`}>
+                <Link to={`/channels/${webhookId}/dispatches`}>
                     <Button variant="ghost" className="text-sky-600 font-bold text-sm">
-                        Xem chi tiết logs &rarr;
+                        Xem chi tiết nhật ký gửi &rarr;
                     </Button>
                 </Link>
             </div>

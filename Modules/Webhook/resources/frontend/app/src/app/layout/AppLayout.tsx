@@ -188,16 +188,20 @@ export default function AppLayout() {
                                     <>
                                         <div className="w-px h-4 bg-slate-200 mx-1"></div>
                                         <Link className={linkClass(loc.pathname, `/channels/${cid}/logs`)} to={`/channels/${cid}/logs`}>
-                                            Logs
+                                            Nhật ký nhận
                                         </Link>
                                         <Link className={linkClass(loc.pathname, `/channels/${cid}/stats`)} to={`/channels/${cid}/stats`}>
-                                            Thống kê
+                                            Thống kê nhận
                                         </Link>
+                                        <div className="w-px h-4 bg-slate-200 mx-1"></div>
                                         <Link className={linkClass(loc.pathname, `/channels/${cid}/destinations`)} to={`/channels/${cid}/destinations`}>
-                                            Forward
+                                            Điểm nhận
                                         </Link>
                                         <Link className={linkClass(loc.pathname, `/channels/${cid}/dispatches`)} to={`/channels/${cid}/dispatches`}>
-                                            Dispatch
+                                            Nhật ký gửi
+                                        </Link>
+                                        <Link className={linkClass(loc.pathname, `/channels/${cid}/dispatch-stats`)} to={`/channels/${cid}/dispatch-stats`}>
+                                            Thống kê gửi
                                         </Link>
                                     </>
                                 );

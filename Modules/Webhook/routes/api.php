@@ -44,6 +44,7 @@ Route::prefix('v1/webhooks')->group(function () {
 
         // Dispatch logs: what we sent out and results.
         Route::get('{id}/dispatches', [WebhookDispatchLogController::class, 'index'])->whereNumber('id');
+        Route::get('{id}/dispatch-stats', [WebhookDispatchLogController::class, 'stats'])->whereNumber('id');
         Route::get('{id}/dispatches/{dispatchId}', [WebhookDispatchLogController::class, 'show'])
             ->whereNumber('id')->whereNumber('dispatchId');
     });

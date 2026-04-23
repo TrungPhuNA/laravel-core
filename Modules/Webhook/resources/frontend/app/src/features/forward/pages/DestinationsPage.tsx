@@ -295,7 +295,7 @@ export default function DestinationsPage() {
                             <tr>
                                 <th className="text-left px-4 py-3 font-bold">Tên</th>
                                 <th className="text-left px-4 py-3 font-bold">URL</th>
-                                <th className="text-left px-4 py-3 font-bold">Mode</th>
+                                <th className="text-left px-4 py-3 font-bold">Chế độ</th>
                                 <th className="text-left px-4 py-3 font-bold">Trạng thái</th>
                                 <th className="text-left px-4 py-3 font-bold">Cập nhật</th>
                                 <th className="text-right px-4 py-3 font-bold">Actions</th>
@@ -321,7 +321,9 @@ export default function DestinationsPage() {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <Badge tone={it.is_active ? "success" : "danger"}>{it.is_active ? "Active" : "Disabled"}</Badge>
+                                        <Badge tone={it.is_active ? "success" : "warning"}>
+                                            {it.is_active ? "Hoạt động" : "Tạm dừng"}
+                                        </Badge>
                                     </td>
                                     <td className="px-4 py-3 text-slate-600 text-xs">
                                         {formatDateTime(it.updated_at ?? it.created_at ?? null)}

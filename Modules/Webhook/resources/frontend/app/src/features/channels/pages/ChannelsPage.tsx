@@ -891,157 +891,169 @@ export default function ChannelsPage() {
                         />
                     </div>
 
-                    <div>
-                        <div className="flex items-center justify-between mb-2">
-                            <label className="ui-label !mb-0">Validation Rules (Rules cho body JSON)</label>
-                            <button
-                                type="button"
-                                className="text-xs font-bold text-sky-600 hover:text-sky-700 underline"
-                                onClick={() => {
-                                    if (!rulesJsonOpen) {
-                                        // Khi chuyển sang JSON mode, lấy data từ fields hiện tại
-                                        setJsonRaw(prettyJson(buildValidationRulesRecord(editor.validation_fields) || {}));
-                                        setJsonError(null);
-                                    }
-                                    setRulesJsonOpen(!rulesJsonOpen);
-                                }}
-                            >
-                                {rulesJsonOpen ? "Dùng Mode UI" : "Sửa JSON trực tiếp"}
-                            </button>
-                        </div>
-
-                        {rulesJsonOpen ? (
-                            <div className="space-y-2">
-                                <textarea
-                                    className={`ui-input h-48 font-mono text-xs py-2 ${jsonError ? 'border-rose-500 ring-rose-50' : ''}`}
-                                    value={jsonRaw}
-                                    onChange={(e) => {
-                                        const val = e.target.value;
-                                        setJsonRaw(val);
-                                        try {
-                                            const parsed = JSON.parse(val);
+                    {editor.type === 'default' ? (
+                        <div>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="ui-label !mb-0">Validation Rules (Rules cho body JSON)</label>
+                                <button
+                                    type="button"
+                                    className="text-xs font-bold text-sky-600 hover:text-sky-700 underline"
+                                    onClick={() => {
+                                        if (!rulesJsonOpen) {
+                                            // Khi chuyển sang JSON mode, lấy data từ fields hiện tại
+                                            setJsonRaw(prettyJson(buildValidationRulesRecord(editor.validation_fields) || {}));
                                             setJsonError(null);
-                                            // Parse thành fields để đồng bộ
-                                            setEditor(prev => ({
-                                                ...prev,
-                                                validation_fields: parseValidationRulesToFields(parsed)
-                                            }));
-                                        } catch (err: any) {
-                                            setJsonError(err.message);
                                         }
+                                        setRulesJsonOpen(!rulesJsonOpen);
                                     }}
-                                    placeholder='{ "field_name": "required|string" }'
-                                />
-                                {jsonError && (
-                                    <div className="text-[10px] font-bold text-rose-500 bg-rose-50 p-2 rounded-lg border border-rose-100">
-                                        JSON không hợp lệ: {jsonError}
-                                    </div>
-                                )}
+                                >
+                                    {rulesJsonOpen ? "Dùng Mode UI" : "Sửa JSON trực tiếp"}
+                                </button>
                             </div>
-                        ) : (
-                            <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
-                                <table className="w-full text-xs">
-                                    <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
-                                        <tr>
-                                            <th className="px-4 py-2 text-left w-1/3">Field Name</th>
-                                            <th className="px-4 py-2 text-left">Rules (Laravel Style)</th>
-                                            <th className="px-4 py-2 w-10"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-slate-100">
-                                        {editor.validation_fields.map((f, fIdx) => (
-                                            <tr key={f.id}>
-                                                <td className="p-2">
-                                                    <input
-                                                        className="w-full h-8 px-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500"
-                                                        value={f.field}
-                                                        onChange={(e) => {
-                                                            const newFields = [...editor.validation_fields];
-                                                            newFields[fIdx].field = e.target.value;
-                                                            setEditor({ ...editor, validation_fields: newFields });
-                                                        }}
-                                                        placeholder="order_id"
-                                                    />
-                                                </td>
-                                                <td className="p-2">
-                                                    <div className="flex flex-wrap gap-1.5 items-center">
-                                                        {f.tokens.map((t, tIdx) => (
-                                                            <div key={t.id} className="flex items-center bg-white border border-slate-200 rounded-md py-0.5 px-1.5 group/token">
-                                                                <select
-                                                                    className="bg-transparent font-medium focus:outline-none cursor-pointer"
-                                                                    value={t.token}
-                                                                    onChange={(e) => {
-                                                                        const newFields = [...editor.validation_fields];
-                                                                        newFields[fIdx].tokens[tIdx].token = e.target.value;
-                                                                        setEditor({ ...editor, validation_fields: newFields });
-                                                                    }}
-                                                                >
-                                                                    {VALIDATION_RULE_OPTIONS.map(opt => (
-                                                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                                    ))}
-                                                                    {!VALIDATION_RULE_OPTIONS.find(o => o.value === t.token) && (
-                                                                        <option value={t.token}>{t.token}</option>
-                                                                    )}
-                                                                </select>
-                                                                <button
-                                                                    type="button"
-                                                                    className="ml-1 text-slate-400 hover:text-rose-500"
-                                                                    onClick={() => {
-                                                                        const newFields = [...editor.validation_fields];
-                                                                        newFields[fIdx].tokens.splice(tIdx, 1);
-                                                                        setEditor({ ...editor, validation_fields: newFields });
-                                                                    }}
-                                                                >
-                                                                    &times;
-                                                                </button>
-                                                            </div>
-                                                        ))}
+
+                            {rulesJsonOpen ? (
+                                <div className="space-y-2">
+                                    <textarea
+                                        className={`ui-input h-48 font-mono text-xs py-2 ${jsonError ? 'border-rose-500 ring-rose-50' : ''}`}
+                                        value={jsonRaw}
+                                        onChange={(e) => {
+                                            const val = e.target.value;
+                                            setJsonRaw(val);
+                                            try {
+                                                const parsed = JSON.parse(val);
+                                                setJsonError(null);
+                                                // Parse thành fields để đồng bộ
+                                                setEditor(prev => ({
+                                                    ...prev,
+                                                    validation_fields: parseValidationRulesToFields(parsed)
+                                                }));
+                                            } catch (err: any) {
+                                                setJsonError(err.message);
+                                            }
+                                        }}
+                                        placeholder='{ "field_name": "required|string" }'
+                                    />
+                                    {jsonError && (
+                                        <div className="text-[10px] font-bold text-rose-500 bg-rose-50 p-2 rounded-lg border border-rose-100">
+                                            JSON không hợp lệ: {jsonError}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
+                                    <table className="w-full text-xs">
+                                        <thead className="bg-slate-50 text-slate-500 font-bold border-b border-slate-100">
+                                            <tr>
+                                                <th className="px-4 py-2 text-left w-1/3">Field Name</th>
+                                                <th className="px-4 py-2 text-left">Rules (Laravel Style)</th>
+                                                <th className="px-4 py-2 w-10"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-100">
+                                            {editor.validation_fields.map((f, fIdx) => (
+                                                <tr key={f.id}>
+                                                    <td className="p-2">
+                                                        <input
+                                                            className="w-full h-8 px-2 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                                                            value={f.field}
+                                                            onChange={(e) => {
+                                                                const newFields = [...editor.validation_fields];
+                                                                newFields[fIdx].field = e.target.value;
+                                                                setEditor({ ...editor, validation_fields: newFields });
+                                                            }}
+                                                            placeholder="order_id"
+                                                        />
+                                                    </td>
+                                                    <td className="p-2">
+                                                        <div className="flex flex-wrap gap-1.5 items-center">
+                                                            {f.tokens.map((t, tIdx) => (
+                                                                <div key={t.id} className="flex items-center bg-white border border-slate-200 rounded-md py-0.5 px-1.5 group/token">
+                                                                    <select
+                                                                        className="bg-transparent font-medium focus:outline-none cursor-pointer"
+                                                                        value={t.token}
+                                                                        onChange={(e) => {
+                                                                            const newFields = [...editor.validation_fields];
+                                                                            newFields[fIdx].tokens[tIdx].token = e.target.value;
+                                                                            setEditor({ ...editor, validation_fields: newFields });
+                                                                        }}
+                                                                    >
+                                                                        {VALIDATION_RULE_OPTIONS.map(opt => (
+                                                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                        ))}
+                                                                        {!VALIDATION_RULE_OPTIONS.find(o => o.value === t.token) && (
+                                                                            <option value={t.token}>{t.token}</option>
+                                                                        )}
+                                                                    </select>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="ml-1 text-slate-400 hover:text-rose-500"
+                                                                        onClick={() => {
+                                                                            const newFields = [...editor.validation_fields];
+                                                                            newFields[fIdx].tokens.splice(tIdx, 1);
+                                                                            setEditor({ ...editor, validation_fields: newFields });
+                                                                        }}
+                                                                    >
+                                                                        &times;
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                            <button
+                                                                type="button"
+                                                                className="h-6 w-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-sky-600 hover:border-sky-300"
+                                                                onClick={() => {
+                                                                    const newFields = [...editor.validation_fields];
+                                                                    newFields[fIdx].tokens.push({ id: newId(), token: "required" });
+                                                                    setEditor({ ...editor, validation_fields: newFields });
+                                                                }}
+                                                            >
+                                                                +
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-2 text-center">
                                                         <button
                                                             type="button"
-                                                            className="h-6 w-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-sky-600 hover:border-sky-300"
+                                                            className="text-slate-300 hover:text-rose-500 transition-colors"
                                                             onClick={() => {
                                                                 const newFields = [...editor.validation_fields];
-                                                                newFields[fIdx].tokens.push({ id: newId(), token: "required" });
+                                                                newFields.splice(fIdx, 1);
                                                                 setEditor({ ...editor, validation_fields: newFields });
                                                             }}
                                                         >
-                                                            +
+                                                            &times;
                                                         </button>
-                                                    </div>
-                                                </td>
-                                                <td className="p-2 text-center">
-                                                    <button
-                                                        type="button"
-                                                        className="text-slate-300 hover:text-rose-500 transition-colors"
-                                                        onClick={() => {
-                                                            const newFields = [...editor.validation_fields];
-                                                            newFields.splice(fIdx, 1);
-                                                            setEditor({ ...editor, validation_fields: newFields });
-                                                        }}
-                                                    >
-                                                        &times;
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <button
-                                    type="button"
-                                    className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-500 transition-colors"
-                                    onClick={() => {
-                                        setEditor({
-                                            ...editor,
-                                            validation_fields: [...editor.validation_fields, { id: newId(), field: "", tokens: [{ id: newId(), token: "required" }] }]
-                                        });
-                                    }}
-                                >
-                                    + THÊM TRƯỜNG DỮ LIỆU
-                                </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                    <button
+                                        type="button"
+                                        className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-[11px] font-bold text-slate-500 transition-colors"
+                                        onClick={() => {
+                                            setEditor({
+                                                ...editor,
+                                                validation_fields: [...editor.validation_fields, { id: newId(), field: "", tokens: [{ id: newId(), token: "required" }] }]
+                                            });
+                                        }}
+                                    >
+                                        + THÊM TRƯỜNG DỮ LIỆU
+                                    </button>
+                                </div>
+                            )}
+                            <p className="ui-help">Định nghĩa các validation rule cho body JSON của request. Dữ liệu sẽ được lọc trước khi đưa vào module xử lý.</p>
+                        </div>
+                    ) : (
+                        <div className="p-4 rounded-xl border border-sky-100 bg-sky-50/50">
+                            <div className="text-xs font-bold text-sky-700 flex items-center gap-2 mb-1">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                XỬ LÝ THEO CODE
                             </div>
-                        )}
-                        <p className="ui-help">Định nghĩa các validation rule cho body JSON của request. Dữ liệu sẽ được lọc trước khi đưa vào module xử lý.</p>
-                    </div>
+                            <p className="text-[11px] text-slate-600 leading-relaxed">
+                                Khi chọn loại kênh tùy chỉnh (<strong>{editor.type}</strong>), hệ thống sẽ bỏ qua Validation Rules cấu hình tại đây và sử dụng logic xử lý Payload riêng biệt trong class tương ứng của Backend.
+                            </p>
+                        </div>
+                    )}
 
                     {editorMode === "edit" && (
                         <div className="p-4 rounded-xl border border-amber-200 bg-amber-50 space-y-3">

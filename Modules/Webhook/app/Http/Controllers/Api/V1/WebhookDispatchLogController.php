@@ -62,7 +62,27 @@ final class WebhookDispatchLogController extends Controller
                 ],
             ],
             code: 'WEBHOOK_DISPATCH_LOG_SHOW_SUCCESS',
-            message: 'Lấy log bắn webhook thành công',
+        );
+    }
+
+    public function stats(int $id, \Illuminate\Http\Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        $days = (int) $request->query('days', 30);
+        $since = now()->subDays($days)->startOfDay();
+
+        $data = $this->dispatches->getStatsForUserWebhook((int) $user->id, $id, $since);
+
+        return ApiResponse::success(
+            data: [
+                'stats' => $data,
+                'period_days' => $days,
+                'since' => $since->toISOString(),
+            ],
+            code: 'WEBHOOK_DISPATCH_LOG_STATS_SUCCESS',
+            message: 'Lấy thống kê bắn webhook thành công',
         );
     }
 }

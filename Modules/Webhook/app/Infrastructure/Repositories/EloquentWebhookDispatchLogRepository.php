@@ -37,5 +37,20 @@ final class EloquentWebhookDispatchLogRepository implements WebhookDispatchLogRe
 
         return $item;
     }
+
+    public function getStats(int $webhookId, \DateTimeInterface $since): array
+    {
+        $stats = WebhookDispatchLog::query()
+            ->where('webhook_id', $webhookId)
+            ->where('created_at', '>=', $since)
+            ->selectRaw('DATE(created_at) as date')
+            ->selectRaw("COUNT(CASE WHEN status = 'success' THEN 1 END) as success_count")
+            ->selectRaw("COUNT(CASE WHEN status = 'failed' THEN 1 END) as failed_count")
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get();
+
+        return $stats->toArray();
+    }
 }
 

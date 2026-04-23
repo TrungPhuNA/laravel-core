@@ -258,12 +258,12 @@ export default function DispatchesPage() {
                         <thead className="bg-slate-50 text-slate-500">
                             <tr>
                                 <th className="text-left px-4 py-3 font-bold">Thời gian</th>
-                                <th className="text-left px-4 py-3 font-bold">Destination</th>
+                                <th className="text-left px-4 py-3 font-bold">Điểm nhận</th>
                                 <th className="text-left px-4 py-3 font-bold">Kết quả</th>
-                                <th className="text-left px-4 py-3 font-bold">HTTP</th>
-                                <th className="text-left px-4 py-3 font-bold">Duration</th>
+                                <th className="text-left px-4 py-3 font-bold">Mã HTTP</th>
+                                <th className="text-left px-4 py-3 font-bold">Xử lý</th>
                                 <th className="text-left px-4 py-3 font-bold">Lỗi</th>
-                                <th className="text-right px-4 py-3 font-bold">Actions</th>
+                                <th className="text-right px-4 py-3 font-bold">Hành động</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-slate-100">
@@ -274,7 +274,9 @@ export default function DispatchesPage() {
                                         #{it.destination_id}
                                         <div className="mt-1 text-[11px] text-slate-500 font-mono">req#{it.webhook_request_id}</div>
                                     </td>
-                                    <td className="px-4 py-3"><Badge tone={badgeTone(it.status)}>{it.status}</Badge></td>
+                                    <td className="px-4 py-3"><Badge tone={badgeTone(it.status)}>
+                                        {it.status === 'success' ? 'Thành công' : it.status === 'failed' ? 'Thất bại' : 'Chờ gửi'}
+                                    </Badge></td>
                                     <td className="px-4 py-3 text-slate-700 font-mono text-xs">{it.response_status ?? "—"}</td>
                                     <td className="px-4 py-3 text-slate-700 font-mono text-xs">{it.duration_ms != null ? `${it.duration_ms}ms` : "—"}</td>
                                     <td className="px-4 py-3 text-slate-600 text-xs">
@@ -319,7 +321,9 @@ export default function DispatchesPage() {
                             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
                                 <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">TRẠNG THÁI</div>
                                 <div className="flex items-center gap-2">
-                                    <Badge tone={badgeTone(detail.status)}>{detail.status.toUpperCase()}</Badge>
+                                    <Badge tone={badgeTone(detail.status)}>
+                                        {detail.status === 'success' ? 'THÀNH CÔNG' : detail.status === 'failed' ? 'THẤT BẠI' : 'CHỜ GỬI'}
+                                    </Badge>
                                     <span className="text-xs font-mono text-slate-500">HTTP {detail.response_status ?? "—"}</span>
                                 </div>
                             </div>
@@ -455,10 +459,10 @@ export default function DispatchesPage() {
                     <div>
                         <div className="text-xs font-medium text-slate-600 mb-1">Status</div>
                         <Select value={filters.status} onChange={(e) => setFilters((s) => ({ ...s, status: e.target.value as any }))}>
-                            <option value="all">Tất cả</option>
-                            <option value="pending">Pending</option>
-                            <option value="success">Success</option>
-                            <option value="failed">Failed</option>
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="pending">Đang chờ (Pending)</option>
+                            <option value="success">Thành công (Success)</option>
+                            <option value="failed">Thất bại (Failed)</option>
                         </Select>
                     </div>
                     <div>

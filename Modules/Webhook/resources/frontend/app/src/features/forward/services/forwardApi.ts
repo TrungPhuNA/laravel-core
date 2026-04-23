@@ -83,3 +83,9 @@ export async function getDispatch(webhookId: number, dispatchId: number): Promis
     return res.data.data;
 }
 
+export async function getDispatchStats(webhookId: number, days: number = 30): Promise<any[]> {
+    const res = await api.get<ApiResponseSuccess<{ stats: any[] }>>(`/webhooks/${webhookId}/dispatch-stats?days=${days}`);
+    if (res.data.status !== "success") throw res.data;
+    return res.data.data.stats;
+}
+

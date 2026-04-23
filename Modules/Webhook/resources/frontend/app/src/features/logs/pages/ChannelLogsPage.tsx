@@ -202,12 +202,12 @@ export default function ChannelLogsPage() {
                         <thead className="ui-thead">
                             <tr>
                                 <th className="ui-th">ID</th>
-                                <th className="ui-th">Status</th>
-                                <th className="ui-th">Method</th>
+                                <th className="ui-th">Trạng thái</th>
+                                <th className="ui-th">Phương thức</th>
                                 <th className="ui-th w-32">IP</th>
-                                <th className="ui-th w-44">Received at</th>
-                                <th className="ui-th">Body Preview</th>
-                                <th className="ui-th">Mapped Preview</th>
+                                <th className="ui-th w-44">Thời gian nhận</th>
+                                <th className="ui-th">Dữ liệu gốc</th>
+                                <th className="ui-th">Dữ liệu đã Map</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -220,7 +220,7 @@ export default function ChannelLogsPage() {
                                     <td className="ui-td font-bold text-slate-900">#{it.id}</td>
                                     <td className="ui-td">
                                         <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${it.status === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                                            {it.status === 'success' ? 'Success' : 'Failed'}
+                                            {it.status === 'success' ? 'Thành công' : 'Thất bại'}
                                         </span>
                                     </td>
                                     <td className="ui-td">
@@ -255,7 +255,7 @@ export default function ChannelLogsPage() {
                                         {it.method}
                                     </span>
                                     <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${it.status === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
-                                        {it.status === 'success' ? 'Success' : 'Failed'}
+                                        {it.status === 'success' ? 'Thành công' : 'Thất bại'}
                                     </span>
                                 </div>
                                 <div className="text-slate-300">
@@ -273,9 +273,9 @@ export default function ChannelLogsPage() {
                                     <div className="text-[11px] font-mono text-slate-500">{it.ip ?? "Unknown"}</div>
                                 </div>
                                 <div className="mt-3 p-3 rounded-xl bg-slate-50/50 border border-slate-100/50">
-                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Body Preview</div>
+                                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Dữ liệu gốc</div>
                                     <div className="text-[11px] text-slate-500 font-mono leading-relaxed line-clamp-2 break-all">
-                                        {it.body_preview ? shortText(it.body_preview, 100) : "No body content"}
+                                        {it.body_preview ? shortText(it.body_preview, 100) : "Không có dữ liệu"}
                                     </div>
                                 </div>
                                 {it.mapped_payload_preview && (

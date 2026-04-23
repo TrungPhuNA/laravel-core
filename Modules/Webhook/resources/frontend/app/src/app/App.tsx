@@ -6,6 +6,7 @@ import ChannelLogsPage from "../features/logs/pages/ChannelLogsPage";
 import ChannelStatsPage from "../features/logs/pages/ChannelStatsPage";
 import DestinationsPage from "../features/forward/pages/DestinationsPage";
 import DispatchesPage from "../features/forward/pages/DispatchesPage";
+import DispatchStatsPage from "../features/forward/pages/DispatchStatsPage";
 
 export default function App() {
     return (
@@ -17,6 +18,7 @@ export default function App() {
                 <Route path="/channels/:id/stats" element={<ChannelStatsPage />} />
                 <Route path="/channels/:id/destinations" element={<DestinationsPage />} />
                 <Route path="/channels/:id/dispatches" element={<DispatchesPage />} />
+                <Route path="/channels/:id/dispatch-stats" element={<DispatchStatsPage />} />
                 <Route path="*" element={<div className="text-sm text-slate-600">Không tìm thấy trang.</div>} />
             </Route>
         </Routes>

@@ -11,5 +11,6 @@ interface WebhookDispatchLogServiceInterface
     public function paginateForUserWebhook(int $userId, int $webhookId, ApiQueryParams $params): LengthAwarePaginator;
 
     public function getForUserWebhook(int $userId, int $webhookId, int $dispatchLogId): WebhookDispatchLog;
+    public function getStatsForUserWebhook(int $userId, int $webhookId, \DateTimeInterface $since): array;
 }
 
