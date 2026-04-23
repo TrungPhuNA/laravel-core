@@ -197,6 +197,7 @@ export default function ChannelLogsPage() {
                         <thead className="ui-thead">
                             <tr>
                                 <th className="ui-th">ID</th>
+                                <th className="ui-th">Status</th>
                                 <th className="ui-th">Method</th>
                                 <th className="ui-th w-32">IP</th>
                                 <th className="ui-th w-44">Received at</th>
@@ -211,6 +212,11 @@ export default function ChannelLogsPage() {
                                     onClick={() => openDetail(it.id)}
                                 >
                                     <td className="ui-td font-bold text-slate-900">#{it.id}</td>
+                                    <td className="ui-td">
+                                        <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${it.status === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                                            {it.status === 'success' ? 'Success' : 'Failed'}
+                                        </span>
+                                    </td>
                                     <td className="ui-td">
                                         <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${it.method === 'POST' ? 'bg-indigo-50 text-indigo-600' : 'bg-sky-50 text-sky-600'}`}>
                                             {it.method}
@@ -240,6 +246,9 @@ export default function ChannelLogsPage() {
                                     </div>
                                     <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${it.method === 'POST' ? 'bg-indigo-50 text-indigo-600' : 'bg-sky-50 text-sky-600'}`}>
                                         {it.method}
+                                    </span>
+                                    <span className={`px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider ${it.status === 'success' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'}`}>
+                                        {it.status === 'success' ? 'Success' : 'Failed'}
                                     </span>
                                 </div>
                                 <div className="text-slate-300">

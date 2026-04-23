@@ -34,6 +34,7 @@ export async function listChannels(params: ListChannelsParams): Promise<{ items:
 
 export type CreateChannelInput = {
     name: string;
+    type?: string;
     is_active?: boolean;
     allowed_methods?: Array<"GET" | "POST">;
     auth_type?: "none" | "token" | "hmac";

@@ -78,11 +78,20 @@ export default function LogDetailModal({ open, onClose, webhookId, requestId }: 
             {!loading && detail && (
                 <div className="space-y-6">
                     {/* Header Info */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <StatItem label="Trạng thái" value={detail.status === 'success' ? 'Success' : 'Failed'} color={detail.status === 'success' ? 'emerald' : 'rose'} />
                         <StatItem label="Phương thức" value={detail.method} color="indigo" />
                         <StatItem label="Địa chỉ IP" value={detail.ip ?? "-"} color="slate" fontMono />
                         <StatStatStat statLabel="Thời gian" value={formatDateTime(detail.received_at)} color="slate" />
                     </div>
+                    {detail.error_message && (
+                        <div className="p-3 rounded-2xl border bg-rose-50 border-rose-100 text-rose-700 mt-3">
+                            <div className="text-[10px] font-bold uppercase tracking-widest mb-1 opacity-80">
+                                Lỗi hệ thống {detail.error_type ? `(${detail.error_type})` : ''}
+                            </div>
+                            <div className="text-sm font-medium">{detail.error_message}</div>
+                        </div>
+                    )}
 
                     {/* Meta Data (Headers & Query) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -134,6 +143,8 @@ function StatItem({ label, value, color, fontMono }: { label: string, value: str
     const colorClasses: Record<string, string> = {
         indigo: "bg-indigo-50 text-indigo-700 border-indigo-100",
         slate: "bg-slate-50 text-slate-700 border-slate-100",
+        emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
+        rose: "bg-rose-50 text-rose-700 border-rose-100",
     };
     return (
         <div className={`p-3 rounded-2xl border ${colorClasses[color]}`}>

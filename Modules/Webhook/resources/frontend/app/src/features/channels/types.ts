@@ -2,6 +2,7 @@ export type WebhookChannel = {
     id: number;
     user_id: number;
     name: string;
+    type: string;
     public_id: string;
     is_active: boolean;
     allowed_methods: string[] | null;

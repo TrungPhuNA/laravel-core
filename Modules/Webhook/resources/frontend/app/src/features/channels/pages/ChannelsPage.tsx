@@ -17,28 +17,28 @@ import { createChannel, deleteChannel, listChannels, rotateSecret, rotateToken, 
 
 // --- Icons ---
 const IconPlus = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
 );
 const IconRefresh = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /></svg>
 );
 const IconCopy = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
 );
 const IconExternal = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6" /><path d="M10 14 21 3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /></svg>
 );
 const IconTerminal = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="4 17 10 11 4 5" /><line x1="12" x2="20" y1="19" y2="19" /></svg>
 );
 const IconFilter = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" /></svg>
 );
 const IconChart = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>
 );
 const IconInfo = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></svg>
 );
 
 
@@ -155,6 +155,7 @@ export default function ChannelsPage() {
     const [editor, setEditor] = React.useState({
         id: 0,
         name: "",
+        type: "default",
         is_active: true,
         allowed_methods: ["POST"] as Array<"GET" | "POST">,
         auth_type: "none" as "none" | "token" | "hmac",
@@ -213,6 +214,7 @@ export default function ChannelsPage() {
         setEditor({
             id: 0,
             name: "",
+            type: "default",
             is_active: true,
             allowed_methods: ["POST"],
             auth_type: "none",
@@ -234,6 +236,7 @@ export default function ChannelsPage() {
         setEditor({
             id: ch.id,
             name: ch.name,
+            type: ch.type ?? "default",
             is_active: ch.is_active,
             allowed_methods: (ch.allowed_methods && ch.allowed_methods.length ? (ch.allowed_methods as any) : ["GET", "POST"]),
             auth_type: ch.auth_type,
@@ -275,6 +278,7 @@ export default function ChannelsPage() {
             if (editorMode === "create") {
                 const res = await createChannel({
                     name: editor.name,
+                    type: editor.type,
                     is_active: editor.is_active,
                     allowed_methods: editor.allowed_methods,
                     auth_type: editor.auth_type,
@@ -299,6 +303,7 @@ export default function ChannelsPage() {
             } else {
                 const res = await updateChannel(editor.id, {
                     name: editor.name,
+                    type: editor.type,
                     is_active: editor.is_active,
                     allowed_methods: editor.allowed_methods,
                     auth_type: editor.auth_type,
@@ -502,9 +507,9 @@ export default function ChannelsPage() {
 
                 {/* Main list section */}
                 <div className="lg:col-span-3 space-y-4 md:space-y-6 min-w-0">
-                    <Card 
-                        className="md:shadow-md md:border md:bg-white shadow-none border-none bg-transparent overflow-hidden" 
-                        title="Danh sách các kênh" 
+                    <Card
+                        className="md:shadow-md md:border md:bg-white shadow-none border-none bg-transparent overflow-hidden"
+                        title="Danh sách các kênh"
                         bodyClassName="p-0 md:p-6"
                     >
                         <div className="md:hidden space-y-4">
@@ -611,7 +616,7 @@ export default function ChannelsPage() {
                                     </div>
                                 );
                             })}
-                             {items.length === 0 && <div className="py-12 text-center text-slate-400 font-medium">Chưa có kênh nào được tạo.</div>}
+                            {items.length === 0 && <div className="py-12 text-center text-slate-400 font-medium">Chưa có kênh nào được tạo.</div>}
                         </div>
 
                         <div className="hidden md:block overflow-x-auto">
@@ -620,6 +625,7 @@ export default function ChannelsPage() {
                                     <tr>
                                         <th className="ui-th w-16">ID</th>
                                         <th className="ui-th w-1/4">Kênh & Mô tả</th>
+                                        <th className="ui-th w-28 whitespace-nowrap">Trạng thái</th>
                                         <th className="ui-th w-28">Auth</th>
                                         <th className="ui-th w-1/3">Receive URL</th>
                                         <th className="ui-th w-40">Hoạt động cuối</th>
@@ -633,20 +639,27 @@ export default function ChannelsPage() {
                                             <tr key={it.id} className="ui-tr group">
                                                 <td className="ui-td font-mono font-bold text-slate-400">#{it.id}</td>
                                                 <td className="ui-td overflow-hidden">
-                                                    <div className="font-bold text-slate-900 truncate" title={it.name}>{it.name}</div>
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="font-bold text-slate-900 truncate" title={it.name}>{it.name}</div>
+                                                        {it.type !== 'default' && (
+                                                            <Badge tone="info" className="scale-90 origin-left">
+                                                                {it.type}
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                     <div className="text-xs text-slate-500 mt-0.5 truncate" title={it.description ?? ""}>
                                                         {it.description || "Không có mô tả"}
                                                     </div>
                                                 </td>
                                                 <td className="ui-td">
-                                                    <div className="flex flex-col gap-1.5 items-start">
-                                                        <Badge tone={it.is_active ? "success" : "danger"}>
-                                                            {it.is_active ? "Active" : "Disabled"}
-                                                        </Badge>
-                                                        <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
-                                                            {it.auth_type}
-                                                        </Badge>
-                                                    </div>
+                                                    <Badge tone={it.is_active ? "success" : "danger"}>
+                                                        {it.is_active ? "Active" : "Disabled"}
+                                                    </Badge>
+                                                </td>
+                                                <td className="ui-td">
+                                                    <Badge tone={it.auth_type === "hmac" ? "info" : it.auth_type === "token" ? "warning" : "success"}>
+                                                        {it.auth_type}
+                                                    </Badge>
                                                 </td>
                                                 <td className="ui-td">
                                                     <div className="flex items-center gap-2 group/url overflow-hidden">
@@ -800,6 +813,28 @@ export default function ChannelsPage() {
                             />
                         </div>
                         <div>
+                            <label className="ui-label">Loại kênh (Type)</label>
+                            <Select
+                                value={editor.type === 'default' ? 'default' : 'custom'}
+                                onChange={(e) => setEditor({ ...editor, type: e.target.value === 'default' ? 'default' : '' })}
+                            >
+                                <option value="default">Mặc định (Dùng Validation UI)</option>
+                                <option value="custom">Khác (Tuỳ chỉnh theo Code)</option>
+                            </Select>
+                            {editor.type !== 'default' && (
+                                <div className="mt-3">
+                                    <Input
+                                        placeholder="Nhập mã loại (vd: woocommerce, kiotviet)"
+                                        value={editor.type}
+                                        onChange={(e) => setEditor({ ...editor, type: e.target.value })}
+                                    />
+                                    <div className="mt-1.5 text-[11px] text-slate-500 italic">
+                                        Mã loại này sẽ được dùng trong code để gọi class xử lý logic tương ứng.
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                        <div>
                             <label className="ui-label">Phương thức xác thực</label>
                             <Select
                                 value={editor.auth_type}
@@ -811,8 +846,8 @@ export default function ChannelsPage() {
                             </Select>
                             <div className="mt-2 text-[11px] text-slate-500 italic bg-amber-50 p-2 rounded-lg border border-amber-100">
                                 {editor.auth_type === "none" ? "Cẩn thận: Bất kỳ ai biết URL đều có thể gửi dữ liệu." :
-                                 editor.auth_type === "token" ? "Sử dụng token tĩnh gửi kèm trong Header." :
-                                 "Bảo mật nhất: Dùng secret key để ký và kiểm tra chữ ký."}
+                                    editor.auth_type === "token" ? "Sử dụng token tĩnh gửi kèm trong Header." :
+                                        "Bảo mật nhất: Dùng secret key để ký và kiểm tra chữ ký."}
                             </div>
                         </div>
                     </div>
@@ -843,7 +878,7 @@ export default function ChannelsPage() {
                             </Select>
                         </div>
                         <div className="md:col-span-1">
-                             {/* Optional for space */}
+                            {/* Optional for space */}
                         </div>
                     </div>
 
@@ -858,8 +893,8 @@ export default function ChannelsPage() {
 
                     <div>
                         <div className="flex items-center justify-between mb-2">
-                             <label className="ui-label !mb-0">Validation Rules (Rules cho body JSON)</label>
-                             <button
+                            <label className="ui-label !mb-0">Validation Rules (Rules cho body JSON)</label>
+                            <button
                                 type="button"
                                 className="text-xs font-bold text-sky-600 hover:text-sky-700 underline"
                                 onClick={() => {
@@ -870,13 +905,13 @@ export default function ChannelsPage() {
                                     }
                                     setRulesJsonOpen(!rulesJsonOpen);
                                 }}
-                             >
+                            >
                                 {rulesJsonOpen ? "Dùng Mode UI" : "Sửa JSON trực tiếp"}
-                             </button>
+                            </button>
                         </div>
 
                         {rulesJsonOpen ? (
-                             <div className="space-y-2">
+                            <div className="space-y-2">
                                 <textarea
                                     className={`ui-input h-48 font-mono text-xs py-2 ${jsonError ? 'border-rose-500 ring-rose-50' : ''}`}
                                     value={jsonRaw}
@@ -902,7 +937,7 @@ export default function ChannelsPage() {
                                         JSON không hợp lệ: {jsonError}
                                     </div>
                                 )}
-                             </div>
+                            </div>
                         ) : (
                             <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50">
                                 <table className="w-full text-xs">
@@ -1053,7 +1088,7 @@ export default function ChannelsPage() {
             >
                 <div className="space-y-4">
                     <Alert tone="warning" title="Lưu ý quan trọng" details="Giá trị này chỉ hiển thị duy nhất một lần này. Vui lòng sao lưu và cất giữ cẩn thận." />
-                    
+
                     <div className="space-y-3">
                         <div>
                             <label className="ui-label">Giá trị Key/Secret</label>

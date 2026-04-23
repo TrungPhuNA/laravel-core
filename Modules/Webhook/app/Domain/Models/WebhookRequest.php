@@ -28,6 +28,7 @@ final class WebhookRequest extends Model
         'headers',
         'query',
         'body',
+        'mapped_payload',
         'status',
         'error_type',
         'error_message',
@@ -37,6 +38,7 @@ final class WebhookRequest extends Model
     protected $casts = [
         'headers' => 'array',
         'query' => 'array',
+        'mapped_payload' => 'array',
         'received_at' => 'datetime',
     ];
 

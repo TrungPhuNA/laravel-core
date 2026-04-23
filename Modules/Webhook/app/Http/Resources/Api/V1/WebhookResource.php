@@ -17,6 +17,7 @@ final class WebhookResource extends JsonResource
             'id' => $wh->id,
             'user_id' => (int) $wh->user_id,
             'name' => $wh->name,
+            'type' => $wh->type,
             'public_id' => $wh->public_id,
             'is_active' => (bool) $wh->is_active,
             'allowed_methods' => $wh->allowed_methods,

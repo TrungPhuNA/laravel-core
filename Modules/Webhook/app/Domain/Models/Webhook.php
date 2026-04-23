@@ -12,6 +12,7 @@ use App\Models\User;
  * @property int $user_id
  * @property string $name
  * @property string $public_id
+ * @property string $type
  * @property bool $is_active
  * @property array<int, string>|null $allowed_methods
  * @property string $auth_type
@@ -30,6 +31,7 @@ final class Webhook extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'type',
         'public_id',
         'is_active',
         'allowed_methods',

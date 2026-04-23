@@ -11,6 +11,7 @@ final class WebhookUpdateRequest extends ApiFormRequest
     {
         return [
             'name' => ['sometimes', 'string', 'max:150'],
+            'type' => ['sometimes', 'string', 'max:50'],
             'is_active' => ['sometimes', 'boolean'],
             'allowed_methods' => ['sometimes', 'array'],
             'allowed_methods.*' => ['string', Rule::in(['GET', 'POST', 'get', 'post'])],

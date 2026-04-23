@@ -54,13 +54,22 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             $payload = Arr::except($request->all(), ['token']);
 
             $validated = $payload;
-            $rules = $webhook->validation_rules;
-            if (is_array($rules) && $rules !== []) {
-                $validated = Validator::make($payload, $rules)->validate();
+
+            if ($webhook->type === 'default') {
+                $rules = $webhook->validation_rules;
+                if (is_array($rules) && $rules !== []) {
+                    $validated = Validator::make($payload, $rules)->validate();
+                }
+            } else {
+                // Xử lý payload theo từng loại kênh (case-by-case)
+                $validated = match ($webhook->type) {
+                    'woocommerce_at' => \Modules\Webhook\Application\Mappers\WooCommerceAtMapper::map($payload),
+                    default => $payload, // Mặc định trả về raw payload nếu chưa implement mapper
+                };
             }
 
             // Success log
-            $requestLog = $this->logRequest($webhook, $request, 'success');
+            $requestLog = $this->logRequest($webhook, $request, 'success', null, null, $validated);
             $webhook->forceFill(['last_received_at' => now()])->save();
 
             // Fan-out (async by queue driver). This is best-effort and must not break receiver.
@@ -220,7 +229,8 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
         Request $request,
         string $status = 'success',
         ?string $errorType = null,
-        ?string $errorMessage = null
+        ?string $errorMessage = null,
+        ?array $mappedPayload = null
     ): WebhookRequest {
         $headers = $request->headers->all();
 
@@ -235,6 +245,7 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             'headers' => $headers,
             'query' => $request->query(),
             'body' => $request->getContent(),
+            'mapped_payload' => $mappedPayload,
             'status' => $status,
             'error_type' => $errorType,
             'error_message' => $errorMessage,
