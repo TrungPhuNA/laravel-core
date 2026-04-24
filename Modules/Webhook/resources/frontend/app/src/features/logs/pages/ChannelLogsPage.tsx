@@ -201,13 +201,13 @@ export default function ChannelLogsPage() {
                     <table className="ui-table">
                         <thead className="ui-thead">
                             <tr>
-                                <th className="ui-th">ID</th>
-                                <th className="ui-th">Trạng thái</th>
-                                <th className="ui-th">Phương thức</th>
-                                <th className="ui-th w-32">IP</th>
-                                <th className="ui-th w-44">Thời gian nhận</th>
-                                <th className="ui-th">Dữ liệu gốc</th>
-                                <th className="ui-th">Dữ liệu đã Map</th>
+                                <th className="ui-th whitespace-nowrap">ID</th>
+                                <th className="ui-th whitespace-nowrap">Trạng thái</th>
+                                <th className="ui-th whitespace-nowrap">Phương thức</th>
+                                <th className="ui-th whitespace-nowrap px-4">IP</th>
+                                <th className="ui-th whitespace-nowrap px-4">Thời gian nhận</th>
+                                <th className="ui-th whitespace-nowrap px-4">Dữ liệu gốc</th>
+                                <th className="ui-th whitespace-nowrap px-4">Dữ liệu đã Map</th>
                             </tr>
                         </thead>
                         <tbody>
