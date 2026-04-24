@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Modules\Webhook\Application\Contracts\WebhookReceiverServiceInterface;
 use Modules\Webhook\Domain\Models\Webhook;
@@ -236,7 +237,9 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
     private function checkWooCommerceAtAuth(Webhook $webhook, Request $request): void
     {
         $signature = $request->header('x-wc-webhook-signature');
-
+        Log::info('signature', [
+            'signature' => $signature,
+        ]);
         if (!$signature) {
             throw new ApiException(
                 errorCode: ErrorCode::UNAUTHORIZED->value,
