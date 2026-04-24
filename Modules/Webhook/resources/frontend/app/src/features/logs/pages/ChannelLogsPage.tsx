@@ -206,8 +206,8 @@ export default function ChannelLogsPage() {
                                 <th className="ui-th whitespace-nowrap">Phương thức</th>
                                 <th className="ui-th whitespace-nowrap px-4">IP</th>
                                 <th className="ui-th whitespace-nowrap px-4">Thời gian nhận</th>
-                                <th className="ui-th whitespace-nowrap px-4">Dữ liệu gốc</th>
-                                <th className="ui-th whitespace-nowrap px-4">Dữ liệu đã Map</th>
+                                <th className="ui-th whitespace-nowrap px-4 w-40">Dữ liệu gốc</th>
+                                <th className="ui-th whitespace-nowrap px-4 w-40">Dữ liệu đã Map</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -230,8 +230,8 @@ export default function ChannelLogsPage() {
                                     </td>
                                     <td className="ui-td text-slate-500 font-mono text-[11px]">{it.ip ?? "-"}</td>
                                     <td className="ui-td text-slate-600 font-medium whitespace-nowrap">{formatDateTime(it.received_at)}</td>
-                                    <td className="ui-td text-slate-400 font-mono text-[11px]">{shortText(it.body_preview ?? "", 80)}</td>
-                                    <td className="ui-td text-slate-400 font-mono text-[11px]">{it.mapped_payload_preview ? shortText(it.mapped_payload_preview, 80) : <span className="italic opacity-50">-</span>}</td>
+                                    <td className="ui-td text-slate-400 font-mono text-[11px] max-w-[160px] truncate">{shortText(it.body_preview ?? "", 40)}</td>
+                                    <td className="ui-td text-slate-400 font-mono text-[11px] max-w-[160px] truncate">{it.mapped_payload_preview ? shortText(it.mapped_payload_preview, 40) : <span className="italic opacity-50">-</span>}</td>
                                 </tr>
                             ))}
                         </tbody>
