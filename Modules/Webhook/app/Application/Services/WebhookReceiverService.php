@@ -236,47 +236,48 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
 
     private function checkWooCommerceAtAuth(Webhook $webhook, Request $request): void
     {
-        $signature = $request->header('x-wc-webhook-signature');
-        $signatureWP = $request->header('X-WC-Webhook-Signature');
+        $signature = $request->header('x-wc-webhook-signature') ?? $request->header('X-WC-Webhook-Signature');
+
         Log::info('WooCommerce Webhook Request Debug', [
             'headers' => $request->headers->all(),
-            'signature_lower' => $signature,
-            'signature_exact' => $signatureWP,
-            'body_preview' => substr($request->getContent(), 0, 500)
+            'signature' => $signature,
+            'content_type' => $request->header('Content-Type'),
+            'body_raw' => substr($request->getContent(), 0, 500),
+            'body_all' => $request->all(),
         ]);
-        if (!$signature) {
-            throw new ApiException(
-                errorCode: ErrorCode::UNAUTHORIZED->value,
-                message: 'Thiếu x-wc-webhook-signature trong header',
-                status: 401,
-            );
-        }
 
-        // 1. Ưu tiên kiểm tra HMAC nếu đã cấu hình Secret (mã hóa 2 chiều)
-        if ($webhook->auth_secret_encrypted) {
-            try {
-                $secret = Crypt::decryptString($webhook->auth_secret_encrypted);
-                $payload = $request->getContent();
-                $expectedSignature = base64_encode(hash_hmac('sha256', $payload, $secret, true));
+        // 1. Nếu có signature header -> Thực hiện kiểm tra chữ ký (HMAC hoặc Token Hash)
+        if ($signature) {
+            // Kiểm tra HMAC (nếu có secret)
+            if ($webhook->auth_secret_encrypted) {
+                try {
+                    $secret = Crypt::decryptString($webhook->auth_secret_encrypted);
+                    $payload = $request->getContent(); // Lấy raw body cho cả JSON và Form-urlencoded
+                    $expectedSignature = base64_encode(hash_hmac('sha256', $payload, $secret, true));
 
-                if (hash_equals($expectedSignature, $signature)) {
-                    return;
-                }
-            } catch (\Throwable) {
-                // Nếu decrypt lỗi thì bỏ qua để xuống check token
+                    if (hash_equals($expectedSignature, $signature)) {
+                        return;
+                    }
+                } catch (\Throwable) { }
+            }
+
+            // Kiểm tra Token Hash (so khớp trực tiếp chữ ký với token đã lưu)
+            if ($webhook->auth_token_hash && Hash::check($signature, $webhook->auth_token_hash)) {
+                return;
             }
         }
 
-        // 2. Kiểm tra Token trực tiếp (so sánh hash) nếu user chọn option Token
-        if ($webhook->auth_token_hash) {
-            if (Hash::check($signature, $webhook->auth_token_hash)) {
+        // 2. Nếu không có signature header (như lúc Ping test), thử fallback check token từ Query hoặc Body
+        $fallbackToken = (string) ($request->query('token') ?? $request->input('token') ?? '');
+        if ($fallbackToken !== '' && $webhook->auth_token_hash) {
+            if (Hash::check($fallbackToken, $webhook->auth_token_hash)) {
                 return;
             }
         }
 
         throw new ApiException(
             errorCode: ErrorCode::UNAUTHORIZED->value,
-            message: 'Xác thực WooCommerce thất bại (Chữ ký hoặc Token không hợp lệ)',
+            message: 'Xác thực WooCommerce thất bại (Chữ ký/Token không hợp lệ hoặc thiếu)',
             status: 401,
         );
     }
