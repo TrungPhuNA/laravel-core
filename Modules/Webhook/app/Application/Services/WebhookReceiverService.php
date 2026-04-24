@@ -237,15 +237,6 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
     {
         $signature = $request->header('x-wc-webhook-signature');
 
-        // WooCommerce thường dùng cơ chế HMAC với Secret
-        if (!$webhook->auth_secret_encrypted) {
-            throw new ApiException(
-                errorCode: ErrorCode::UNAUTHORIZED->value,
-                message: 'Webhook WooCommerce chưa cấu hình Secret',
-                status: 401,
-            );
-        }
-
         if (!$signature) {
             throw new ApiException(
                 errorCode: ErrorCode::UNAUTHORIZED->value,
@@ -254,19 +245,33 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             );
         }
 
-        $secret = Crypt::decryptString($webhook->auth_secret_encrypted);
-        $payload = $request->getContent();
+        // 1. Ưu tiên kiểm tra HMAC nếu đã cấu hình Secret (mã hóa 2 chiều)
+        if ($webhook->auth_secret_encrypted) {
+            try {
+                $secret = Crypt::decryptString($webhook->auth_secret_encrypted);
+                $payload = $request->getContent();
+                $expectedSignature = base64_encode(hash_hmac('sha256', $payload, $secret, true));
 
-        // Verify WooCommerce signature: base64(hmac-sha256(payload, secret))
-        $expectedSignature = base64_encode(hash_hmac('sha256', $payload, $secret, true));
-
-        if (!hash_equals($expectedSignature, $signature)) {
-            throw new ApiException(
-                errorCode: ErrorCode::UNAUTHORIZED->value,
-                message: 'WooCommerce signature không hợp lệ',
-                status: 401,
-            );
+                if (hash_equals($expectedSignature, $signature)) {
+                    return;
+                }
+            } catch (\Throwable) {
+                // Nếu decrypt lỗi thì bỏ qua để xuống check token
+            }
         }
+
+        // 2. Kiểm tra Token trực tiếp (so sánh hash) nếu user chọn option Token
+        if ($webhook->auth_token_hash) {
+            if (Hash::check($signature, $webhook->auth_token_hash)) {
+                return;
+            }
+        }
+
+        throw new ApiException(
+            errorCode: ErrorCode::UNAUTHORIZED->value,
+            message: 'Xác thực WooCommerce thất bại (Chữ ký hoặc Token không hợp lệ)',
+            status: 401,
+        );
     }
 
     private function logRequest(
