@@ -25,6 +25,15 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
 
     public function receive(string $publicId, Request $request): array
     {
+        Log::info('=== WEBHOOK RAW RECEIVE START ===', [
+            'public_id' => $publicId,
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'headers' => $request->headers->all(),
+            'params' => $request->all(),
+            'raw_body' => $request->getContent(),
+        ]);
+
         $webhook = $this->webhooks->findByPublicIdOrFail($publicId);
 
         try {
