@@ -237,8 +237,10 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
     private function checkWooCommerceAtAuth(Webhook $webhook, Request $request): void
     {
         $signature = $request->header('x-wc-webhook-signature');
+        $signatureWP = $request->header('X-WC-Webhook-Signature');
         Log::info('signature', [
             'signature' => $signature,
+            'signatureWP' => $signatureWP
         ]);
         if (!$signature) {
             throw new ApiException(
