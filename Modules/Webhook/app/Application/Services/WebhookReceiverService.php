@@ -238,9 +238,11 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
     {
         $signature = $request->header('x-wc-webhook-signature');
         $signatureWP = $request->header('X-WC-Webhook-Signature');
-        Log::info('signature', [
-            'signature' => $signature,
-            'signatureWP' => $signatureWP
+        Log::info('WooCommerce Webhook Request Debug', [
+            'headers' => $request->headers->all(),
+            'signature_lower' => $signature,
+            'signature_exact' => $signatureWP,
+            'body_preview' => substr($request->getContent(), 0, 500)
         ]);
         if (!$signature) {
             throw new ApiException(
