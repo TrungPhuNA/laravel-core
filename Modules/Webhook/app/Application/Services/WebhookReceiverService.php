@@ -120,6 +120,15 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             return;
         }
 
+        // Ưu tiên xử lý check auth thủ công cho các loại webhook đặc thù
+        if ($webhook->type !== 'default') {
+            match ($webhook->type) {
+                'woocommerce_at' => $this->checkWooCommerceAtAuth($webhook, $request),
+                default => null,
+            };
+            return;
+        }
+
         if ($webhook->auth_type === 'token') {
             $token = (string) ($request->header('X-Webhook-Token')
                 ?? $request->query('token')
@@ -222,6 +231,42 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             $value = substr($value, strlen('sha256='));
         }
         return trim($value);
+    }
+
+    private function checkWooCommerceAtAuth(Webhook $webhook, Request $request): void
+    {
+        $signature = $request->header('x-wc-webhook-signature');
+
+        // WooCommerce thường dùng cơ chế HMAC với Secret
+        if (!$webhook->auth_secret_encrypted) {
+            throw new ApiException(
+                errorCode: ErrorCode::UNAUTHORIZED->value,
+                message: 'Webhook WooCommerce chưa cấu hình Secret',
+                status: 401,
+            );
+        }
+
+        if (!$signature) {
+            throw new ApiException(
+                errorCode: ErrorCode::UNAUTHORIZED->value,
+                message: 'Thiếu x-wc-webhook-signature trong header',
+                status: 401,
+            );
+        }
+
+        $secret = Crypt::decryptString($webhook->auth_secret_encrypted);
+        $payload = $request->getContent();
+
+        // Verify WooCommerce signature: base64(hmac-sha256(payload, secret))
+        $expectedSignature = base64_encode(hash_hmac('sha256', $payload, $secret, true));
+
+        if (!hash_equals($expectedSignature, $signature)) {
+            throw new ApiException(
+                errorCode: ErrorCode::UNAUTHORIZED->value,
+                message: 'WooCommerce signature không hợp lệ',
+                status: 401,
+            );
+        }
     }
 
     private function logRequest(

@@ -3,6 +3,7 @@
 ## Dev
 
 - `docs/dev/COMMANDS.md`
+- `docs/dev/DEVOPS_SETUP.md`
 - `docs/dev/FRONTEND_REACT_MODULES.md`
 - `docs/dev/GITFLOW_JIRA.md`
 - `docs/dev/RESPONSE_API.md`
@@ -29,6 +30,8 @@
 ## Requests
 
 - `docs/requests/BACKLOG.md`
+- `docs/requests/REQ-20260404-ecommerce-module.md`
+- `docs/requests/SETUP_BODY_POST_BACK.md`
 - `docs/requests/TEMPLATE.md`
 
 ## Testing
@@ -40,3 +43,4 @@
 ## Tooling
 
 - `scripts/index-docs.sh`
+

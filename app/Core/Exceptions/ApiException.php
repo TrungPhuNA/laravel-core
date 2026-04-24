@@ -38,5 +38,10 @@ final class ApiException extends RuntimeException
     {
         return new self($errorCode, $message, 400, $details);
     }
+
+    public function getErrorCode(): string
+    {
+        return $this->errorCode;
+    }
 }
 
