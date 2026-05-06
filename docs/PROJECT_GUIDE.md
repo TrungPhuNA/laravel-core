@@ -45,10 +45,16 @@ Khi tạo mới một module (ví dụ: `Payment`), cấu trúc code phải tuâ
   - Validation dữ liệu đầu vào.
 - **Resources**: `Modules/Payment/app/Http/Resources/Api/V1/...`
   - Transform dữ liệu đầu ra (Format JSON).
-- **Services**: `Modules/Payment/app/Application/Services/...`
-  - Nơi chứa logic nghiệp vụ chính (Business Logic).
-- **Contracts**: `Modules/Payment/app/Application/Contracts/...`
-  - Các Interfaces định nghĩa phương thức cho Service.
+- **Application**: `Modules/Payment/app/Application/...`
+  - **Services**: Nơi chứa logic nghiệp vụ chính (Business Logic).
+  - **Contracts**: Các Interfaces định nghĩa phương thức cho Service.
+  - **DTOs/Mappers**: Chuyển đổi và vận chuyển dữ liệu giữa các lớp.
+- **Domain**: `Modules/Payment/app/Domain/...`
+  - **Models**: Các Eloquent Model đại diện cho thực thể (Entities) và quan hệ dữ liệu.
+- **Infrastructure**: `Modules/Payment/app/Infrastructure/...`
+  - **Repositories**: Triển khai logic lưu trữ và truy vấn dữ liệu (Eloquent, Redis, v.v.).
+  - **Contracts**: Interfaces định nghĩa các phương thức cho Repository.
+  - **Query**: Các class cấu hình truy vấn, lọc dữ liệu (QueryConfig).
 
 ---
 

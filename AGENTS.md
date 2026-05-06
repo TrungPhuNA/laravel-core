@@ -14,7 +14,9 @@ This repo is a Laravel API core scaffold using:
   - Requests: `Modules/{Module}/app/Http/Requests/Api/V1/...`
   - Resources: `Modules/{Module}/app/Http/Resources/Api/V1/...`
   - Application services: `Modules/{Module}/app/Application/Services/...`
-  - Contracts (interfaces): `Modules/{Module}/app/Application/Contracts/...`
+  - Contracts: `Modules/{Module}/app/Application/Contracts/...`
+  - Domain Models: `Modules/{Module}/app/Domain/Models/...`
+  - Infrastructure (Repositories): `Modules/{Module}/app/Infrastructure/...`
 
 - Global response/error format:
   - `App\Core\Http\Responses\ApiResponse`
