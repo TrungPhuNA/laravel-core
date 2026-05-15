@@ -68,7 +68,7 @@ final class WooCommerceAtMapper
             "Link hợp đồng: " . Arr::get($payload, 'billing_contract_link'),
         ]);
 
-        return [
+        return self::clean([
             'request_name' => 'Đơn hàng WooCommerce #' . Arr::get($payload, 'id').  ' - ' .Arr::get($billing, 'company'),
             'order_id' => (string) Arr::get($payload, 'id'),
             'contact_name' => Arr::get($billing,'last_name'),
@@ -86,6 +86,23 @@ final class WooCommerceAtMapper
             // Một số trường metadata bổ sung
             'payment_account' => Arr::get($payload, 'payment_method_title'),
             'note' => Arr::get($payload, 'customer_note'),
-        ];
+        ]);
+    }
+
+    /**
+     * Đảm bảo dữ liệu là UTF-8 hợp lệ để tránh lỗi json_encode
+     */
+    private static function clean(mixed $data): mixed
+    {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = self::clean($value);
+            }
+        } elseif (is_string($data)) {
+            // Loại bỏ các ký tự không hợp lệ cho UTF-8
+            return mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+        }
+
+        return $data;
     }
 }

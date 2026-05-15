@@ -47,7 +47,7 @@ final class ApiResponse
             $payload['trace_id'] = $traceId;
         }
 
-        return response()->json($payload, $status);
+        return response()->json($payload, $status, [], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     public static function paginated(LengthAwarePaginator $paginator, mixed $items, string $code = 'SUCCESS', string $message = 'OK', int $status = 200): JsonResponse
@@ -83,7 +83,7 @@ final class ApiResponse
             $payload['trace_id'] = $traceId;
         }
 
-        return response()->json($payload, $status);
+        return response()->json($payload, $status, [], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     }
 
     /**
@@ -114,6 +114,6 @@ final class ApiResponse
             $payload['trace_id'] = $traceId;
         }
 
-        return response()->json($payload, $status);
+        return response()->json($payload, $status, [], JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
     }
 }

@@ -25,14 +25,14 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
 
     public function receive(string $publicId, Request $request): array
     {
-        Log::info('=== WEBHOOK RAW RECEIVE START ===', [
+        Log::info('=== WEBHOOK RAW RECEIVE START ===', $this->cleanData([
             'public_id' => $publicId,
             'url' => $request->fullUrl(),
             'method' => $request->method(),
             'headers' => $request->headers->all(),
             'params' => $request->all(),
             'raw_body' => $request->getContent(),
-        ]);
+        ]));
 
         $webhook = $this->webhooks->findByPublicIdOrFail($publicId);
 
@@ -311,14 +311,30 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             'ip' => (string)($request->ip() ?? ''),
             'headers' => $headers,
             'query' => $request->query(),
-            'body' => $request->getContent(),
-            'mapped_payload' => $mappedPayload,
+            'body' => $this->cleanData($request->getContent()),
+            'mapped_payload' => $this->cleanData($mappedPayload),
             'status' => $status,
             'error_type' => $errorType,
-            'error_message' => $errorMessage,
+            'error_message' => $this->cleanData($errorMessage),
             'received_at' => now(),
         ]);
 
         return $item;
+    }
+
+    /**
+     * Clean dữ liệu để đảm bảo UTF-8 hợp lệ
+     */
+    private function cleanData(mixed $data): mixed
+    {
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {
+                $data[$key] = $this->cleanData($value);
+            }
+        } elseif (is_string($data)) {
+            return mb_convert_encoding($data, 'UTF-8', 'UTF-8');
+        }
+
+        return $data;
     }
 }
