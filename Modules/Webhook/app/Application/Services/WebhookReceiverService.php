@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Modules\Webhook\Application\Contracts\WebhookReceiverServiceInterface;
@@ -62,6 +63,9 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
             // Payload validate: hop nhat query + body (Laravel: $request->all()).
             // Neu auth dung query param token=... -> remove de khong can validate.
             $payload = Arr::except($request->all(), ['token']);
+
+            // Kiểm tra hành vi spam đặt đơn hàng (áp dụng đặc biệt cho WooCommerce webhook)
+            $this->checkSpam($webhook, $payload);
 
             $validated = $payload;
 
@@ -336,5 +340,106 @@ final class WebhookReceiverService implements WebhookReceiverServiceInterface
         }
 
         return $data;
+    }
+
+    /**
+     * Mục đích: Kiểm tra và chặn các request spam đặt đơn hàng gửi qua Webhook (đặc biệt là WooCommerce).
+     * 
+     * Logic xử lý chính:
+     * - Chỉ kiểm tra nếu tính năng được bật trong cấu hình (`config.spam.enabled`) và webhook có loại là 'woocommerce_at'.
+     * - Trích xuất Số điện thoại người mua hàng (`billing.phone`) và danh sách SKU sản phẩm (`line_items.*.sku`).
+     * - Với mỗi SKU, tạo một Cache Key nguyên tử (atomic) kết hợp: `webhook:spam:phone_sku:{public_id}:{phone}:{sku}`.
+     * - Nếu không có số điện thoại, fallback về sử dụng IP của client gửi request: `webhook:spam:sku_ip:{public_id}:{ip}:{sku}`.
+     * - Sử dụng `Cache::add()` với thời gian khóa (lock time) được lấy từ cấu hình (mặc định 3 giây).
+     * - Nếu `Cache::add()` trả về false, nghĩa là đã có một thao tác tương tự diễn ra trong vòng 3 giây trước đó -> Xác định là SPAM -> Ném ra ngoại lệ `ApiException` (mã lỗi `SPAM_BLOCKED`, HTTP 429).
+     * 
+     * Các case đặc biệt:
+     * - Không có line_items hoặc không có SKU: Bỏ qua kiểm tra để tránh chặn nhầm các request ping hoặc test rỗng.
+     * - Một đơn hàng có nhiều sản phẩm (nhiều SKU): Kiểm tra độc lập từng SKU trong danh sách unique.
+     * - Ký tự đặc biệt trong SĐT hoặc SKU: Sử dụng regex lọc bỏ ký tự đặc biệt để đảm bảo khóa cache hoạt động an toàn và ổn định trên mọi Driver (như Redis, File, v.v.).
+     */
+    private function checkSpam(Webhook $webhook, array $payload): void
+    {
+        // Case đặc biệt 1: Tính năng check spam bị tắt trong cấu hình
+        if (!config('webhook.spam.enabled', true)) {
+            return;
+        }
+
+        // Chỉ áp dụng check spam cho loại webhook WooCommerce 'woocommerce_at'
+        if ($webhook->type !== 'woocommerce_at') {
+            return;
+        }
+
+        $phone = trim((string) Arr::get($payload, 'billing.phone', ''));
+        $lineItems = Arr::get($payload, 'line_items', []);
+
+        // Case đặc biệt 2: Nếu payload không chứa danh sách sản phẩm, bỏ qua check spam
+        if (empty($lineItems) || !is_array($lineItems)) {
+            return;
+        }
+
+        // Lấy thời gian khóa từ cấu hình (mặc định 3 giây)
+        $lockTime = (int) config('webhook.spam.lock_time', 3);
+        if ($lockTime <= 0) {
+            return;
+        }
+
+        // Trích xuất tất cả SKU hợp lệ trong đơn hàng
+        $skus = [];
+        foreach ($lineItems as $item) {
+            $sku = trim((string) Arr::get($item, 'sku', ''));
+            if ($sku !== '') {
+                $skus[] = $sku;
+            }
+        }
+
+        // Case đặc biệt 3: Không tìm thấy bất kỳ SKU nào trong đơn hàng, bỏ qua check spam
+        if (empty($skus)) {
+            return;
+        }
+
+        // Lọc bỏ SKU trùng lặp trong cùng một request đơn hàng
+        $uniqueSkus = array_unique($skus);
+
+        // Duyệt qua từng SKU để kiểm tra trùng lặp đặt đơn nhanh liên tiếp
+        foreach ($uniqueSkus as $sku) {
+            // Chuẩn hóa SĐT và SKU: loại bỏ các ký tự đặc biệt để tránh lỗi tên cache key trên các driver như Redis
+            $safePhone = preg_replace('/[^0-9]/', '', $phone);
+            $safeSku = preg_replace('/[^A-Za-z0-9_\-]/', '', $sku);
+            
+            if ($safePhone === '') {
+                // Case đặc biệt 4: Nếu không có SĐT khách hàng, fallback về check theo IP người dùng gửi webhook để chống spam IP
+                $ip = request()->ip() ?? '127.0.0.1';
+                $safeIp = preg_replace('/[^0-9\.]/', '', $ip);
+                $cacheKey = "webhook:spam:sku_ip:{$webhook->public_id}:{$safeIp}:{$safeSku}";
+            } else {
+                $cacheKey = "webhook:spam:phone_sku:{$webhook->public_id}:{$safePhone}:{$safeSku}";
+            }
+
+            // Cache::add() hoạt động atomic (nguyên tử) giúp ngăn chặn race condition tuyệt đối.
+            // Trả về true nếu ghi key thành công (lần đầu đặt đơn).
+            // Trả về false nếu key đã tồn tại (đã đặt trùng trong thời gian khóa lockTime).
+            $isSuccess = Cache::add($cacheKey, true, $lockTime);
+
+            if (!$isSuccess) {
+                // Ghi log cảnh báo hành vi spam
+                Log::warning('=== WEBHOOK SPAM DETECTED & BLOCKED ===', [
+                    'webhook_id' => $webhook->id,
+                    'public_id' => $webhook->public_id,
+                    'phone' => $phone,
+                    'sku' => $sku,
+                    'cache_key' => $cacheKey,
+                    'lock_time' => $lockTime,
+                    'ip' => request()->ip(),
+                ]);
+
+                // Ném ngoại lệ chặn request, HTTP 429 Too Many Requests
+                throw new ApiException(
+                    errorCode: ErrorCode::SPAM_BLOCKED->value,
+                    message: "Phát hiện hành vi spam đặt đơn liên tục cho SKU [{$sku}]. Vui lòng thử lại sau {$lockTime} giây.",
+                    status: 429
+                );
+            }
+        }
     }
 }

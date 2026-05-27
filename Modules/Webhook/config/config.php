@@ -22,4 +22,13 @@ return [
             'signature' => 'X-Webhook-Signature',
         ],
     ],
+
+    // Cấu hình chống spam đặt đơn (đặc biệt cho WooCommerce webhook)
+    'spam' => [
+        // Trạng thái bật/tắt tính năng check spam
+        'enabled' => true,
+        
+        // Thời gian khóa (giây) giữa các lần đặt trùng lặp sản phẩm (cùng SKU) của cùng một khách hàng (cùng SĐT)
+        'lock_time' => 3,
+    ],
 ];

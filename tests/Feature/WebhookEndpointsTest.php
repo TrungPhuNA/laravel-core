@@ -193,4 +193,62 @@ final class WebhookEndpointsTest extends TestCase
         $res->assertJsonPath('status', 'success');
         $res->assertJsonPath('code', 'WEBHOOK_RECEIVED');
     }
+
+    /**
+     * Test case kiểm tra tính năng chống spam đặt đơn của WooCommerce webhook.
+     * Kiểm tra rằng khi gửi trùng SKU và SĐT trong thời gian khóa, hệ thống sẽ chặn và lưu log lỗi đầy đủ.
+     */
+    public function test_receiver_blocks_spam_for_woocommerce_at_webhook(): void
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+
+        // 1. Tạo webhook loại 'woocommerce_at' không có authentication để test nhanh
+        $created = $this->postJson('/api/v1/webhooks', [
+            'name' => 'WooCommerce Spam Test',
+            'type' => 'woocommerce_at',
+            'auth_type' => 'none',
+            'allowed_methods' => ['POST'],
+        ])->json('data');
+
+        $publicId = (string) ($created['webhook']['public_id'] ?? '');
+
+        // Payload WooCommerce giả lập chứa SĐT và SKU sản phẩm
+        $payload = [
+            'id' => 123456,
+            'billing' => [
+                'phone' => '0987654321',
+            ],
+            'line_items' => [
+                [
+                    'sku' => 'SKU-TEST-SPAM-99',
+                    'quantity' => 1,
+                    'price' => '100000',
+                    'total' => '100000',
+                ]
+            ]
+        ];
+
+        // Lần gửi 1: Phải thành công bình thường
+        $res1 = $this->postJson("/api/v1/webhooks/receive/{$publicId}", $payload);
+        $res1->assertOk();
+        $res1->assertJsonPath('status', 'success');
+
+        // Lần gửi 2 (gửi trùng SĐT và SKU ngay lập tức): Phải bị chặn spam (HTTP 429)
+        $res2 = $this->postJson("/api/v1/webhooks/receive/{$publicId}", $payload);
+        $res2->assertStatus(429);
+        $res2->assertJsonPath('status', 'fail');
+        $res2->assertJsonPath('code', 'SPAM_BLOCKED');
+
+        // 2. Kiểm tra xem log request thất bại có được lưu đầy đủ vào Database với thông tin lỗi phù hợp hay không
+        $webhookId = (int) ($created['webhook']['id'] ?? 0);
+        $failedLog = WebhookRequest::query()
+            ->where('webhook_id', $webhookId)
+            ->where('status', 'failed')
+            ->first();
+
+        $this->assertNotNull($failedLog);
+        $this->assertEquals('SPAM_BLOCKED', $failedLog->error_type);
+        $this->assertStringContainsString('Phát hiện hành vi spam đặt đơn', $failedLog->error_message);
+    }
 }
