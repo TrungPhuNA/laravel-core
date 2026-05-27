@@ -12,7 +12,12 @@ final class WooCommerceAtMapper
     public static function map(array $payload): array
     {
         $billing = Arr::get($payload, 'billing', []);
-        $contactName = trim(Arr::get($billing, 'last_name', '') . ' ' . Arr::get($billing, 'first_name', ''));
+        
+        // Mục đích: Xác định tên người liên hệ mua hàng.
+        // Logic xử lý chính: Ưu tiên lấy last_name của khách hàng, nếu không có thì fallback lấy first_name.
+        $lastName = trim((string) Arr::get($billing, 'last_name', ''));
+        $firstName = trim((string) Arr::get($billing, 'first_name', ''));
+        $contactName = $lastName !== '' ? $lastName : $firstName;
         
         $metaData = collect(Arr::get($payload, 'meta_data', []));
         $getMeta = fn($key) => $metaData->firstWhere('key', $key)['value'] ?? null;
@@ -71,7 +76,8 @@ final class WooCommerceAtMapper
         return self::clean([
             'request_name' => 'Đơn hàng WooCommerce #' . Arr::get($payload, 'id').  ' - ' .Arr::get($billing, 'company'),
             'order_id' => (string) Arr::get($payload, 'id'),
-            'contact_name' => Arr::get($billing,'last_name'),
+            // Sử dụng biến contactName đã được xác định ở trên (ưu tiên last_name, fallback first_name)
+            'contact_name' => $contactName,
             'contact_email' => Arr::get($billing, 'email'),
             'contact_phone' => Arr::get($billing, 'phone'),
             'company_name' => Arr::get($billing, 'company'),
