@@ -7,6 +7,98 @@ use Illuminate\Support\Arr;
 final class WooCommerceAtMapper
 {
     /**
+     * Mục đích: Danh sách sản phẩm dịch vụ của hệ thống dùng để tra cứu dựa trên SKU sạch.
+     */
+    private static array $SERVICES_LIST = [
+        [
+            'value' => 'GT_AMBASSADOR',
+            'name' => 'GT - Ambassador Community',
+            'service_type' => 'GT',
+            'unit' => 'VIEW',
+            'old_ids' => [1]
+        ],
+        [
+            'value' => 'GT_PT_BANNER_GAMIFICATION',
+            'name' => 'GT - Premium Traffic (Banner & Gamification)',
+            'service_type' => 'GT',
+            'unit' => 'CLICK',
+            'old_ids' => [2, 3]
+        ],
+        [
+            'value' => 'GT_BOOKING_KOC',
+            'name' => 'GT - Booking KOC',
+            'service_type' => 'GT',
+            'unit' => 'PACKAGE',
+            'old_ids' => []
+        ],
+        [
+            'value' => 'GT_BRAND_SERVICE',
+            'name' => 'GT - Other Branding Services',
+            'service_type' => 'GT',
+            'unit' => 'PACKAGE',
+            'old_ids' => []
+        ],
+        [
+            'value' => 'GA_QLG',
+            'name' => 'GA - Qualified Lead Generation',
+            'service_type' => 'GA',
+            'unit' => 'LEAD',
+            'old_ids' => [4]
+        ],
+        [
+            'value' => 'GA_QUG',
+            'name' => 'GA - Qualified User Generation',
+            'service_type' => 'GA',
+            'unit' => 'NEW_USER',
+            'old_ids' => [5, 6]
+        ],
+        [
+            'value' => 'GA_FIRST_TRANSACTION',
+            'name' => 'GA - First Transaction',
+            'service_type' => 'GA',
+            'unit' => 'FIRST_TRANSACTION',
+            'old_ids' => []
+        ],
+        [
+            'value' => 'GA_CPV',
+            'name' => 'GA - Cost per Voucher',
+            'service_type' => 'GA',
+            'old_ids' => []
+        ],
+        [
+            'value' => 'GS_LIVE_HUB',
+            'name' => 'GS - Live Hub',
+            'service_type' => 'GS',
+            'old_ids' => [9]
+        ],
+        [
+            'value' => 'GS_CPS',
+            'name' => 'GS - Cost per sale',
+            'service_type' => 'GS',
+            'old_ids' => [7, 8, 10]
+        ],
+        [
+            'value' => 'GLC_PT_CVG',
+            'name' => 'GLC - Premium Partnership Platform (Cashback & Voucher & Gamification)',
+            'unit' => 'ORDER',
+            'service_type' => 'GLC',
+            'old_ids' => [11, 12, 13, 14]
+        ],
+        [
+            'value' => 'GU_SCALEF',
+            'name' => 'GU - ScaleF (Platform as a Service)',
+            'service_type' => 'GU',
+            'old_ids' => [15, 16]
+        ],
+        [
+            'value' => 'GU_AT_ACADEMY',
+            'name' => 'GU - Academy',
+            'service_type' => 'GU',
+            'old_ids' => [17]
+        ]
+    ];
+
+    /**
      * Map payload của WooCommerce thành format chuẩn của hệ thống
      */
     public static function map(array $payload): array
@@ -26,11 +118,41 @@ final class WooCommerceAtMapper
         $lineItems = Arr::get($payload, 'line_items', []);
         $descriptionParts = [];
 
+        // Mục đích: Tích lũy danh sách service_type và thông tin service_products tương ứng từ các sản phẩm
+        // Logic xử lý chính: 
+        // - Với mỗi sản phẩm, trích xuất SKU sạch bằng cách lấy phần trước dấu |
+        // - So khớp với danh sách $SERVICES_LIST để lấy service_type tương ứng
+        $serviceTypes = [];
+        $serviceProducts = [];
+
         foreach ($lineItems as $item) {
             $products[] = [
                 'name' => Arr::get($item, 'name'),
                 'price' => Arr::get($item, 'price'),
             ];
+
+            // Tách SKU lấy giá trị trước ký tự | (Ví dụ: GS_LIVE_HUB|dailylive20p -> GS_LIVE_HUB)
+            $rawSku = trim((string) Arr::get($item, 'sku', ''));
+            $cleanSku = str_contains($rawSku, '|') ? explode('|', $rawSku)[0] : $rawSku;
+            $cleanSku = trim($cleanSku);
+
+            // Tìm thông tin dịch vụ tương ứng
+            $matchedService = null;
+            foreach (self::$SERVICES_LIST as $service) {
+                if ($service['value'] === $cleanSku) {
+                    $matchedService = $service;
+                    break;
+                }
+            }
+
+            if ($matchedService) {
+                $serviceTypes[] = $matchedService['service_type'];
+                $serviceProducts[] = [
+                    'value' => $matchedService['value'],
+                    'name' => $matchedService['name'],
+                    'service_type' => $matchedService['service_type']
+                ];
+            }
 
             // Lấy meta data của sản phẩm
             $itemMeta = collect(Arr::get($item, 'meta_data', []));
@@ -42,11 +164,24 @@ final class WooCommerceAtMapper
                 Arr::get($item, 'name') . ' × ' . Arr::get($item, 'quantity'),
                 "Loại: " . $loai,
                 "Số phiên: " . $soPhien,
-                "SKU: " . Arr::get($item, 'sku'),
+                "SKU: " . $rawSku,
                 "Giá: " . number_format((float)Arr::get($item, 'price', 0), 0, '.', '.') . " VND",
                 "Tổng cộng: " . number_format((float)Arr::get($item, 'total', 0), 0, '.', '.') . " VND",
             ];
             $descriptionParts[] = implode("\n", array_filter($itemDesc));
+        }
+
+        // Lọc trùng danh sách các service_type
+        $serviceTypes = array_values(array_unique($serviceTypes));
+
+        // Lọc trùng danh sách các service_products dựa trên mã 'value'
+        $uniqueServiceProducts = [];
+        $seenValues = [];
+        foreach ($serviceProducts as $sp) {
+            if (!in_array($sp['value'], $seenValues, true)) {
+                $seenValues[] = $sp['value'];
+                $uniqueServiceProducts[] = $sp;
+            }
         }
 
         // Ánh xạ trạng thái đơn hàng sang tiếng Việt
@@ -89,6 +224,10 @@ final class WooCommerceAtMapper
             'products' => $products,
             'description' => trim($description),
             
+            // Các trường bổ sung thông tin sản phẩm dịch vụ tra cứu theo SKU
+            'service_type' => $serviceTypes,
+            'service_products' => $uniqueServiceProducts,
+
             // Một số trường metadata bổ sung
             'payment_account' => Arr::get($payload, 'payment_method_title'),
             'note' => Arr::get($payload, 'customer_note'),

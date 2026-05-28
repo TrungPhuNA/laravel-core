@@ -213,7 +213,7 @@ final class WebhookEndpointsTest extends TestCase
 
         $publicId = (string) ($created['webhook']['public_id'] ?? '');
 
-        // Payload WooCommerce giả lập chứa SĐT và SKU sản phẩm
+        // Payload WooCommerce giả lập chứa SĐT và SKU sản phẩm dạng đặc biệt (chứa dấu |)
         $payload = [
             'id' => 123456,
             'billing' => [
@@ -221,7 +221,7 @@ final class WebhookEndpointsTest extends TestCase
             ],
             'line_items' => [
                 [
-                    'sku' => 'SKU-TEST-SPAM-99',
+                    'sku' => 'GS_LIVE_HUB|dailylive20p',
                     'quantity' => 1,
                     'price' => '100000',
                     'total' => '100000',
@@ -233,6 +233,12 @@ final class WebhookEndpointsTest extends TestCase
         $res1 = $this->postJson("/api/v1/webhooks/receive/{$publicId}", $payload);
         $res1->assertOk();
         $res1->assertJsonPath('status', 'success');
+        
+        // Kiểm tra xem SKU đã được tách và map đúng thông tin sản phẩm dịch vụ hay chưa
+        $res1->assertJsonPath('data.validated.service_type', ['GS']);
+        $res1->assertJsonPath('data.validated.service_products.0.value', 'GS_LIVE_HUB');
+        $res1->assertJsonPath('data.validated.service_products.0.name', 'GS - Live Hub');
+        $res1->assertJsonPath('data.validated.service_products.0.service_type', 'GS');
 
         // Lần gửi 2 (gửi trùng SĐT và SKU ngay lập tức): Phải bị chặn spam (HTTP 429)
         $res2 = $this->postJson("/api/v1/webhooks/receive/{$publicId}", $payload);
