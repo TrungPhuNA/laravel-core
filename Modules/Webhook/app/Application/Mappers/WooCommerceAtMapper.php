@@ -104,13 +104,25 @@ final class WooCommerceAtMapper
     public static function map(array $payload): array
     {
         $billing = Arr::get($payload, 'billing', []);
-        
+
         // Mục đích: Xác định tên người liên hệ mua hàng.
         // Logic xử lý chính: Ưu tiên lấy last_name của khách hàng, nếu không có thì fallback lấy first_name.
         $lastName = trim((string) Arr::get($billing, 'last_name', ''));
         $firstName = trim((string) Arr::get($billing, 'first_name', ''));
         $contactName = $lastName !== '' ? $lastName : $firstName;
-        
+
+        // Mục đích: Xây dựng địa chỉ đầy đủ của khách hàng từ thông tin thanh toán (billing).
+        // Logic xử lý chính: 
+        // - Trích xuất các trường address_1, city, state từ mảng $billing và cắt khoảng trắng thừa.
+        // - Lọc bỏ các trường rỗng để tránh dư thừa dấu phẩy.
+        // - Ghép nối các phần tử bằng dấu phẩy và khoảng trắng ", ".
+        // Các case đặc biệt: Nếu tất cả các trường đều trống, trả về chuỗi rỗng.
+        $address1 = trim((string) Arr::get($billing, 'address_1', ''));
+        $city = trim((string) Arr::get($billing, 'city', ''));
+        $state = trim((string) Arr::get($billing, 'state', ''));
+        $addressParts = array_filter([$address1, $city, $state], fn($value) => $value !== '');
+        $fullAddress = implode(', ', $addressParts);
+
         $metaData = collect(Arr::get($payload, 'meta_data', []));
         $getMeta = fn($key) => $metaData->firstWhere('key', $key)['value'] ?? null;
 
@@ -209,27 +221,35 @@ final class WooCommerceAtMapper
         ]);
 
         return self::clean([
-            'request_name' => 'Đơn hàng WooCommerce #' . Arr::get($payload, 'id').  ' - ' .Arr::get($billing, 'company'),
+            'request_name' => 'Đơn hàng WooCommerce #' . Arr::get($payload, 'id') .  ' - ' . Arr::get($billing, 'company'),
             'order_id' => (string) Arr::get($payload, 'id'),
             // Sử dụng biến contactName đã được xác định ở trên (ưu tiên last_name, fallback first_name)
             'contact_name' => $contactName,
             'contact_email' => Arr::get($billing, 'email'),
             'contact_phone' => Arr::get($billing, 'phone'),
             'company_name' => Arr::get($billing, 'company'),
+            'tax_code' => $metaData->firstWhere('key', '_billing_at_tax_id')['value'] ?? null,
+            'address' => $fullAddress,
+            'account_number' => '', // STK TT
+            'service_name' => Arr::get($billing, 'line_items.name'), // Tên dịch vụ trong HD
             'total_amount' => (float) Arr::get($payload, 'total', 0),
-            // 'campaign_source' => $getMeta('_wc_order_attribution_utm_source'),
-            // 'campaign_medium' => $getMeta('_wc_order_attribution_utm_medium'),
-            // 'campaign_name' => $getMeta('_wc_order_attribution_utm_campaign'),
-            // 'campaign_content' => $getMeta('_wc_order_attribution_utm_content'),
             'products' => $products,
             'description' => trim($description),
-            
+
             // Các trường bổ sung thông tin sản phẩm dịch vụ tra cứu theo SKU
             'service_type' => $serviceTypes,
             'service_products' => $uniqueServiceProducts,
 
             // Một số trường metadata bổ sung
             'payment_account' => Arr::get($payload, 'payment_method_title'),
+            'representative' => '', //Đỗ Hữu Hưng
+            'representative_b' => $metaData->firstWhere('key', '_billing_at_representative')['value'] ?? null, // Đại diện bên b
+            'sale' => [
+                'name' => $firstName !== '' ? $firstName : $lastName,
+                'phone' => trim((string) Arr::get($billing, 'phone', '')),
+                'email' => trim((string) Arr::get($billing, 'email', '')),
+            ],
+            'link_website' => 'https://biz.accesstrade.vn',
             'note' => Arr::get($payload, 'customer_note'),
         ]);
     }

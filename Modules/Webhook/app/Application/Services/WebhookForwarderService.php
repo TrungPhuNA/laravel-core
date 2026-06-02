@@ -53,12 +53,51 @@ final class WebhookForwarderService implements WebhookForwarderServiceInterface
                 $res = $client->send($method, (string) $dest->url, ['json' => $out]);
 
                 $durationMs = (int) round((hrtime(true) - $start) / 1_000_000);
+
+                // Mục đích: Xác định trạng thái kết quả bắn webhook (thành công hoặc thất bại do lỗi HTTP / lỗi nghiệp vụ) và lấy thông báo lỗi tương ứng.
+                // Logic xử lý chính:
+                // - Mặc định coi là 'success' nếu HTTP status code trong khoảng 2xx và không chứa lỗi nghiệp vụ trong body.
+                // - Giải mã body phản hồi dưới dạng JSON để kiểm tra lỗi nghiệp vụ (ví dụ: status là 'error' hoặc 'fail').
+                // - Nếu HTTP status code không thành công, đánh dấu là 'failed' và lưu thông tin lỗi HTTP.
+                // Các case đặc biệt:
+                // - Trả về HTTP 200 nhưng body JSON chứa "status": "error" hoặc "status": "fail".
+                // - Phản hồi không phải dạng JSON hoặc không có trường 'message', fallback về mã lỗi hoặc thông báo HTTP.
+                $status = $res->successful() ? 'success' : 'failed';
+                $errorType = null;
+                $errorMessage = null;
+
+                if ($res->successful()) {
+                    $resBody = (string) $res->body();
+                    $decoded = json_decode($resBody, true);
+                    if (is_array($decoded)) {
+                        $resStatus = $decoded['status'] ?? '';
+                        if (in_array($resStatus, ['error', 'fail'], true)) {
+                            $status = 'failed';
+                            $errorType = 'business_error';
+                            $errorMessage = $decoded['message']
+                                ?? $decoded['error_message']
+                                ?? ($decoded['code'] ?? ($decoded['error_code'] ?? 'Lỗi nghiệp vụ không xác định'));
+                        }
+                    }
+                } else {
+                    $errorType = 'http_error';
+                    $resBody = (string) $res->body();
+                    $decoded = json_decode($resBody, true);
+                    if (is_array($decoded) && !empty($decoded['message'])) {
+                        $errorMessage = $decoded['message'];
+                    } else {
+                        $errorMessage = 'Yêu cầu HTTP thất bại với mã trạng thái ' . $res->status();
+                    }
+                }
+
                 $log->forceFill([
                     'duration_ms' => $durationMs,
                     'response_status' => $res->status(),
                     'response_headers' => $res->headers(),
                     'response_body' => $this->truncateBytes((string) $res->body(), $maxResBytes),
-                    'status' => $res->successful() ? 'success' : 'failed',
+                    'status' => $status,
+                    'error_type' => $errorType,
+                    'error_message' => $errorMessage,
                 ])->save();
             } catch (\Throwable $e) {
                 $durationMs = (int) round((hrtime(true) - $start) / 1_000_000);
