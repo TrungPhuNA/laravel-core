@@ -220,6 +220,10 @@ final class WooCommerceAtMapper
             "Link hợp đồng: " . Arr::get($payload, 'billing_contract_link'),
         ]);
 
+        // Mục đích: Ghép tên các sản phẩm dịch vụ trong đơn hàng cách nhau bằng dấu phẩy.
+        // Logic xử lý chính: Trích xuất trường 'name' từ danh sách line_items và nối lại.
+        $serviceName = implode(', ', array_filter(array_column($lineItems, 'name')));
+
         return self::clean([
             'request_name' => 'Đơn hàng WooCommerce #' . Arr::get($payload, 'id') .  ' - ' . Arr::get($billing, 'company'),
             'order_id' => (string) Arr::get($payload, 'id'),
@@ -231,7 +235,7 @@ final class WooCommerceAtMapper
             'tax_code' => $metaData->firstWhere('key', '_billing_at_tax_id')['value'] ?? null,
             'address' => $fullAddress,
             'account_number' => '', // STK TT
-            'service_name' => Arr::get($billing, 'line_items.name'), // Tên dịch vụ trong HD
+            'service_name' => $serviceName, // Tên dịch vụ trong HD
             'total_amount' => (float) Arr::get($payload, 'total', 0),
             'products' => $products,
             'description' => trim($description),
