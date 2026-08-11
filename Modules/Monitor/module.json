@@ -1,0 +1,11 @@
+{
+    "name": "Monitor",
+    "alias": "monitor",
+    "description": "Quản lý domain & thời gian hết hạn",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Monitor\\Providers\\MonitorServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "@shared/styles/ui.css";
+
+html, body {
+    height: 100%;
+    background-color: #f8fafc;
+}
+
+body {
+    min-height: 100%;
+    margin: 0;
+}

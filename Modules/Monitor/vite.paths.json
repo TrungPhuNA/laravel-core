@@ -1,0 +1,6 @@
+{
+    "paths": [
+        "Modules/Monitor/resources/frontend/app/index.css",
+        "Modules/Monitor/resources/frontend/app/main.tsx"
+    ]
+}

@@ -4,5 +4,6 @@
     "User": true,
     "Webhook": true,
     "Ecommerce": true,
-    "CheatSheet": true
+    "CheatSheet": true,
+    "Monitor": true
 }

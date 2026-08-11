@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/monitor",
+    "description": "Domain expiry monitor",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Monitor\\": "app/",
+            "Modules\\Monitor\\Database\\Factories\\": "database/factories/",
+            "Modules\\Monitor\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Monitor\\Tests\\": "tests/"
+        }
+    }
+}
